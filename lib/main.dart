@@ -1,122 +1,140 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
+import 'core/ui_kit/ui_kit.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ReaderDocumentsApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class ReaderDocumentsApp extends StatefulWidget {
+  const ReaderDocumentsApp({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ReaderDocumentsApp> createState() => _ReaderDocumentsAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _ReaderDocumentsAppState extends State<ReaderDocumentsApp> {
+  Brightness _brightness = Brightness.light;
 
-  void _incrementCounter() {
+  void _toggleBrightness() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _brightness = _brightness == Brightness.light ? Brightness.dark : Brightness.light;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+    final theme = AppTheme.of(_brightness);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Reader Documents',
+      localizationsDelegates: FLocalizations.localizationsDelegates,
+      supportedLocales: FLocalizations.supportedLocales,
+      builder: (context, child) => FTheme(data: theme, child: child!),
+      home: HomePage(brightness: _brightness, onToggleBrightness: _toggleBrightness),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({required this.brightness, required this.onToggleBrightness, super.key});
+
+  final Brightness brightness;
+  final VoidCallback onToggleBrightness;
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _navIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return FScaffold(
+      header: FHeader(
+        title: const Text('Reader Documents'),
+        suffixes: [
+          FHeaderAction(
+            icon: Icon(widget.brightness == Brightness.dark ? FLucideIcons.sun : FLucideIcons.moon),
+            onPress: widget.onToggleBrightness,
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      footer: AppBottomNav(
+        currentIndex: _navIndex,
+        onChanged: (index) => setState(() => _navIndex = index),
+        items: const [
+          AppBottomNavItem(icon: FLucideIcons.house, label: 'Home'),
+          AppBottomNavItem(icon: FLucideIcons.search, label: 'Search'),
+          AppBottomNavItem(icon: FLucideIcons.settings, label: 'Settings'),
+        ],
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        children: [
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Themed with Forui', style: context.theme.typography.body.lg),
+                const AppGap.sm(),
+                const Text('Buttons below use the brand color from AppTheme, not Forui defaults.'),
+                const AppGap.lg(),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    AppButton(onPressed: () {}, child: const Text('Primary')),
+                    AppButton(variant: AppButtonVariant.secondary, onPressed: () {}, child: const Text('Secondary')),
+                    AppButton(variant: AppButtonVariant.outline, onPressed: () {}, child: const Text('Outline')),
+                    AppButton(variant: AppButtonVariant.destructive, onPressed: () {}, child: const Text('Delete')),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const AppGap.lg(),
+          AppCard(child: _AutoSyncRow()),
+          const AppGap.lg(),
+          Text('ui_kit primitives: AppGrid', style: context.theme.typography.body.lg),
+          const AppGap.sm(),
+          AppGrid(
+            children: [
+              for (final label in ['Recent', 'Favorites', 'Shared', 'Trash'])
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: AppBorders.all(context),
+                    borderRadius: AppRadius.of(context).md,
+                  ),
+                  child: Padding(padding: const EdgeInsets.all(AppSpacing.md), child: Text(label)),
+                ),
+            ],
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+    );
+  }
+}
+
+class _AutoSyncRow extends StatefulWidget {
+  @override
+  State<_AutoSyncRow> createState() => _AutoSyncRowState();
+}
+
+class _AutoSyncRowState extends State<_AutoSyncRow> {
+  bool _enabled = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text('Auto-sync annotations'),
+        FSwitch(value: _enabled, onChange: (value) => setState(() => _enabled = value)),
+      ],
     );
   }
 }
