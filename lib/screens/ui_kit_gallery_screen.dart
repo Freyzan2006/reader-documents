@@ -1,0 +1,664 @@
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart' show FLucideIcons;
+
+import '../core/ui_kit/ui_kit.dart';
+
+/// A living catalogue of every component in `core/ui_kit`, grouped by the
+/// same categories the kit's folders use.
+class UiKitGalleryScreen extends StatelessWidget {
+  const UiKitGalleryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => AppScrollArea(
+    child: Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppHeader.topInset(context) + AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AppText('UI Kit', variant: AppTextVariant.display),
+          const AppGap.sm(),
+          const AppText(
+            'Every component currently in core/ui_kit, in one place.',
+            variant: AppTextVariant.caption,
+          ),
+          const AppGap.lg(),
+          const _Section(title: 'Typography', child: _TypographySection()),
+          const AppGap.lg(),
+          _Section(title: 'Tokens', child: _TokensSection()),
+          const AppGap.lg(),
+          const _Section(title: 'Controls', child: _ControlsSection()),
+          const AppGap.lg(),
+          const _Section(title: 'Data display', child: _DataDisplaySection()),
+          const AppGap.lg(),
+          const _Section(title: 'Feedback', child: _FeedbackSection()),
+          const AppGap.lg(),
+          const _Section(title: 'Overlay', child: _OverlaySection()),
+          const AppGap.lg(),
+          const _Section(title: 'Navigation', child: _NavigationSection()),
+          const AppGap.lg(),
+          const _Section(title: 'Layout', child: _LayoutSection()),
+          const AppGap.lg(),
+          _Section(title: 'Primitives', child: _PrimitivesSection()),
+          const AppGap.xl(),
+        ],
+      ),
+    ),
+  );
+}
+
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      AppText(title, variant: AppTextVariant.title),
+      const AppGap.sm(),
+      AppCard(child: child),
+    ],
+  );
+}
+
+class _TypographySection extends StatelessWidget {
+  const _TypographySection();
+
+  @override
+  Widget build(BuildContext context) => const Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.sm,
+    children: [
+      AppText('Display', variant: AppTextVariant.display),
+      AppText('Title', variant: AppTextVariant.title),
+      AppText('Body', variant: AppTextVariant.body),
+      AppText('Caption', variant: AppTextVariant.caption),
+    ],
+  );
+}
+
+class _Swatch extends StatelessWidget {
+  const _Swatch({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    spacing: AppSpacing.xs,
+    children: [
+      DecoratedBox(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: AppRadius.of(context).sm,
+          border: AppBorders.all(context),
+        ),
+        child: const SizedBox(width: 48, height: 48),
+      ),
+      AppText(label, variant: AppTextVariant.caption),
+    ],
+  );
+}
+
+class _TokensSection extends StatelessWidget {
+  const _TokensSection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText('Colors (AppColors)', variant: AppTextVariant.caption),
+      const AppRow(
+        children: [
+          _Swatch(color: AppColors.graphite, label: 'graphite'),
+          _Swatch(color: AppColors.silver, label: 'silver'),
+        ],
+      ),
+      const AppText('Spacing (AppSpacing)', variant: AppTextVariant.caption),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.xs,
+        children: [
+          for (final (label, value) in const [
+            ('xs', AppSpacing.xs),
+            ('sm', AppSpacing.sm),
+            ('md', AppSpacing.md),
+            ('lg', AppSpacing.lg),
+            ('xl', AppSpacing.xl),
+          ])
+            AppRow(
+              children: [
+                SizedBox(
+                  width: 28,
+                  child: AppText(label, variant: AppTextVariant.caption),
+                ),
+                Container(width: value, height: 8, color: AppColors.silver),
+              ],
+            ),
+        ],
+      ),
+      const AppText('Radius (AppRadius)', variant: AppTextVariant.caption),
+      AppRow(
+        children: [
+          for (final (label, radius) in [
+            ('sm', AppRadius.of(context).sm),
+            ('md', AppRadius.of(context).md),
+            ('lg', AppRadius.of(context).lg),
+            ('pill', AppRadius.of(context).pill),
+          ])
+            Column(
+              spacing: AppSpacing.xs,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: AppBorders.all(context),
+                    borderRadius: radius,
+                  ),
+                  child: const SizedBox(width: 40, height: 40),
+                ),
+                AppText(label, variant: AppTextVariant.caption),
+              ],
+            ),
+        ],
+      ),
+    ],
+  );
+}
+
+class _ControlsSection extends StatefulWidget {
+  const _ControlsSection();
+
+  @override
+  State<_ControlsSection> createState() => _ControlsSectionState();
+}
+
+class _ControlsSectionState extends State<_ControlsSection> {
+  bool _checked = false;
+  bool _switched = true;
+  double _sliderValue = 0.4;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText('AppButton', variant: AppTextVariant.caption),
+      Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          for (final variant in AppButtonVariant.values)
+            AppButton(
+              variant: variant,
+              onPressed: () {},
+              child: Text(variant.name),
+            ),
+        ],
+      ),
+      const AppText('AppCheckbox', variant: AppTextVariant.caption),
+      AppCheckbox(
+        value: _checked,
+        onChanged: (value) => setState(() => _checked = value),
+        label: 'Example checkbox',
+      ),
+      const AppText('AppInput', variant: AppTextVariant.caption),
+      const AppInput(label: 'Document title', hint: 'Untitled document'),
+      const AppText('AppSelect', variant: AppTextVariant.caption),
+      AppSelect<String>(
+        label: 'Page size',
+        hint: 'Choose a size',
+        items: const {'A4': 'a4', 'Letter': 'letter', 'Legal': 'legal'},
+        onChanged: (value) {},
+      ),
+      const AppText('AppSwitch', variant: AppTextVariant.caption),
+      AppSwitch(
+        value: _switched,
+        onChanged: (value) => setState(() => _switched = value),
+        label: 'Auto-save',
+      ),
+      const AppText('AppSlider', variant: AppTextVariant.caption),
+      AppSlider(
+        value: _sliderValue,
+        onChanged: (value) => setState(() => _sliderValue = value),
+      ),
+      const AppText('AppLabel', variant: AppTextVariant.caption),
+      AppLabel(
+        label: 'Zoom',
+        description: 'Applies to the current document only.',
+        child: AppSlider(
+          value: _sliderValue,
+          onChanged: (value) => setState(() => _sliderValue = value),
+        ),
+      ),
+      const AppText('AppDateTimePicker', variant: AppTextVariant.caption),
+      const SizedBox(height: 160, child: AppDateTimePicker()),
+      const AppText('AppUpload', variant: AppTextVariant.caption),
+      AppUpload(
+        allowedExtensions: const ['pdf', 'docx', 'png'],
+        onChanged: (files) {},
+      ),
+    ],
+  );
+}
+
+class _DataDisplaySection extends StatelessWidget {
+  const _DataDisplaySection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText('AppList / AppListItem', variant: AppTextVariant.caption),
+      AppList(
+        items: [
+          AppListItem(
+            title: 'Item one',
+            subtitle: 'With a subtitle',
+            leading: FLucideIcons.file,
+            onTap: () {},
+          ),
+          AppListItem(
+            title: 'Item two',
+            leading: FLucideIcons.file,
+            onTap: () {},
+          ),
+        ],
+      ),
+      const AppText('AppBadge', variant: AppTextVariant.caption),
+      Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          for (final variant in AppBadgeVariant.values)
+            AppBadge(variant: variant, child: Text(variant.name)),
+        ],
+      ),
+      const AppText('AppCollapsible', variant: AppTextVariant.caption),
+      const AppCollapsible(
+        title: 'What file formats are supported?',
+        child: AppText('PDF, DOCX and DjVu.', variant: AppTextVariant.caption),
+      ),
+      const AppText('AppAvatar', variant: AppTextVariant.caption),
+      const AppRow(
+        children: [
+          AppAvatar(initials: 'FR'),
+          AppAvatar(initials: 'JD', size: 56),
+        ],
+      ),
+      const AppText('AppAccordion', variant: AppTextVariant.caption),
+      AppAccordion(
+        items: [
+          AppAccordionItem(
+            title: 'What file formats are supported?',
+            child: const AppText(
+              'PDF, DOCX and DjVu.',
+              variant: AppTextVariant.caption,
+            ),
+          ),
+          AppAccordionItem(
+            title: 'Can I edit scanned documents?',
+            child: const AppText(
+              'Only PDF and DjVu, via OCR.',
+              variant: AppTextVariant.caption,
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+class _FeedbackSection extends StatelessWidget {
+  const _FeedbackSection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText('AppAlert', variant: AppTextVariant.caption),
+      const AppAlert(
+        title: Text('Heads up'),
+        subtitle: Text('This is a primary alert.'),
+      ),
+      const AppGap.xs(),
+      const AppAlert(
+        title: Text('Something went wrong'),
+        subtitle: Text('This is a destructive alert.'),
+        variant: AppAlertVariant.destructive,
+      ),
+      const AppText('AppSpinner', variant: AppTextVariant.caption),
+      AppRow(
+        children: [
+          for (final size in AppSpinnerSize.values) AppSpinner(size: size),
+        ],
+      ),
+      const AppText('AppSkeleton', variant: AppTextVariant.caption),
+      const AppRow(
+        children: [AppSkeleton(width: 40, height: 40), AppSkeleton(width: 120)],
+      ),
+      const AppText('AppProgress', variant: AppTextVariant.caption),
+      const AppProgress(value: 0.6),
+      const AppGap.xs(),
+      const AppProgress(),
+    ],
+  );
+}
+
+class _OverlaySection extends StatelessWidget {
+  const _OverlaySection();
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    spacing: AppSpacing.sm,
+    runSpacing: AppSpacing.sm,
+    children: [
+      AppTooltip(
+        message:
+            'This button is wrapped in AppTooltip — hover or long-press it',
+        child: AppButton(
+          variant: AppButtonVariant.ghost,
+          onPressed: () {},
+          child: const Text('Hover / long-press me'),
+        ),
+      ),
+      AppPopover(
+        popoverBuilder: (context) => const Padding(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: AppText('A popover, aligned to its child.'),
+        ),
+        child: const AppButton(
+          variant: AppButtonVariant.outline,
+          onPressed: null,
+          child: Text('Show popover'),
+        ),
+      ),
+      AppPopoverMenu(
+        items: [
+          AppCommandItem(
+            label: 'Rename',
+            icon: FLucideIcons.pencil,
+            onSelect: () {},
+          ),
+          AppCommandItem(
+            label: 'Duplicate',
+            icon: FLucideIcons.copy,
+            onSelect: () {},
+          ),
+          AppCommandItem(
+            label: 'Delete',
+            icon: FLucideIcons.trash2,
+            onSelect: () {},
+          ),
+        ],
+        child: const AppButton(
+          variant: AppButtonVariant.outline,
+          onPressed: null,
+          child: Text('Show popover menu'),
+        ),
+      ),
+      AppButton(
+        variant: AppButtonVariant.outline,
+        onPressed: () => AppDialog.show(
+          context: context,
+          title: const Text('AppDialog'),
+          body: const Text('A centered modal dialog.'),
+          actions: [
+            AppButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+        child: const Text('Show dialog'),
+      ),
+      AppButton(
+        variant: AppButtonVariant.outline,
+        onPressed: () => AppSheet.show(
+          context: context,
+          builder: (context, scrollController) => ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            children: [
+              const AppText(
+                'Drag the handle up to expand, or down past the halfway point to dismiss.',
+              ),
+              const AppGap.md(),
+              AppButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+        child: const Text('Show sheet'),
+      ),
+      AppButton(
+        variant: AppButtonVariant.outline,
+        onPressed: () => AppSidePanel.show(
+          context: context,
+          builder: (context, controller) {
+            return Column(
+              children: [
+                AppSidePanelHeader(title: 'Outline', onClose: controller.close),
+                const AppSidePanelContent(
+                  child: AppText(
+                    'A side panel — 80% width, dims and blocks the rest of the app while shown.',
+                  ),
+                ),
+                AppSidePanelFooter(
+                  children: [
+                    AppButton(
+                      onPressed: controller.close,
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+        child: const Text('Show side panel'),
+      ),
+      AppButton(
+        variant: AppButtonVariant.outline,
+        onPressed: () => AppCommandPalette.show(
+          context: context,
+          items: [
+            AppCommandItem(
+              label: 'Open document…',
+              icon: FLucideIcons.file,
+              onSelect: () {},
+            ),
+            AppCommandItem(
+              label: 'New folder',
+              icon: FLucideIcons.folderPlus,
+              onSelect: () {},
+            ),
+            AppCommandItem(
+              label: 'Toggle dark mode',
+              icon: FLucideIcons.moon,
+              onSelect: () {},
+            ),
+            AppCommandItem(
+              label: 'Export as PDF',
+              icon: FLucideIcons.download,
+              onSelect: () {},
+            ),
+            AppCommandItem(
+              label: 'Settings',
+              icon: FLucideIcons.settings,
+              onSelect: () {},
+            ),
+          ],
+        ),
+        child: const Text('Show command palette'),
+      ),
+      AppButton(
+        variant: AppButtonVariant.outline,
+        onPressed: () => AppToast.show(
+          context: context,
+          title: const Text('AppToast'),
+          description: const Text('A transient status message.'),
+        ),
+        child: const Text('Show toast'),
+      ),
+    ],
+  );
+}
+
+class _NavigationSection extends StatelessWidget {
+  const _NavigationSection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText('AppHeader', variant: AppTextVariant.caption),
+      DecoratedBox(
+        decoration: BoxDecoration(
+          border: AppBorders.all(context),
+          borderRadius: AppRadius.of(context).md,
+        ),
+        child: AppHeader(
+          title: 'ChatGPT',
+          onMenuTap: () {},
+          actionLabel: 'Sign in',
+          onActionTap: () {},
+        ),
+      ),
+      const AppText(
+        'AppBottomNav is already this app\'s bottom navigation bar.',
+        variant: AppTextVariant.caption,
+      ),
+      const AppText('AppTabs', variant: AppTextVariant.caption),
+      SizedBox(
+        height: 160,
+        child: AppTabs(
+          tabs: [
+            AppTab(
+              label: 'Pages',
+              child: const AppCenter(child: Text('Pages tab content')),
+            ),
+            AppTab(
+              label: 'Outline',
+              child: const AppCenter(child: Text('Outline tab content')),
+            ),
+            AppTab(
+              label: 'Bookmarks',
+              child: const AppCenter(child: Text('Bookmarks tab content')),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+class _LayoutSection extends StatelessWidget {
+  const _LayoutSection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText(
+        "AppScaffold is already this app's page shell (header/footer/body).",
+        variant: AppTextVariant.caption,
+      ),
+      const AppText('AppDivider', variant: AppTextVariant.caption),
+      const Text('Above'),
+      const AppDivider(),
+      const Text('Below'),
+      const AppGap.sm(),
+      const AppText('AppResizable', variant: AppTextVariant.caption),
+      SizedBox(
+        height: 120,
+        child: AppResizable(
+          axis: Axis.horizontal,
+          regions: [
+            AppResizableRegion(
+              flex: 1,
+              child: const AppCenter(child: Text('Outline')),
+            ),
+            AppResizableRegion(
+              flex: 2,
+              child: const AppCenter(child: Text('Document')),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+class _PrimitivesSection extends StatelessWidget {
+  const _PrimitivesSection();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.md,
+    children: [
+      const AppText(
+        'AppScrollArea wraps this whole screen.',
+        variant: AppTextVariant.caption,
+      ),
+      const AppText(
+        'AppRow (default spacing)',
+        variant: AppTextVariant.caption,
+      ),
+      const AppRow(
+        children: [Icon(FLucideIcons.check), Text('Row with default spacing')],
+      ),
+      const AppText(
+        'AppStack (centered by default)',
+        variant: AppTextVariant.caption,
+      ),
+      SizedBox(
+        height: 60,
+        child: AppStack(
+          children: [
+            Container(color: AppColors.silver, width: 60, height: 60),
+            const Icon(FLucideIcons.star),
+          ],
+        ),
+      ),
+      const AppText(
+        'AppCenter (with padding)',
+        variant: AppTextVariant.caption,
+      ),
+      DecoratedBox(
+        decoration: BoxDecoration(border: AppBorders.all(context)),
+        child: const AppCenter(padding: AppSpacing.md, child: Text('Centered')),
+      ),
+      const AppText('AppGrid', variant: AppTextVariant.caption),
+      AppGrid(
+        children: [
+          for (final label in ['A', 'B', 'C'])
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: AppBorders.all(context),
+                borderRadius: AppRadius.of(context).sm,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: AppText(label),
+              ),
+            ),
+        ],
+      ),
+    ],
+  );
+}

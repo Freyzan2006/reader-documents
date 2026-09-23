@@ -38,6 +38,10 @@ class AppButton extends StatelessWidget {
   };
 
   @override
-  Widget build(BuildContext context) =>
-      FButton(onPress: onPressed, variant: _variant(variant), size: _size(size), child: child);
+  Widget build(BuildContext context) => FButton(
+    onPress: onPressed,
+    variant: _variant(variant),
+    size: _size(size),
+    child: child,
+  );
 }

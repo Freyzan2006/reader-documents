@@ -29,5 +29,6 @@ abstract final class AppTheme {
     ),
   );
 
-  static FThemeData of(Brightness brightness) => brightness == Brightness.dark ? dark : light;
+  static FThemeData of(Brightness brightness) =>
+      brightness == Brightness.dark ? dark : light;
 }

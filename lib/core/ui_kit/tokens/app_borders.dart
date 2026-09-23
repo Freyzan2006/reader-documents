@@ -18,6 +18,8 @@ abstract final class AppBorderWidth {
 abstract final class AppBorders {
   static Color color(BuildContext context) => context.theme.colors.border;
 
-  static Border all(BuildContext context, {double width = AppBorderWidth.thin}) =>
-      Border.all(color: color(context), width: width);
+  static Border all(
+    BuildContext context, {
+    double width = AppBorderWidth.thin,
+  }) => Border.all(color: color(context), width: width);
 }

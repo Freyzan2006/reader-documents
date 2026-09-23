@@ -13,7 +13,12 @@ class AppBottomNavItem {
 /// [FBottomNavigationBarItem] behind plain data ([AppBottomNavItem]) so
 /// screens build with data, not Forui widgets, directly.
 class AppBottomNav extends StatelessWidget {
-  const AppBottomNav({required this.items, required this.currentIndex, required this.onChanged, super.key});
+  const AppBottomNav({
+    required this.items,
+    required this.currentIndex,
+    required this.onChanged,
+    super.key,
+  });
 
   final List<AppBottomNavItem> items;
   final int currentIndex;
@@ -23,6 +28,12 @@ class AppBottomNav extends StatelessWidget {
   Widget build(BuildContext context) => FBottomNavigationBar(
     index: currentIndex,
     onChange: onChanged,
-    children: [for (final item in items) FBottomNavigationBarItem(icon: Icon(item.icon), label: Text(item.label))],
+    children: [
+      for (final item in items)
+        FBottomNavigationBarItem(
+          icon: Icon(item.icon),
+          label: Text(item.label),
+        ),
+    ],
   );
 }

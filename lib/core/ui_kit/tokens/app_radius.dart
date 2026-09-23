@@ -9,5 +9,6 @@ import 'package:forui/forui.dart';
 /// directly — if the underlying UI kit is ever swapped, only this file
 /// changes.
 abstract final class AppRadius {
-  static FBorderRadius of(BuildContext context) => context.theme.style.borderRadius;
+  static FBorderRadius of(BuildContext context) =>
+      context.theme.style.borderRadius;
 }

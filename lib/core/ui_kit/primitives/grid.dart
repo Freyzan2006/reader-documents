@@ -12,7 +12,12 @@ import '../tokens/app_spacing.dart';
 /// into responsive columns *inline*, without scrolling — e.g. a settings
 /// page's cards.
 class AppGrid extends StatelessWidget {
-  const AppGrid({required this.children, this.spacing = AppSpacing.md, this.runSpacing = AppSpacing.md, super.key});
+  const AppGrid({
+    required this.children,
+    this.spacing = AppSpacing.md,
+    this.runSpacing = AppSpacing.md,
+    super.key,
+  });
 
   final List<Widget> children;
   final double spacing;
@@ -29,11 +34,15 @@ class AppGrid extends StatelessWidget {
     final columns = _columnsFor(context.screenSize);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - spacing * (columns - 1)) / columns;
+        final itemWidth =
+            (constraints.maxWidth - spacing * (columns - 1)) / columns;
         return Wrap(
           spacing: spacing,
           runSpacing: runSpacing,
-          children: [for (final child in children) SizedBox(width: itemWidth, child: child)],
+          children: [
+            for (final child in children)
+              SizedBox(width: itemWidth, child: child),
+          ],
         );
       },
     );

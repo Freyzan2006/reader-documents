@@ -16,6 +16,8 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = context.theme.cardStyle;
-    return FCard(child: Padding(padding: padding ?? style.padding, child: child));
+    return FCard(
+      child: Padding(padding: padding ?? style.padding, child: child),
+    );
   }
 }

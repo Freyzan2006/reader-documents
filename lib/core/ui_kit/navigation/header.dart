@@ -1,0 +1,105 @@
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
+
+import '../data_display/card.dart';
+import '../data_display/text.dart';
+import '../tokens/app_spacing.dart';
+
+class AppHeader extends StatelessWidget {
+  static const double height = 64;
+
+  static double topInset(BuildContext context) =>
+      MediaQuery.paddingOf(context).top + height;
+
+  const AppHeader({
+    required this.title,
+    this.onMenuTap,
+    this.actionLabel,
+    this.onActionTap,
+    super.key,
+  });
+
+  final String title;
+  final VoidCallback? onMenuTap;
+  final String? actionLabel;
+  final VoidCallback? onActionTap;
+
+  @override
+  Widget build(BuildContext context) => FHeader.nested(
+    style: const FHeaderStyleDelta.delta(
+      constraints: BoxConstraints(minHeight: height, maxHeight: height),
+    ),
+    title: AppCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      child: AppText(title, variant: AppTextVariant.title),
+    ),
+    prefixes: [
+      if (onMenuTap != null)
+        _CircleIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
+    ],
+    suffixes: [
+      if (actionLabel != null && onActionTap != null)
+        _PillButton(label: actionLabel!, onPressed: onActionTap!),
+    ],
+  );
+}
+
+class _CircleIconButton extends StatelessWidget {
+  const _CircleIconButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => FTappable(
+    onPress: onPressed,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.theme.colors.secondary,
+        shape: BoxShape.circle,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Icon(
+          icon,
+          size: 20,
+          color: context.theme.colors.secondaryForeground,
+        ),
+      ),
+    ),
+  );
+}
+
+class _PillButton extends StatelessWidget {
+  const _PillButton({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => FTappable(
+    onPress: onPressed,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.theme.colors.primary,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm,
+        ),
+        child: Text(
+          label,
+          style: context.theme.typography.body.sm.copyWith(
+            color: context.theme.colors.primaryForeground,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    ),
+  );
+}
