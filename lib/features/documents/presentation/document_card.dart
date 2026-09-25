@@ -15,12 +15,6 @@ class DocumentCard extends StatelessWidget {
       ? '${file.name.substring(0, _maxNameChars - 3)}...'
       : file.name;
 
-  static String _formatSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-  }
-
   @override
   Widget build(BuildContext context) => FTappable(
     onPress: onTap,
@@ -49,7 +43,7 @@ class DocumentCard extends StatelessWidget {
                     ),
                     AppBadge(
                       variant: AppBadgeVariant.outline,
-                      child: Text(_formatSize(file.sizeBytes)),
+                      child: Text(file.formattedSize),
                     ),
                   ],
                 ),

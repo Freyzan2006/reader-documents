@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
@@ -8,11 +9,19 @@ import '../application/documents_providers.dart';
 import 'document_card.dart';
 import 'document_filter_bar.dart';
 import 'paginated_document_list.dart';
+import 'pdf_viewer_screen.dart';
 
 class DocumentsScreen extends ConsumerWidget {
   const DocumentsScreen({super.key});
 
   void _openDocument(BuildContext context, DocumentFile file) {
+    if (file.type == DocumentType.pdf) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => PdfViewerScreen(file: file)),
+      );
+      return;
+    }
+
     AppToast.show(
       context: context,
       title: Text(AppLocalizations.of(context)!.viewerComingSoon),

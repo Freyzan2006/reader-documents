@@ -24,9 +24,10 @@ class DocumentsNotifier extends AsyncNotifier<List<DocumentFile>> {
     );
   }
 
-  Future<void> import(String sourcePath) async {
-    await ref.read(documentsRepositoryProvider).import(sourcePath);
+  Future<DocumentFile> import(String sourcePath) async {
+    final file = await ref.read(documentsRepositoryProvider).import(sourcePath);
     await refresh();
+    return file;
   }
 
   Future<void> delete(String path) async {

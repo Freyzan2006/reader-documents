@@ -46,6 +46,7 @@ dependencies:
   forui: ^0.27.0
   path: ^1.9.1
   shared_preferences: ^2.5.3
+  receive_sharing_intent: ^1.8.1
 
 dev_dependencies:
   flutter_test:

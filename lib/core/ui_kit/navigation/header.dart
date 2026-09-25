@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import '../controls/icon_button.dart';
 import '../data_display/card.dart';
 import '../data_display/text.dart';
 import '../tokens/app_spacing.dart';
@@ -41,40 +42,14 @@ class AppHeader extends StatelessWidget {
     ),
     prefixes: [
       if (onMenuTap != null)
-        _CircleIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
+        AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
     ],
     suffixes: [
       if (actionIcon != null && onActionTap != null)
-        _CircleIconButton(icon: actionIcon!, onPressed: onActionTap!)
+        AppIconButton(icon: actionIcon!, onPressed: onActionTap!)
       else if (actionLabel != null && onActionTap != null)
         _PillButton(label: actionLabel!, onPressed: onActionTap!),
     ],
-  );
-}
-
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({required this.icon, required this.onPressed});
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) => FTappable(
-    onPress: onPressed,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.colors.secondary,
-        shape: BoxShape.circle,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        child: Icon(
-          icon,
-          size: 20,
-          color: context.theme.colors.secondaryForeground,
-        ),
-      ),
-    ),
   );
 }
 

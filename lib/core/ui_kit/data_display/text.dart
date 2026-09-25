@@ -14,12 +14,16 @@ class AppText extends StatelessWidget {
     this.data, {
     this.variant = AppTextVariant.body,
     this.color,
+    this.maxLines,
+    this.overflow,
     super.key,
   });
 
   final String data;
   final AppTextVariant variant;
   final Color? color;
+  final int? maxLines;
+  final TextOverflow? overflow;
 
   static TextStyle _style(BuildContext context, AppTextVariant variant) {
     final typography = AppTypography.of(context);
@@ -37,6 +41,8 @@ class AppText extends StatelessWidget {
     return Text(
       data,
       style: color == null ? style : style.copyWith(color: color),
+      maxLines: maxLines,
+      overflow: overflow,
     );
   }
 }

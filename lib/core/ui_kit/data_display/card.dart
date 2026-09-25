@@ -1,23 +1,49 @@
+import 'dart:ui';
+
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
-/// A padded content card. Wraps Forui's [FCard], adding the padding Forui's
-/// own snippet generator applies (`dart run forui snippet create card`) —
-/// [FCard] itself ships unpadded.
+import '../tokens/app_borders.dart';
+import '../tokens/app_radius.dart';
+
+enum AppCardVariant { standard, blur }
+
 class AppCard extends StatelessWidget {
-  const AppCard({required this.child, this.padding, super.key});
+  const AppCard({
+    required this.child,
+    this.padding,
+    this.variant = AppCardVariant.standard,
+    super.key,
+  });
 
   final Widget child;
-
-  /// Defaults to `context.theme.cardStyle.padding`, so it scales with touch
-  /// vs. desktop the same way Forui's own widgets do.
   final EdgeInsetsGeometry? padding;
+  final AppCardVariant variant;
 
   @override
   Widget build(BuildContext context) {
     final style = context.theme.cardStyle;
-    return FCard(
-      child: Padding(padding: padding ?? style.padding, child: child),
+    final content = Padding(padding: padding ?? style.padding, child: child);
+
+    if (variant == AppCardVariant.standard) {
+      return FCard(child: content);
+    }
+
+    final colors = context.theme.colors;
+    final radius = AppRadius.of(context).lg;
+    return ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.card.withValues(alpha: 0.7),
+            border: AppBorders.all(context),
+            borderRadius: radius,
+          ),
+          child: content,
+        ),
+      ),
     );
   }
 }

@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:reader_documents/features/documents/presentation/documents_screen.dart';
+import 'package:reader_documents/features/documents/presentation/shared_pdf_intake.dart';
 import 'package:reader_documents/features/settings/application/settings_providers.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/features/settings/presentation/settings_screen.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import 'app_command_launcher.dart';
 import 'core/localization/app_locale_resolver.dart';
@@ -56,12 +60,28 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   int _navIndex = 0;
+  late final StreamSubscription<List<SharedMediaFile>> _sharedPdfSubscription;
 
   static const _tabs = [
     DocumentsScreen(),
     UiKitGalleryScreen(),
     SettingsScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _sharedPdfSubscription = SharedPdfIntake.listen(context, ref);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => SharedPdfIntake.checkInitial(context, ref),
+    );
+  }
+
+  @override
+  void dispose() {
+    _sharedPdfSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
