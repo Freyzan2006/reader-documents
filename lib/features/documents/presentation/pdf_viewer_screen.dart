@@ -13,6 +13,7 @@ import 'ai_providers.dart';
 import 'pdf_context_menu.dart';
 import 'pdf_error_view.dart';
 import 'pdf_magnifier.dart';
+import 'translate_providers.dart';
 
 class PdfViewerScreen extends ConsumerStatefulWidget {
   const PdfViewerScreen({required this.file, super.key});
@@ -157,6 +158,22 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           ),
         );
       }
+
+      final targetLanguageCode = Localizations.localeOf(context).languageCode;
+      for (final provider in TranslateProviders.all) {
+        actions.add(
+          PdfContextMenuAction(
+            label: provider.label,
+            icon: Icon(
+              provider.icon,
+              size: _actionIconSize,
+              color: provider.color,
+            ),
+            onPressed: () =>
+                _translateWith(params, provider, targetLanguageCode),
+          ),
+        );
+      }
     }
 
     if (actions.isEmpty) return null;
@@ -185,6 +202,20 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     if (text.trim().isEmpty) return;
     await launchUrl(
       provider.buildUri(text),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  Future<void> _translateWith(
+    PdfViewerContextMenuBuilderParams params,
+    TranslateProvider provider,
+    String targetLanguageCode,
+  ) async {
+    final text = await params.textSelectionDelegate.getSelectedText();
+    params.dismissContextMenu();
+    if (text.trim().isEmpty) return;
+    await launchUrl(
+      provider.buildUri(text, targetLanguageCode),
       mode: LaunchMode.externalApplication,
     );
   }
