@@ -15,6 +15,7 @@ class AppButton extends StatelessWidget {
     required this.child,
     this.variant = AppButtonVariant.primary,
     this.size = AppButtonSize.md,
+    this.mainAxisSize = MainAxisSize.max,
     super.key,
   });
 
@@ -22,6 +23,7 @@ class AppButton extends StatelessWidget {
   final Widget child;
   final AppButtonVariant variant;
   final AppButtonSize size;
+  final MainAxisSize mainAxisSize;
 
   static FButtonVariant _variant(AppButtonVariant variant) => switch (variant) {
     AppButtonVariant.primary => FButtonVariant.primary,
@@ -42,6 +44,7 @@ class AppButton extends StatelessWidget {
     onPress: onPressed,
     variant: _variant(variant),
     size: _size(size),
+    mainAxisSize: mainAxisSize,
     child: child,
   );
 }

@@ -15,7 +15,7 @@ class UiKitGalleryScreen extends StatelessWidget {
         AppSpacing.lg,
         AppHeader.topInset(context) + AppSpacing.lg,
         AppSpacing.lg,
-        AppSpacing.lg,
+        AppBottomNav.bottomInset(context) + AppSpacing.lg,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,6 +169,24 @@ class _TokensSection extends StatelessWidget {
             ),
         ],
       ),
+      const AppText(
+        'Typography (AppTypography)',
+        variant: AppTextVariant.caption,
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.xs,
+        children: [
+          for (final (label, style) in [
+            ('display.xl2', AppTypography.of(context).display.xl2),
+            ('display.lg', AppTypography.of(context).display.lg),
+            ('body.md', AppTypography.of(context).body.md),
+            ('body.sm', AppTypography.of(context).body.sm),
+            ('body.xs3', AppTypography.of(context).body.xs3),
+          ])
+            Text(label, style: style),
+        ],
+      ),
     ],
   );
 }
@@ -184,6 +202,7 @@ class _ControlsSectionState extends State<_ControlsSection> {
   bool _checked = false;
   bool _switched = true;
   double _sliderValue = 0.4;
+  String _format = 'pdf';
 
   @override
   Widget build(BuildContext context) => Column(
@@ -245,12 +264,52 @@ class _ControlsSectionState extends State<_ControlsSection> {
         allowedExtensions: const ['pdf', 'docx', 'png'],
         onChanged: (files) {},
       ),
+      const AppText('AppRadioGroup (classic)', variant: AppTextVariant.caption),
+      AppRadioGroup<String>(
+        value: _format,
+        onChanged: (value) => setState(() => _format = value),
+        options: const [
+          AppRadioOption(value: 'pdf', label: 'PDF'),
+          AppRadioOption(value: 'docx', label: 'DOCX'),
+          AppRadioOption(value: 'djvu', label: 'DjVu'),
+        ],
+      ),
+      const AppText('AppRadioGroup (card)', variant: AppTextVariant.caption),
+      AppRadioGroup<String>(
+        variant: AppRadioVariant.card,
+        value: _format,
+        onChanged: (value) => setState(() => _format = value),
+        options: const [
+          AppRadioOption(value: 'pdf', label: 'PDF'),
+          AppRadioOption(value: 'docx', label: 'DOCX'),
+          AppRadioOption(value: 'djvu', label: 'DjVu'),
+        ],
+      ),
+      const AppText('AppOtpField', variant: AppTextVariant.caption),
+      AppOtpField(length: 4, onCompleted: (code) {}),
     ],
   );
 }
 
-class _DataDisplaySection extends StatelessWidget {
+class _DataDisplaySection extends StatefulWidget {
   const _DataDisplaySection();
+
+  @override
+  State<_DataDisplaySection> createState() => _DataDisplaySectionState();
+}
+
+class _DataDisplaySectionState extends State<_DataDisplaySection> {
+  final List<String> _dismissibleItems = [
+    'Invoice.pdf',
+    'Report.docx',
+    'Scan.djvu',
+  ];
+  final List<String> _reorderableItems = [
+    'First chapter',
+    'Second chapter',
+    'Third chapter',
+  ];
+  final List<String> _tagItems = ['All', 'PDF', 'DOCX', 'DjVu'];
 
   @override
   Widget build(BuildContext context) => Column(
@@ -280,6 +339,18 @@ class _DataDisplaySection extends StatelessWidget {
         children: [
           for (final variant in AppBadgeVariant.values)
             AppBadge(variant: variant, child: Text(variant.name)),
+        ],
+      ),
+      const AppText('AppTag', variant: AppTextVariant.caption),
+      Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          for (final item in _tagItems)
+            AppTag(
+              label: Text(item),
+              onRemove: () => setState(() => _tagItems.remove(item)),
+            ),
         ],
       ),
       const AppText('AppCollapsible', variant: AppTextVariant.caption),
@@ -313,6 +384,50 @@ class _DataDisplaySection extends StatelessWidget {
           ),
         ],
       ),
+      const AppText('AppLineCalendar', variant: AppTextVariant.caption),
+      SizedBox(height: 88, child: AppLineCalendar(onChanged: (date) {})),
+      const AppText(
+        'AppDismissible (swipe to delete)',
+        variant: AppTextVariant.caption,
+      ),
+      Column(
+        children: [
+          for (final item in _dismissibleItems)
+            AppDismissible(
+              itemKey: ValueKey(item),
+              onDismissed: () => setState(() => _dismissibleItems.remove(item)),
+              child: AppCard(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: AppText(item),
+              ),
+            ),
+        ],
+      ),
+      const AppText(
+        'AppReorderableList (drag handle)',
+        variant: AppTextVariant.caption,
+      ),
+      SizedBox(
+        height: 160,
+        child: AppReorderableList<String>(
+          items: _reorderableItems,
+          itemKey: (item) => ValueKey(item),
+          onReorder: (oldIndex, newIndex) => setState(() {
+            final item = _reorderableItems.removeAt(oldIndex);
+            _reorderableItems.insert(newIndex, item);
+          }),
+          itemBuilder: (context, item, index) => AppCard(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: AppText(item),
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -344,8 +459,14 @@ class _FeedbackSection extends StatelessWidget {
       ),
       const AppText('AppSkeleton', variant: AppTextVariant.caption),
       const AppRow(
-        children: [AppSkeleton(width: 40, height: 40), AppSkeleton(width: 120)],
+        children: [
+          AppSkeleton.circle(size: 40),
+          AppSkeleton(width: 40, height: 40),
+          AppSkeleton(width: 120),
+        ],
       ),
+      const AppGap.sm(),
+      const AppSkeletonText(),
       const AppText('AppProgress', variant: AppTextVariant.caption),
       const AppProgress(value: 0.6),
       const AppGap.xs(),
@@ -404,6 +525,35 @@ class _OverlaySection extends StatelessWidget {
           variant: AppButtonVariant.outline,
           onPressed: null,
           child: Text('Show popover menu'),
+        ),
+      ),
+      AppContextMenu(
+        items: [
+          AppCommandItem(
+            label: 'Rename',
+            icon: FLucideIcons.pencil,
+            onSelect: () {},
+          ),
+          AppCommandItem(
+            label: 'Duplicate',
+            icon: FLucideIcons.copy,
+            onSelect: () {},
+          ),
+          AppCommandItem(
+            label: 'Delete',
+            icon: FLucideIcons.trash2,
+            onSelect: () {},
+          ),
+        ],
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: AppBorders.all(context),
+            borderRadius: AppRadius.of(context).md,
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(AppSpacing.md),
+            child: AppText('Long-press me'),
+          ),
         ),
       ),
       AppButton(
@@ -473,31 +623,41 @@ class _OverlaySection extends StatelessWidget {
         variant: AppButtonVariant.outline,
         onPressed: () => AppCommandPalette.show(
           context: context,
-          items: [
-            AppCommandItem(
-              label: 'Open document…',
-              icon: FLucideIcons.file,
-              onSelect: () {},
+          groups: [
+            AppCommandGroup(
+              label: 'Files',
+              items: [
+                AppCommandItem(
+                  label: 'Open document…',
+                  icon: FLucideIcons.file,
+                  onSelect: () {},
+                ),
+                AppCommandItem(
+                  label: 'New folder',
+                  icon: FLucideIcons.folderPlus,
+                  onSelect: () {},
+                ),
+                AppCommandItem(
+                  label: 'Export as PDF',
+                  icon: FLucideIcons.download,
+                  onSelect: () {},
+                ),
+              ],
             ),
-            AppCommandItem(
-              label: 'New folder',
-              icon: FLucideIcons.folderPlus,
-              onSelect: () {},
-            ),
-            AppCommandItem(
-              label: 'Toggle dark mode',
-              icon: FLucideIcons.moon,
-              onSelect: () {},
-            ),
-            AppCommandItem(
-              label: 'Export as PDF',
-              icon: FLucideIcons.download,
-              onSelect: () {},
-            ),
-            AppCommandItem(
-              label: 'Settings',
-              icon: FLucideIcons.settings,
-              onSelect: () {},
+            AppCommandGroup(
+              label: 'App',
+              items: [
+                AppCommandItem(
+                  label: 'Toggle dark mode',
+                  icon: FLucideIcons.moon,
+                  onSelect: () {},
+                ),
+                AppCommandItem(
+                  label: 'Settings',
+                  icon: FLucideIcons.settings,
+                  onSelect: () {},
+                ),
+              ],
             ),
           ],
         ),
@@ -561,6 +721,8 @@ class _NavigationSection extends StatelessWidget {
           ],
         ),
       ),
+      const AppText('AppPagination', variant: AppTextVariant.caption),
+      AppPagination(pageCount: 10, onChanged: (page) {}),
     ],
   );
 }
@@ -658,6 +820,56 @@ class _PrimitivesSection extends StatelessWidget {
               ),
             ),
         ],
+      ),
+      const AppText(
+        'AppZoomable (pinch to zoom)',
+        variant: AppTextVariant.caption,
+      ),
+      SizedBox(
+        height: 140,
+        child: ClipRRect(
+          borderRadius: AppRadius.of(context).sm,
+          child: AppZoomable(
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: AppColors.silver),
+              child: Center(
+                child: AppText('Page 1', color: AppColors.graphite),
+              ),
+            ),
+          ),
+        ),
+      ),
+      const AppText(
+        'AppPageView (swipe between pages)',
+        variant: AppTextVariant.caption,
+      ),
+      SizedBox(
+        height: 100,
+        child: AppPageView(
+          children: [
+            for (final label in ['Page A', 'Page B', 'Page C'])
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: AppBorders.all(context),
+                  borderRadius: AppRadius.of(context).sm,
+                ),
+                child: AppCenter(child: AppText(label)),
+              ),
+          ],
+        ),
+      ),
+      const AppText('AppPullToRefresh', variant: AppTextVariant.caption),
+      SizedBox(
+        height: 140,
+        child: AppPullToRefresh(
+          onRefresh: () => Future.delayed(const Duration(seconds: 1)),
+          child: AppList(
+            items: [
+              for (var i = 1; i <= 3; i++)
+                AppListItem(title: 'Item $i', leading: FLucideIcons.file),
+            ],
+          ),
+        ),
       ),
     ],
   );

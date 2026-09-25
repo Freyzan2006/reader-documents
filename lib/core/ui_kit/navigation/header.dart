@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import '../data_display/card.dart';
 import '../data_display/text.dart';
 import '../tokens/app_spacing.dart';
+import '../tokens/app_typography.dart';
 
 class AppHeader extends StatelessWidget {
   static const double height = 64;
@@ -15,6 +16,7 @@ class AppHeader extends StatelessWidget {
     required this.title,
     this.onMenuTap,
     this.actionLabel,
+    this.actionIcon,
     this.onActionTap,
     super.key,
   });
@@ -22,6 +24,7 @@ class AppHeader extends StatelessWidget {
   final String title;
   final VoidCallback? onMenuTap;
   final String? actionLabel;
+  final IconData? actionIcon;
   final VoidCallback? onActionTap;
 
   @override
@@ -41,7 +44,9 @@ class AppHeader extends StatelessWidget {
         _CircleIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
     ],
     suffixes: [
-      if (actionLabel != null && onActionTap != null)
+      if (actionIcon != null && onActionTap != null)
+        _CircleIconButton(icon: actionIcon!, onPressed: onActionTap!)
+      else if (actionLabel != null && onActionTap != null)
         _PillButton(label: actionLabel!, onPressed: onActionTap!),
     ],
   );
@@ -94,7 +99,7 @@ class _PillButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: context.theme.typography.body.sm.copyWith(
+          style: AppTypography.of(context).body.sm.copyWith(
             color: context.theme.colors.primaryForeground,
             fontWeight: FontWeight.w600,
           ),

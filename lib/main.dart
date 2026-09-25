@@ -1,128 +1,116 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
+import 'package:reader_documents/features/documents/presentation/documents_screen.dart';
+import 'package:reader_documents/features/settings/application/settings_providers.dart';
+import 'package:reader_documents/features/settings/data/app_settings.dart';
+import 'package:reader_documents/features/settings/presentation/settings_screen.dart';
+import 'package:reader_documents/l10n/app_localizations.dart';
 
+import 'app_command_launcher.dart';
+import 'core/localization/app_locale_resolver.dart';
 import 'core/ui_kit/ui_kit.dart';
-import 'screens/home_tab.dart';
-import 'screens/search_tab.dart';
-import 'screens/settings_tab.dart';
 import 'screens/ui_kit_gallery_screen.dart';
 
 void main() {
-  runApp(const ReaderDocumentsApp());
+  runApp(const ProviderScope(child: ReaderDocumentsApp()));
 }
 
-class ReaderDocumentsApp extends StatefulWidget {
+class ReaderDocumentsApp extends ConsumerWidget {
   const ReaderDocumentsApp({super.key});
 
   @override
-  State<ReaderDocumentsApp> createState() => _ReaderDocumentsAppState();
-}
-
-class _ReaderDocumentsAppState extends State<ReaderDocumentsApp> {
-  Brightness _brightness = Brightness.light;
-
-  void _toggleBrightness() {
-    setState(() {
-      _brightness = _brightness == Brightness.light
-          ? Brightness.dark
-          : Brightness.light;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = AppTheme.of(_brightness);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider).value ?? AppSettings.defaults;
+    final brightness = settings.resolveBrightness(
+      MediaQuery.platformBrightnessOf(context),
+    );
+    final theme = AppTheme.of(brightness);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Reader Documents',
-      localizationsDelegates: FLocalizations.localizationsDelegates,
-      supportedLocales: FLocalizations.supportedLocales,
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        ...FLocalizations.localizationsDelegates,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: settings.language.locale,
+      localeResolutionCallback: (locale, supportedLocales) =>
+          AppLocaleResolver.resolve(locale, supportedLocales),
       builder: (context, child) => FTheme(
         data: theme,
         child: FToaster(child: child!),
       ),
-      home: HomePage(
-        brightness: _brightness,
-        onToggleBrightness: _toggleBrightness,
-      ),
+      home: const HomePage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({
-    required this.brightness,
-    required this.onToggleBrightness,
-    super.key,
-  });
-
-  final Brightness brightness;
-  final VoidCallback onToggleBrightness;
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   int _navIndex = 0;
 
   static const _tabs = [
-    HomeTab(),
-    SearchTab(),
+    DocumentsScreen(),
     UiKitGalleryScreen(),
-    SettingsTab(),
+    SettingsScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppScaffold(
       header: AppHeader(
         title: 'RD',
-        onMenuTap: () => _openMenu(context),
-        actionLabel: widget.brightness == Brightness.dark ? 'Dark' : 'Light',
-        onActionTap: widget.onToggleBrightness,
+        onMenuTap: () => _openMenu(context, l10n),
+        actionIcon: FLucideIcons.command,
+        onActionTap: () => AppCommandLauncher.show(context, ref),
       ),
       footer: AppBottomNav(
         currentIndex: _navIndex,
         onChanged: (index) => setState(() => _navIndex = index),
-        items: const [
-          AppBottomNavItem(icon: FLucideIcons.house, label: 'Home'),
-          AppBottomNavItem(icon: FLucideIcons.search, label: 'Search'),
-          AppBottomNavItem(icon: FLucideIcons.palette, label: 'UI Kit'),
-          AppBottomNavItem(icon: FLucideIcons.settings, label: 'Settings'),
+        items: [
+          AppBottomNavItem(icon: FLucideIcons.house, label: l10n.navHome),
+          AppBottomNavItem(icon: FLucideIcons.palette, label: l10n.navUiKit),
+          AppBottomNavItem(
+            icon: FLucideIcons.settings,
+            label: l10n.navSettings,
+          ),
         ],
       ),
       child: IndexedStack(index: _navIndex, children: _tabs),
     );
   }
 
-  void _openMenu(BuildContext context) {
+  void _openMenu(BuildContext context, AppLocalizations l10n) {
     AppSidePanel.show(
       context: context,
       builder: (context, controller) => Column(
         children: [
-          AppSidePanelHeader(title: 'Menu', onClose: controller.close),
+          AppSidePanelHeader(title: l10n.menuTitle, onClose: controller.close),
           AppSidePanelContent(
             child: AppList(
               items: [
                 AppListItem(
-                  title: 'Home',
+                  title: l10n.navHome,
                   leading: FLucideIcons.house,
                   onTap: controller.close,
                 ),
                 AppListItem(
-                  title: 'Search',
-                  leading: FLucideIcons.search,
-                  onTap: controller.close,
-                ),
-                AppListItem(
-                  title: 'UI Kit',
+                  title: l10n.navUiKit,
                   leading: FLucideIcons.palette,
                   onTap: controller.close,
                 ),
                 AppListItem(
-                  title: 'Settings',
+                  title: l10n.navSettings,
                   leading: FLucideIcons.settings,
                   onTap: controller.close,
                 ),

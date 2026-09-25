@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
+
+import '../tokens/app_typography.dart';
 
 /// A small, opinionated set of text styles built on Forui's typography scale
 /// (`context.theme.typography.display`/`.body`, each with its own `xs`...`xl8`
@@ -21,7 +22,7 @@ class AppText extends StatelessWidget {
   final Color? color;
 
   static TextStyle _style(BuildContext context, AppTextVariant variant) {
-    final typography = context.theme.typography;
+    final typography = AppTypography.of(context);
     return switch (variant) {
       AppTextVariant.display => typography.display.xl2,
       AppTextVariant.title => typography.display.lg,

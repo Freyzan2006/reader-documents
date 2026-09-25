@@ -1,0 +1,34 @@
+{
+  "@@locale": "en",
+  "documentsTitle": "Documents",
+  "filterAll": "All",
+  "documentsEmpty": "No documents yet",
+  "documentsLoadError": "Could not load documents",
+  "importDocument": "Import document",
+  "deleteDocumentTitle": "Delete document?",
+  "deleteDocumentBody": "This will permanently delete \"{name}\".",
+  "@deleteDocumentBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "viewerComingSoon": "Viewer coming soon",
+  "settingsTitle": "Settings",
+  "settingsLoadError": "Could not load settings",
+  "themeSectionTitle": "Theme",
+  "languageSectionTitle": "Language",
+  "systemLanguage": "System",
+  "profileSectionTitle": "Profile",
+  "nameLabel": "Name",
+  "emailLabel": "Email",
+  "save": "Save",
+  "lightTheme": "Light theme",
+  "darkTheme": "Dark theme",
+  "systemTheme": "System theme",
+  "menuTitle": "Menu",
+  "navHome": "Home",
+  "navUiKit": "UI Kit",
+  "navSettings": "Settings"
+}

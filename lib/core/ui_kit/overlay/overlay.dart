@@ -1,4 +1,5 @@
 export 'command_palette.dart';
+export 'context_menu.dart';
 export 'dialog.dart';
 export 'popover.dart';
 export 'popover_menu.dart';
