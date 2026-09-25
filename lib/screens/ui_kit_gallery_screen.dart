@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart' show FLucideIcons;
 
 import '../core/ui_kit/ui_kit.dart';
 
@@ -322,14 +321,10 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
           AppListItem(
             title: 'Item one',
             subtitle: 'With a subtitle',
-            leading: FLucideIcons.file,
+            leading: AppIcons.file,
             onTap: () {},
           ),
-          AppListItem(
-            title: 'Item two',
-            leading: FLucideIcons.file,
-            onTap: () {},
-          ),
+          AppListItem(title: 'Item two', leading: AppIcons.file, onTap: () {}),
         ],
       ),
       const AppText('AppBadge', variant: AppTextVariant.caption),
@@ -507,17 +502,17 @@ class _OverlaySection extends StatelessWidget {
         items: [
           AppCommandItem(
             label: 'Rename',
-            icon: FLucideIcons.pencil,
+            icon: AppIcons.pencil,
             onSelect: () {},
           ),
           AppCommandItem(
             label: 'Duplicate',
-            icon: FLucideIcons.copy,
+            icon: AppIcons.copy,
             onSelect: () {},
           ),
           AppCommandItem(
             label: 'Delete',
-            icon: FLucideIcons.trash2,
+            icon: AppIcons.trash2,
             onSelect: () {},
           ),
         ],
@@ -531,17 +526,17 @@ class _OverlaySection extends StatelessWidget {
         items: [
           AppCommandItem(
             label: 'Rename',
-            icon: FLucideIcons.pencil,
+            icon: AppIcons.pencil,
             onSelect: () {},
           ),
           AppCommandItem(
             label: 'Duplicate',
-            icon: FLucideIcons.copy,
+            icon: AppIcons.copy,
             onSelect: () {},
           ),
           AppCommandItem(
             label: 'Delete',
-            icon: FLucideIcons.trash2,
+            icon: AppIcons.trash2,
             onSelect: () {},
           ),
         ],
@@ -629,17 +624,17 @@ class _OverlaySection extends StatelessWidget {
               items: [
                 AppCommandItem(
                   label: 'Open document…',
-                  icon: FLucideIcons.file,
+                  icon: AppIcons.file,
                   onSelect: () {},
                 ),
                 AppCommandItem(
                   label: 'New folder',
-                  icon: FLucideIcons.folderPlus,
+                  icon: AppIcons.folderPlus,
                   onSelect: () {},
                 ),
                 AppCommandItem(
                   label: 'Export as PDF',
-                  icon: FLucideIcons.download,
+                  icon: AppIcons.download,
                   onSelect: () {},
                 ),
               ],
@@ -649,12 +644,12 @@ class _OverlaySection extends StatelessWidget {
               items: [
                 AppCommandItem(
                   label: 'Toggle dark mode',
-                  icon: FLucideIcons.moon,
+                  icon: AppIcons.moon,
                   onSelect: () {},
                 ),
                 AppCommandItem(
                   label: 'Settings',
-                  icon: FLucideIcons.settings,
+                  icon: AppIcons.settings,
                   onSelect: () {},
                 ),
               ],
@@ -782,7 +777,7 @@ class _PrimitivesSection extends StatelessWidget {
         variant: AppTextVariant.caption,
       ),
       const AppRow(
-        children: [Icon(FLucideIcons.check), Text('Row with default spacing')],
+        children: [Icon(AppIcons.check), Text('Row with default spacing')],
       ),
       const AppText(
         'AppStack (centered by default)',
@@ -793,7 +788,7 @@ class _PrimitivesSection extends StatelessWidget {
         child: AppStack(
           children: [
             Container(color: AppColors.silver, width: 60, height: 60),
-            const Icon(FLucideIcons.star),
+            const Icon(AppIcons.star),
           ],
         ),
       ),
@@ -866,7 +861,7 @@ class _PrimitivesSection extends StatelessWidget {
           child: AppList(
             items: [
               for (var i = 1; i <= 3; i++)
-                AppListItem(title: 'Item $i', leading: FLucideIcons.file),
+                AppListItem(title: 'Item $i', leading: AppIcons.file),
             ],
           ),
         ),

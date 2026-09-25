@@ -25,5 +25,10 @@
   "menuTitle": "Меню",
   "navHome": "Главная",
   "navUiKit": "UI Kit",
-  "navSettings": "Настройки"
+  "navSettings": "Настройки",
+  "contextMenuCopy": "Копировать",
+  "contextMenuSelectAll": "Выделить всё",
+  "pdfErrorGeneric": "Не удалось открыть документ",
+  "pdfErrorPasswordProtected": "Документ защищён паролем",
+  "goBack": "Назад"
 }

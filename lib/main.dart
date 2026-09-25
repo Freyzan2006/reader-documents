@@ -61,6 +61,8 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   int _navIndex = 0;
   late final StreamSubscription<List<SharedMediaFile>> _sharedPdfSubscription;
+  bool _bootstrapping = true;
+  bool _revealed = false;
 
   static const _tabs = [
     DocumentsScreen(),
@@ -73,8 +75,27 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     _sharedPdfSubscription = SharedPdfIntake.listen(context, ref);
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => SharedPdfIntake.checkInitial(context, ref),
+      (_) => _checkInitialSharedPdf(),
     );
+  }
+
+  Future<void> _checkInitialSharedPdf() async {
+    try {
+      await SharedPdfIntake.checkInitial(
+        context,
+        ref,
+        onBeforeNavigate: _reveal,
+      ).timeout(const Duration(seconds: 2));
+    } catch (_) {
+    } finally {
+      _reveal();
+    }
+  }
+
+  void _reveal() {
+    if (_revealed || !mounted) return;
+    _revealed = true;
+    setState(() => _bootstrapping = false);
   }
 
   @override
@@ -85,25 +106,26 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_bootstrapping) {
+      return ColoredBox(color: AppColors.of(context).background);
+    }
+
     final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
       header: AppHeader(
         title: 'RD',
         onMenuTap: () => _openMenu(context, l10n),
-        actionIcon: FLucideIcons.command,
+        actionIcon: AppIcons.command,
         onActionTap: () => AppCommandLauncher.show(context, ref),
       ),
       footer: AppBottomNav(
         currentIndex: _navIndex,
         onChanged: (index) => setState(() => _navIndex = index),
         items: [
-          AppBottomNavItem(icon: FLucideIcons.house, label: l10n.navHome),
-          AppBottomNavItem(icon: FLucideIcons.palette, label: l10n.navUiKit),
-          AppBottomNavItem(
-            icon: FLucideIcons.settings,
-            label: l10n.navSettings,
-          ),
+          AppBottomNavItem(icon: AppIcons.house, label: l10n.navHome),
+          AppBottomNavItem(icon: AppIcons.palette, label: l10n.navUiKit),
+          AppBottomNavItem(icon: AppIcons.settings, label: l10n.navSettings),
         ],
       ),
       child: IndexedStack(index: _navIndex, children: _tabs),
@@ -121,17 +143,17 @@ class _HomePageState extends ConsumerState<HomePage> {
               items: [
                 AppListItem(
                   title: l10n.navHome,
-                  leading: FLucideIcons.house,
+                  leading: AppIcons.house,
                   onTap: controller.close,
                 ),
                 AppListItem(
                   title: l10n.navUiKit,
-                  leading: FLucideIcons.palette,
+                  leading: AppIcons.palette,
                   onTap: controller.close,
                 ),
                 AppListItem(
                   title: l10n.navSettings,
-                  leading: FLucideIcons.settings,
+                  leading: AppIcons.settings,
                   onTap: controller.close,
                 ),
               ],

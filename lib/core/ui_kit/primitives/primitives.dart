@@ -6,4 +6,6 @@ export 'pull_to_refresh.dart';
 export 'row.dart';
 export 'scroll_area.dart';
 export 'stack.dart';
+export 'tappable.dart';
+export 'text_selection_theme.dart';
 export 'zoomable.dart';

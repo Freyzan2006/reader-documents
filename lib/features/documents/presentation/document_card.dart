@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart' show FLucideIcons, FTappable;
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/document_file.dart';
 
@@ -16,8 +15,8 @@ class DocumentCard extends StatelessWidget {
       : file.name;
 
   @override
-  Widget build(BuildContext context) => FTappable(
-    onPress: onTap,
+  Widget build(BuildContext context) => AppTappable(
+    onPressed: onTap,
     child: AppCard(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -26,7 +25,7 @@ class DocumentCard extends StatelessWidget {
       child: Row(
         spacing: AppSpacing.sm,
         children: [
-          const Icon(FLucideIcons.fileText, size: 20),
+          const Icon(AppIcons.fileText, size: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart' show FLucideIcons;
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
@@ -12,9 +11,9 @@ class ThemeSettingsCard extends StatelessWidget {
   });
 
   static const _icons = {
-    AppThemeMode.system: FLucideIcons.monitor,
-    AppThemeMode.light: FLucideIcons.sun,
-    AppThemeMode.dark: FLucideIcons.moon,
+    AppThemeMode.system: AppIcons.monitor,
+    AppThemeMode.light: AppIcons.sun,
+    AppThemeMode.dark: AppIcons.moon,
   };
 
   final AppThemeMode themeMode;

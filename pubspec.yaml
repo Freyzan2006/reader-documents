@@ -47,6 +47,8 @@ dependencies:
   path: ^1.9.1
   shared_preferences: ^2.5.3
   receive_sharing_intent: ^1.8.1
+  url_launcher: ^6.3.2
+  simple_icons: ^16.23.0
 
 dev_dependencies:
   flutter_test:

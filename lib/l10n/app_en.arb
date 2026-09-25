@@ -30,5 +30,10 @@
   "menuTitle": "Menu",
   "navHome": "Home",
   "navUiKit": "UI Kit",
-  "navSettings": "Settings"
+  "navSettings": "Settings",
+  "contextMenuCopy": "Copy",
+  "contextMenuSelectAll": "Select All",
+  "pdfErrorGeneric": "Couldn't open this document",
+  "pdfErrorPasswordProtected": "This document is password protected",
+  "goBack": "Go back"
 }

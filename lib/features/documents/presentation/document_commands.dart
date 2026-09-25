@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:forui/forui.dart' show FLucideIcons;
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
@@ -14,7 +13,7 @@ abstract final class DocumentCommands {
     return [
       AppCommandItem(
         label: l10n.importDocument,
-        icon: FLucideIcons.upload,
+        icon: AppIcons.upload,
         onSelect: () => importDocument(ref),
       ),
     ];

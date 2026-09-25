@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:forui/forui.dart' show FLucideIcons;
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/settings/application/settings_providers.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
@@ -13,20 +12,20 @@ abstract final class ThemeCommands {
     return [
       AppCommandItem(
         label: l10n.lightTheme,
-        icon: FLucideIcons.sun,
+        icon: AppIcons.sun,
         onSelect: () => ref
             .read(settingsProvider.notifier)
             .setThemeMode(AppThemeMode.light),
       ),
       AppCommandItem(
         label: l10n.darkTheme,
-        icon: FLucideIcons.moon,
+        icon: AppIcons.moon,
         onSelect: () =>
             ref.read(settingsProvider.notifier).setThemeMode(AppThemeMode.dark),
       ),
       AppCommandItem(
         label: l10n.systemTheme,
-        icon: FLucideIcons.monitor,
+        icon: AppIcons.monitor,
         onSelect: () => ref
             .read(settingsProvider.notifier)
             .setThemeMode(AppThemeMode.system),

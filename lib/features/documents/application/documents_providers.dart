@@ -2,11 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:reader_documents/features/documents/data/document_file.dart';
 import 'package:reader_documents/features/documents/data/documents_repository.dart';
+import 'package:reader_documents/features/documents/data/reading_progress_repository.dart';
 
 import 'document_filter.dart';
 
 final documentsRepositoryProvider = Provider<DocumentsRepository>(
   (ref) => const DocumentsRepository(),
+);
+
+final readingProgressRepositoryProvider = Provider<ReadingProgressRepository>(
+  (ref) => const ReadingProgressRepository(),
 );
 
 final documentFilterProvider = StateProvider<DocumentFilter>(

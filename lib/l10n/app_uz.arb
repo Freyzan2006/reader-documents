@@ -25,5 +25,10 @@
   "menuTitle": "Menyu",
   "navHome": "Bosh sahifa",
   "navUiKit": "UI Kit",
-  "navSettings": "Sozlamalar"
+  "navSettings": "Sozlamalar",
+  "contextMenuCopy": "Nusxalash",
+  "contextMenuSelectAll": "Barchasini tanlash",
+  "pdfErrorGeneric": "Hujjatni ochib bo'lmadi",
+  "pdfErrorPasswordProtected": "Hujjat parol bilan himoyalangan",
+  "goBack": "Orqaga"
 }

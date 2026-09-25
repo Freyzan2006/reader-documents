@@ -1,4 +1,5 @@
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 
 /// Brand colors.
 ///
@@ -16,4 +17,6 @@ abstract final class AppColors {
 
   static const primaryLight = graphite;
   static const primaryDark = silver;
+
+  static FColors of(BuildContext context) => context.theme.colors;
 }
