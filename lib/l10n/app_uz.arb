@@ -30,5 +30,14 @@
   "contextMenuSelectAll": "Barchasini tanlash",
   "pdfErrorGeneric": "Hujjatni ochib bo'lmadi",
   "pdfErrorPasswordProtected": "Hujjat parol bilan himoyalangan",
-  "goBack": "Orqaga"
+  "goBack": "Orqaga",
+  "aiTextCopiedTitle": "Matn nusxalandi",
+  "aiTextCopiedDescription": "Uni {provider} ga joylashtiring",
+  "minimapJumpToPageHint": "Sahifaga o'tish",
+  "pdfSearchHint": "Hujjatdan qidirish",
+  "removeHighlight": "Ta'kidlashni olib tashlash",
+  "pdfPasswordTitle": "Parol talab qilinadi",
+  "pdfPasswordHint": "Parolni kiriting",
+  "pdfPasswordIncorrect": "Parol noto'g'ri. Qayta urinib ko'ring.",
+  "pdfPasswordUnlock": "Ochish"
 }

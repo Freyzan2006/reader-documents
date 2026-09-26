@@ -12,7 +12,6 @@ class PdfMagnifier extends StatelessWidget {
 
   static const _targetSize = 96.0;
   static const _frameColor = Color(0xFF1A1A1A);
-  static const _frameBorderColor = Color(0x1AFFFFFF);
 
   // Inverts RGB so light document pages read as light text on a dark frame,
   // without needing to distinguish text pixels from background pixels.
@@ -51,7 +50,7 @@ class PdfMagnifier extends StatelessWidget {
       decoration: BoxDecoration(
         color: _frameColor,
         borderRadius: radius,
-        border: Border.all(color: _frameBorderColor),
+        border: Border.all(color: AppColors.accent(context), width: 2),
         boxShadow: const [
           BoxShadow(
             color: Color(0x33000000),

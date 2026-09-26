@@ -3,6 +3,7 @@ export 'checkbox.dart';
 export 'date_time_picker.dart';
 export 'icon_button.dart';
 export 'input.dart';
+export 'number_input.dart';
 export 'otp_field.dart';
 export 'radio.dart';
 export 'select.dart';

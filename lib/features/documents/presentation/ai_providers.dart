@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:reader_documents/core/ui_kit/tokens/app_icons.dart';
+import 'package:simple_icons/simple_icons.dart';
 
 class AiProvider {
   const AiProvider({
@@ -7,12 +7,18 @@ class AiProvider {
     required this.buildUri,
     required this.color,
     this.icon,
+    this.prefillsText = true,
   });
 
   final String label;
   final Uri Function(String selectedText) buildUri;
   final Color color;
   final IconData? icon;
+
+  /// Whether [buildUri] actually pre-fills the selected text in the opened
+  /// page. Some providers dropped URL-based prefill support server-side, so
+  /// for those we fall back to copying the text to the clipboard instead.
+  final bool prefillsText;
 }
 
 abstract final class AiProviders {
@@ -22,7 +28,15 @@ abstract final class AiProviders {
     color: const Color(0xFF10A37F),
   );
 
-  static final List<AiProvider> all = [gpt];
+  static final claude = AiProvider(
+    label: 'Claude',
+    buildUri: (text) => Uri.https('claude.ai', '/new'),
+    color: const Color(0xFFD97757),
+    icon: SimpleIcons.claude,
+    prefillsText: false,
+  );
+
+  static final List<AiProvider> all = [gpt, claude];
 }
 
 class AiProviderIcon extends StatelessWidget {
@@ -47,10 +61,14 @@ class AiProviderIcon extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Center(
-          child: Icon(
-            AppIcons.sparkles,
-            size: size * 0.6,
-            color: const Color(0xFFFFFFFF),
+          child: Text(
+            provider.label.substring(0, 1),
+            style: TextStyle(
+              fontSize: size * 0.6,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFFFFFFFF),
+              height: 1,
+            ),
           ),
         ),
       ),

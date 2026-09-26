@@ -35,5 +35,19 @@
   "contextMenuSelectAll": "Select All",
   "pdfErrorGeneric": "Couldn't open this document",
   "pdfErrorPasswordProtected": "This document is password protected",
-  "goBack": "Go back"
+  "goBack": "Go back",
+  "aiTextCopiedTitle": "Text copied",
+  "aiTextCopiedDescription": "Paste it into {provider}",
+  "@aiTextCopiedDescription": {
+    "placeholders": {
+      "provider": { "type": "String" }
+    }
+  },
+  "minimapJumpToPageHint": "Go to page",
+  "pdfSearchHint": "Search in document",
+  "removeHighlight": "Remove Highlight",
+  "pdfPasswordTitle": "Password required",
+  "pdfPasswordHint": "Enter password",
+  "pdfPasswordIncorrect": "Incorrect password. Try again.",
+  "pdfPasswordUnlock": "Unlock"
 }

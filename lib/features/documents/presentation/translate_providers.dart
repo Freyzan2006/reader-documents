@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:reader_documents/core/ui_kit/tokens/app_icons.dart';
 import 'package:simple_icons/simple_icons.dart';
 
 class TranslateProvider {
@@ -27,5 +28,16 @@ abstract final class TranslateProviders {
     icon: SimpleIcons.googletranslate,
   );
 
-  static final List<TranslateProvider> all = [google];
+  static final yandex = TranslateProvider(
+    label: 'Yandex Translate',
+    buildUri: (text, targetLanguageCode) => Uri.https(
+      'translate.yandex.com',
+      '/',
+      {'source_lang': 'auto', 'target_lang': targetLanguageCode, 'text': text},
+    ),
+    color: const Color(0xFFFC3F1D),
+    icon: AppIcons.languages,
+  );
+
+  static final List<TranslateProvider> all = [google, yandex];
 }

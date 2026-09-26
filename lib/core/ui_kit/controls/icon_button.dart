@@ -7,24 +7,33 @@ class AppIconButton extends StatelessWidget {
   const AppIconButton({required this.icon, required this.onPressed, super.key});
 
   final IconData icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) => FTappable(
-    onPress: onPressed,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.colors.secondary,
-        shape: BoxShape.circle,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        child: Icon(
-          icon,
-          size: 20,
-          color: context.theme.colors.secondaryForeground,
+  Widget build(BuildContext context) {
+    final colors = context.theme.colors;
+    final disabled = onPressed == null;
+
+    return FTappable(
+      onPress: onPressed,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: disabled
+              ? colors.secondary.withValues(alpha: 0.5)
+              : colors.secondary,
+          shape: BoxShape.circle,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          child: Icon(
+            icon,
+            size: 20,
+            color: disabled
+                ? colors.secondaryForeground.withValues(alpha: 0.5)
+                : colors.secondaryForeground,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

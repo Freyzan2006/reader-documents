@@ -348,6 +348,14 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
             ),
         ],
       ),
+      Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          for (final variant in AppTagVariant.values)
+            AppTag(label: Text(variant.name), variant: variant),
+        ],
+      ),
       const AppText('AppCollapsible', variant: AppTextVariant.caption),
       const AppCollapsible(
         title: 'What file formats are supported?',

@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/document_file.dart';
 
+import 'document_sharing.dart';
+
 class DocumentCard extends StatelessWidget {
   const DocumentCard({required this.file, this.onTap, super.key});
 
@@ -48,6 +50,10 @@ class DocumentCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          AppIconButton(
+            icon: AppIcons.share2,
+            onPressed: () => DocumentSharing.share(file),
           ),
         ],
       ),

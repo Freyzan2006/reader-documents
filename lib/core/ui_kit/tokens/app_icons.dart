@@ -3,6 +3,8 @@ import 'package:forui/forui.dart';
 abstract final class AppIcons {
   static const arrowLeft = FLucideIcons.arrowLeft;
   static const check = FLucideIcons.check;
+  static const chevronDown = FLucideIcons.chevronDown;
+  static const chevronUp = FLucideIcons.chevronUp;
   static const command = FLucideIcons.command;
   static const copy = FLucideIcons.copy;
   static const download = FLucideIcons.download;
@@ -10,15 +12,22 @@ abstract final class AppIcons {
   static const fileText = FLucideIcons.fileText;
   static const fileWarning = FLucideIcons.fileWarning;
   static const folderPlus = FLucideIcons.folderPlus;
+  static const highlighter = FLucideIcons.highlighter;
   static const house = FLucideIcons.house;
+  static const languages = FLucideIcons.languages;
+  static const layoutGrid = FLucideIcons.layoutGrid;
   static const lock = FLucideIcons.lock;
   static const menu = FLucideIcons.menu;
+  static const minus = FLucideIcons.minus;
   static const monitor = FLucideIcons.monitor;
   static const moon = FLucideIcons.moon;
   static const palette = FLucideIcons.palette;
+  static const penOff = FLucideIcons.penOff;
+  static const plus = FLucideIcons.plus;
   static const pencil = FLucideIcons.pencil;
   static const search = FLucideIcons.search;
   static const settings = FLucideIcons.settings;
+  static const share2 = FLucideIcons.share2;
   static const sparkles = FLucideIcons.sparkles;
   static const star = FLucideIcons.star;
   static const sun = FLucideIcons.sun;
@@ -26,4 +35,5 @@ abstract final class AppIcons {
   static const trash = FLucideIcons.trash;
   static const trash2 = FLucideIcons.trash2;
   static const upload = FLucideIcons.upload;
+  static const x = FLucideIcons.x;
 }
