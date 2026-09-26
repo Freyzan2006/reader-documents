@@ -30,8 +30,8 @@ class HomeScreen extends ConsumerWidget {
           children: [
             AppText(l10n.homeTitle, variant: AppTextVariant.title),
             const AppGap.lg(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -45,9 +45,11 @@ class HomeScreen extends ConsumerWidget {
                     AppText(l10n.homeRecentTitle, variant: AppTextVariant.body),
                   ],
                 ),
+                const AppGap.xs(),
                 AppButton(
                   variant: AppButtonVariant.ghost,
                   size: AppButtonSize.sm,
+                  mainAxisSize: MainAxisSize.min,
                   onPressed: () =>
                       ref.read(currentNavDestinationProvider.notifier).state =
                           AppNavDestination.documents,
