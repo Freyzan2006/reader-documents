@@ -1,0 +1,18 @@
+{
+  "documentsTitle": "Documents",
+  "documentsSearchHint": "Search by name…",
+  "filterAll": "All",
+  "documentsEmpty": "No documents yet",
+  "documentsLoadError": "Could not load documents",
+  "importDocument": "Import document",
+  "viewerComingSoon": "Viewer coming soon",
+  "deleteDocumentTitle": "Delete document?",
+  "deleteDocumentBody": "This will permanently delete \"{name}\".",
+  "@deleteDocumentBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "renameDocumentTitle": "Rename document",
+  "renameDocumentHint": "Document name"
+}

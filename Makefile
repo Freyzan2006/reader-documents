@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev dev-android dev-linux devices get analyze test format clean doctor build-apk
+.PHONY: help dev dev-android dev-linux devices get analyze test format clean doctor build-apk translations
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -28,6 +28,10 @@ test: ## Run the test suite
 
 format: ## Format all Dart source files
 	dart format .
+
+translations: ## Merge lib/l10n/src/*/*.arb fragments and regenerate localizations
+	dart run tool/merge_arb.dart
+	flutter gen-l10n
 
 clean: ## Remove build artifacts
 	flutter clean

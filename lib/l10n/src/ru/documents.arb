@@ -1,0 +1,13 @@
+{
+  "documentsTitle": "Документы",
+  "documentsSearchHint": "Поиск по названию…",
+  "filterAll": "Все",
+  "documentsEmpty": "Пока нет документов",
+  "documentsLoadError": "Не удалось загрузить документы",
+  "importDocument": "Импортировать документ",
+  "viewerComingSoon": "Просмотр скоро появится",
+  "deleteDocumentTitle": "Удалить документ?",
+  "deleteDocumentBody": "Файл \"{name}\" будет удалён без возможности восстановления.",
+  "renameDocumentTitle": "Переименовать документ",
+  "renameDocumentHint": "Название документа"
+}

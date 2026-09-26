@@ -13,11 +13,13 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'ai_providers.dart';
+import 'document_rename.dart';
 import 'document_sharing.dart';
 import 'pdf_context_menu.dart';
 import 'pdf_error_view.dart';
 import 'pdf_magnifier.dart';
 import 'pdf_minimap.dart';
+import 'pdf_outline.dart';
 import 'search_providers.dart';
 import 'translate_providers.dart';
 
@@ -60,6 +62,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   final _searchController = TextEditingController();
 
   List<PdfHighlight> _highlights = [];
+  List<PdfOutlineNode>? _outline;
 
   @override
   void initState() {
@@ -75,7 +78,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         .load(widget.file.path);
     if (!mounted) return;
     setState(() {
-      _highlights = highlights;
+      _highlights = highlights ?? [];
       _rebuildPaintCallbacks();
     });
   }
@@ -176,6 +179,13 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       _searcher = searcher;
       _rebuildPaintCallbacks();
     });
+    _loadOutline(document);
+  }
+
+  Future<void> _loadOutline(PdfDocument document) async {
+    final outline = await document.loadOutline();
+    if (!mounted) return;
+    setState(() => _outline = outline);
   }
 
   void _onSearchChanged() {
@@ -626,7 +636,9 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final file = widget.file;
+    final title = ref.watch(documentTitleProvider(file.path)) ?? file.name;
 
     return Stack(
       children: [
@@ -701,36 +713,90 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                               ),
                               Expanded(
                                 child: Center(
-                                  child: AppCard(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.md,
-                                      vertical: AppSpacing.xs,
+                                  child: AppTooltip(
+                                    tip: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(title),
+                                        AppCopyText(
+                                          file.path,
+                                          variant: AppTextVariant.caption,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
-                                    child: AppText(
-                                      file.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                    child: AppCard(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSpacing.md,
+                                        vertical: AppSpacing.xs,
+                                      ),
+                                      child: AppText(
+                                        title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                               AppIconButton(
-                                icon: AppIcons.search,
-                                onPressed: _searcher == null
-                                    ? null
-                                    : _openSearch,
+                                icon: AppIcons.star,
+                                onPressed: () => ref
+                                    .read(favoritesProvider.notifier)
+                                    .toggle(file.path),
+                                color: ref.watch(isFavoriteProvider(file.path))
+                                    ? AppColors.warning(context)
+                                    : null,
                               ),
-                              AppIconButton(
-                                icon: AppIcons.layoutGrid,
-                                onPressed: () => PdfMinimapSheet.show(
-                                  context: context,
-                                  controller: _pdfController,
-                                  fileFormatLabel: file.type.label,
+                              AppPopoverMenu(
+                                items: [
+                                  AppCommandItem(
+                                    label: l10n.pdfMenuRename,
+                                    icon: AppIcons.pencil,
+                                    onSelect: () => DocumentRename.show(
+                                      context: context,
+                                      ref: ref,
+                                      file: file,
+                                    ),
+                                  ),
+                                  if (_searcher != null)
+                                    AppCommandItem(
+                                      label: l10n.pdfMenuSearch,
+                                      icon: AppIcons.search,
+                                      onSelect: _openSearch,
+                                    ),
+                                  if (_outline?.isNotEmpty ?? false)
+                                    AppCommandItem(
+                                      label: l10n.pdfMenuOutline,
+                                      icon: AppIcons.tableOfContents,
+                                      onSelect: () => PdfOutlineSheet.show(
+                                        context: context,
+                                        controller: _pdfController,
+                                        outline: _outline!,
+                                      ),
+                                    ),
+                                  AppCommandItem(
+                                    label: l10n.pdfMenuPages,
+                                    icon: AppIcons.layoutGrid,
+                                    onSelect: () => PdfMinimapSheet.show(
+                                      context: context,
+                                      controller: _pdfController,
+                                      fileFormatLabel: file.type.label,
+                                    ),
+                                  ),
+                                  AppCommandItem(
+                                    label: l10n.pdfMenuShare,
+                                    icon: AppIcons.share2,
+                                    onSelect: () => DocumentSharing.share(file),
+                                  ),
+                                ],
+                                child: const AppIconButton(
+                                  icon: AppIcons.ellipsisVertical,
+                                  onPressed: null,
+                                  enabled: true,
                                 ),
-                              ),
-                              AppIconButton(
-                                icon: AppIcons.share2,
-                                onPressed: () => DocumentSharing.share(file),
                               ),
                             ],
                           ),

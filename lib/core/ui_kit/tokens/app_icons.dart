@@ -2,17 +2,20 @@ import 'package:forui/forui.dart';
 
 abstract final class AppIcons {
   static const arrowLeft = FLucideIcons.arrowLeft;
+  static const arrowRight = FLucideIcons.arrowRight;
   static const check = FLucideIcons.check;
   static const chevronDown = FLucideIcons.chevronDown;
   static const chevronUp = FLucideIcons.chevronUp;
   static const command = FLucideIcons.command;
   static const copy = FLucideIcons.copy;
   static const download = FLucideIcons.download;
+  static const ellipsisVertical = FLucideIcons.ellipsisVertical;
   static const file = FLucideIcons.file;
   static const fileText = FLucideIcons.fileText;
   static const fileWarning = FLucideIcons.fileWarning;
   static const folderPlus = FLucideIcons.folderPlus;
   static const highlighter = FLucideIcons.highlighter;
+  static const history = FLucideIcons.history;
   static const house = FLucideIcons.house;
   static const languages = FLucideIcons.languages;
   static const layoutGrid = FLucideIcons.layoutGrid;
@@ -31,6 +34,8 @@ abstract final class AppIcons {
   static const sparkles = FLucideIcons.sparkles;
   static const star = FLucideIcons.star;
   static const sun = FLucideIcons.sun;
+  static const tableOfContents = FLucideIcons.tableOfContents;
+  static const tags = FLucideIcons.tags;
   static const textSelect = FLucideIcons.textSelect;
   static const trash = FLucideIcons.trash;
   static const trash2 = FLucideIcons.trash2;

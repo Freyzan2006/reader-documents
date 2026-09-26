@@ -1,0 +1,13 @@
+{
+  "documentsTitle": "Hujjatlar",
+  "documentsSearchHint": "Nomi bo'yicha qidirish…",
+  "filterAll": "Barchasi",
+  "documentsEmpty": "Hozircha hujjatlar yo'q",
+  "documentsLoadError": "Hujjatlarni yuklab bo'lmadi",
+  "importDocument": "Hujjat import qilish",
+  "viewerComingSoon": "Ko'ruvchi tez orada",
+  "deleteDocumentTitle": "Hujjatni o'chirish?",
+  "deleteDocumentBody": "\"{name}\" butunlay o'chiriladi.",
+  "renameDocumentTitle": "Hujjatni qayta nomlash",
+  "renameDocumentHint": "Hujjat nomi"
+}

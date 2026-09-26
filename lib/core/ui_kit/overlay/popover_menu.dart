@@ -18,8 +18,8 @@ class AppPopoverMenu extends StatelessWidget {
             FTile(
               title: Text(item.label),
               prefix: item.icon == null ? null : Icon(item.icon),
-              onPress: () {
-                controller.hide();
+              onPress: () async {
+                await controller.hide();
                 item.onSelect();
               },
             ),

@@ -10,12 +10,19 @@ class AppTag extends StatelessWidget {
     required this.label,
     this.onRemove,
     this.variant = AppTagVariant.standard,
+    this.color,
     super.key,
   });
 
   final Widget label;
   final VoidCallback? onRemove;
   final AppTagVariant variant;
+
+  /// An arbitrary background color, overriding [variant] entirely. The
+  /// label color is picked automatically for contrast. Use this for
+  /// user-chosen colors (e.g. tag colors) that don't fit a fixed semantic
+  /// variant.
+  final Color? color;
 
   static (Color, Color)? _customColors(
     BuildContext context,
@@ -38,16 +45,24 @@ class AppTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final custom = _customColors(context, variant);
+    final customColor = color;
+    final custom = customColor != null
+        ? (
+            customColor,
+            customColor.computeLuminance() > 0.5
+                ? const Color(0xFF0A0A0A)
+                : const Color(0xFFFFFFFF),
+          )
+        : _customColors(context, variant);
     if (custom == null) {
       return FMultiSelectTag(label: label, onPress: onRemove);
     }
 
-    final (color, foreground) = custom;
+    final (resolvedColor, foreground) = custom;
     final theme = context.theme;
     final existing = theme.multiSelectStyle.fieldStyles.md.tagStyle;
     final colors = theme.colors.copyWith(
-      secondary: color,
+      secondary: resolvedColor,
       secondaryForeground: foreground,
     );
 

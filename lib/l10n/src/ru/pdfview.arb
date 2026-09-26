@@ -1,0 +1,22 @@
+{
+  "pdfErrorGeneric": "Не удалось открыть документ",
+  "pdfErrorPasswordProtected": "Документ защищён паролем",
+  "goBack": "Назад",
+  "contextMenuCopy": "Копировать",
+  "contextMenuSelectAll": "Выделить всё",
+  "aiTextCopiedTitle": "Текст скопирован",
+  "aiTextCopiedDescription": "Вставьте его в {provider}",
+  "minimapJumpToPageHint": "Перейти на страницу",
+  "pdfSearchHint": "Поиск по документу",
+  "removeHighlight": "Убрать выделение",
+  "pdfPasswordTitle": "Требуется пароль",
+  "pdfPasswordHint": "Введите пароль",
+  "pdfPasswordIncorrect": "Неверный пароль. Попробуйте снова.",
+  "pdfPasswordUnlock": "Открыть",
+  "pdfOutlineEmpty": "Оглавление недоступно",
+  "pdfMenuSearch": "Поиск",
+  "pdfMenuOutline": "Оглавление",
+  "pdfMenuPages": "Страницы",
+  "pdfMenuShare": "Поделиться",
+  "pdfMenuRename": "Переименовать"
+}

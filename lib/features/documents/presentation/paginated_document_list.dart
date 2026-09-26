@@ -45,7 +45,12 @@ class _PaginatedDocumentListState extends State<PaginatedDocumentList> {
             itemKey: ValueKey(file.path),
             confirmDismiss: () => widget.confirmDelete(file),
             onDismissed: () => widget.onDelete(file),
-            child: DocumentCard(file: file, onTap: () => widget.onOpen(file)),
+            child: DocumentCard(
+              file: file,
+              onTap: () => widget.onOpen(file),
+              confirmDelete: widget.confirmDelete,
+              onDelete: widget.onDelete,
+            ),
           ),
         if (pageCount > 1) ...[
           const AppGap.sm(),

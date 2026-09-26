@@ -1,0 +1,22 @@
+{
+  "pdfErrorGeneric": "Hujjatni ochib bo'lmadi",
+  "pdfErrorPasswordProtected": "Hujjat parol bilan himoyalangan",
+  "goBack": "Orqaga",
+  "contextMenuCopy": "Nusxalash",
+  "contextMenuSelectAll": "Barchasini tanlash",
+  "aiTextCopiedTitle": "Matn nusxalandi",
+  "aiTextCopiedDescription": "Uni {provider} ga joylashtiring",
+  "minimapJumpToPageHint": "Sahifaga o'tish",
+  "pdfSearchHint": "Hujjatdan qidirish",
+  "removeHighlight": "Ta'kidlashni olib tashlash",
+  "pdfPasswordTitle": "Parol talab qilinadi",
+  "pdfPasswordHint": "Parolni kiriting",
+  "pdfPasswordIncorrect": "Parol noto'g'ri. Qayta urinib ko'ring.",
+  "pdfPasswordUnlock": "Ochish",
+  "pdfOutlineEmpty": "Kontent jadvali mavjud emas",
+  "pdfMenuSearch": "Qidiruv",
+  "pdfMenuOutline": "Kontent jadvali",
+  "pdfMenuPages": "Sahifalar",
+  "pdfMenuShare": "Ulashish",
+  "pdfMenuRename": "Qayta nomlash"
+}

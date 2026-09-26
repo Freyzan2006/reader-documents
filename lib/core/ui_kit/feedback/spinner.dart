@@ -6,9 +6,10 @@ enum AppSpinnerSize { xs, sm, md, lg, xl }
 
 /// An indeterminate loading spinner. Wraps Forui's [FCircularProgress].
 class AppSpinner extends StatelessWidget {
-  const AppSpinner({this.size = AppSpinnerSize.md, super.key});
+  const AppSpinner({this.size = AppSpinnerSize.md, this.color, super.key});
 
   final AppSpinnerSize size;
+  final Color? color;
 
   static FCircularProgressSizeVariant _size(AppSpinnerSize size) =>
       switch (size) {
@@ -20,5 +21,12 @@ class AppSpinner extends StatelessWidget {
       };
 
   @override
-  Widget build(BuildContext context) => FCircularProgress(size: _size(size));
+  Widget build(BuildContext context) => FCircularProgress(
+    size: _size(size),
+    style: color == null
+        ? const FCircularProgressStyleDelta.context()
+        : FCircularProgressStyleDelta.delta(
+            iconStyle: IconThemeDataDelta.delta(color: color),
+          ),
+  );
 }

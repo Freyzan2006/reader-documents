@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
@@ -17,9 +19,18 @@ abstract final class AppDialog {
   }) => showFDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
+    routeStyle: FDialogRouteStyleDelta.delta(
+      barrierFilter: () => _dimBarrierFilter,
+    ),
+    style: FDialogStyleDelta.delta(
+      insetPadding: EdgeInsetsGeometryDelta.value(
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      ),
+    ),
     builder: (context, style, animation) => FDialog(
       style: style,
       animation: animation,
+      constraints: const BoxConstraints(minWidth: 280, maxWidth: 640),
       builder: (context, style) => Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -38,5 +49,17 @@ abstract final class AppDialog {
         ),
       ),
     ),
+  );
+
+  static ImageFilter _dimBarrierFilter(
+    BuildContext context,
+    double animation,
+  ) => ColorFilter.mode(
+    Color.lerp(
+      const Color(0x00000000),
+      context.theme.colors.barrier,
+      animation,
+    )!,
+    BlendMode.srcOver,
   );
 }

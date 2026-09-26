@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import '../../config/app_brand.dart';
 import '../tokens/app_colors.dart';
 
 /// The app's own theming layer on top of Forui.
@@ -13,7 +14,7 @@ import '../tokens/app_colors.dart';
 abstract final class AppTheme {
   static final FThemeData light = FThemeData(
     touch: true,
-    debugLabel: 'Reader Documents Light',
+    debugLabel: '${AppBrand.name} Light',
     colors: FColors.neutralLight.copyWith(
       primary: AppColors.primaryLight,
       primaryForeground: const Color(0xFFFFFFFF),
@@ -22,7 +23,7 @@ abstract final class AppTheme {
 
   static final FThemeData dark = FThemeData(
     touch: true,
-    debugLabel: 'Reader Documents Dark',
+    debugLabel: '${AppBrand.name} Dark',
     colors: FColors.neutralDark.copyWith(
       primary: AppColors.primaryDark,
       primaryForeground: const Color(0xFF0A0A0A),

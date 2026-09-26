@@ -1,0 +1,13 @@
+{
+  "settingsTitle": "Settings",
+  "settingsLoadError": "Could not load settings",
+  "themeSectionTitle": "Theme",
+  "languageSectionTitle": "Language",
+  "systemLanguage": "System",
+  "profileSectionTitle": "Profile",
+  "nameLabel": "Name",
+  "emailLabel": "Email",
+  "lightTheme": "Light theme",
+  "darkTheme": "Dark theme",
+  "systemTheme": "System theme"
+}

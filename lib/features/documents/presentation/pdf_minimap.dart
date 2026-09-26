@@ -49,6 +49,10 @@ class _PdfMinimapState extends State<PdfMinimap> {
   late final _pageInputController = TextEditingController(
     text: widget.controller.pageNumber?.toString() ?? '',
   );
+  late final Listenable _listenable = Listenable.merge([
+    widget.controller,
+    widget.controller.documentRef.resolveListenable(),
+  ]);
 
   @override
   void dispose() {
@@ -65,10 +69,7 @@ class _PdfMinimapState extends State<PdfMinimap> {
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: Listenable.merge([
-      widget.controller,
-      widget.controller.documentRef.resolveListenable(),
-    ]),
+    animation: _listenable,
     builder: (context, _) {
       final listenable = widget.controller.documentRef.resolveListenable();
       final error = listenable.error;

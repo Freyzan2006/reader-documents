@@ -1,6 +1,10 @@
 import 'package:flutter/widgets.dart';
+import 'package:forui/forui.dart';
 
 import '../feedback/spinner.dart';
+import '../tokens/app_borders.dart';
+import '../tokens/app_colors.dart';
+import '../tokens/app_spacing.dart';
 
 class AppPullToRefresh extends StatefulWidget {
   const AppPullToRefresh({
@@ -87,7 +91,29 @@ class _AppPullToRefreshState extends State<AppPullToRefresh> {
                 height: _pull,
                 alignment: Alignment.center,
                 child: _pull > 0 || _refreshing
-                    ? const AppSpinner(size: AppSpinnerSize.lg)
+                    ? DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: context.theme.colors.card,
+                          shape: BoxShape.circle,
+                          border: AppBorders.all(context),
+                          boxShadow: [
+                            BoxShadow(
+                              color: context.theme.colors.foreground.withValues(
+                                alpha: 0.15,
+                              ),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          child: AppSpinner(
+                            size: AppSpinnerSize.xl,
+                            color: AppColors.accent(context),
+                          ),
+                        ),
+                      )
                     : null,
               ),
             ),

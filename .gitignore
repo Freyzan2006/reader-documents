@@ -41,6 +41,9 @@ app.*.map.json
 
 # Generated localizations
 lib/l10n/app_localizations*.dart
+lib/l10n/app_en.arb
+lib/l10n/app_ru.arb
+lib/l10n/app_uz.arb
 
 # Android Studio will place build artifacts here
 /android/app/debug

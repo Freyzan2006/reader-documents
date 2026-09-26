@@ -1,0 +1,13 @@
+{
+  "settingsTitle": "Настройки",
+  "settingsLoadError": "Не удалось загрузить настройки",
+  "themeSectionTitle": "Тема",
+  "languageSectionTitle": "Язык",
+  "systemLanguage": "Системный",
+  "profileSectionTitle": "Профиль",
+  "nameLabel": "Имя",
+  "emailLabel": "Email",
+  "lightTheme": "Светлая тема",
+  "darkTheme": "Тёмная тема",
+  "systemTheme": "Системная тема"
+}
