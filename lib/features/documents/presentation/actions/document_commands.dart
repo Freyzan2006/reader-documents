@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../application/documents_providers.dart';
-import '../data/document_file.dart';
-import 'viewer/document_viewer_screen.dart';
+import '../../application/documents_providers.dart';
+import '../../data/document_file.dart';
+import '../viewer/document_viewer_factory.dart';
+import '../viewer/document_viewer_screen.dart';
 
 abstract final class DocumentCommands {
   static List<AppCommandItem> items(BuildContext context, WidgetRef ref) {
@@ -40,19 +41,17 @@ abstract final class DocumentCommands {
     await ref.read(recentlyOpenedProvider.notifier).markOpened(file.path);
     if (!context.mounted) return;
 
-    if (file.type == DocumentType.pdf) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => DocumentViewerScreen(file: file),
-        ),
+    if (!DocumentViewerFactory.supports(file.type)) {
+      AppToast.show(
+        context: context,
+        title: Text(AppLocalizations.of(context)!.viewerComingSoon),
+        description: Text(file.name),
       );
       return;
     }
 
-    AppToast.show(
-      context: context,
-      title: Text(AppLocalizations.of(context)!.viewerComingSoon),
-      description: Text(file.name),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => DocumentViewerScreen(file: file)),
     );
   }
 

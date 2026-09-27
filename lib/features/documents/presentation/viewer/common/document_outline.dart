@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
+import 'package:reader_documents/features/documents/data/document_outline_node.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import 'document_outline_node.dart';
-import 'document_viewer_controller.dart';
+import '../contract/document_viewer_controller.dart';
 
 abstract final class DocumentOutlineSheet {
   static Future<void> show({

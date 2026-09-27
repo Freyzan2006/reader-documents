@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/navigation/app_nav_tab.dart';
 import 'package:reader_documents/core/navigation/navigation_providers.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
+import 'package:reader_documents/features/documents/application/documents_providers.dart';
+import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
+import 'package:reader_documents/features/documents/presentation/list/document_list.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
-
-import '../application/documents_providers.dart';
-import 'document_card.dart';
-import 'document_commands.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -65,37 +64,15 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
             const AppGap.sm(),
-            recent.when(
-              data: (files) => files.isEmpty
-                  ? AppEmptyState(
-                      icon: AppIcons.fileText,
-                      message: l10n.homeRecentEmpty,
-                    )
-                  : Column(
-                      spacing: AppSpacing.sm,
-                      children: [
-                        for (final file in files)
-                          DocumentCard(
-                            file: file,
-                            onTap: () =>
-                                DocumentCommands.open(context, ref, file),
-                            confirmDelete: (file) =>
-                                DocumentCommands.confirmDelete(context, file),
-                            onDelete: (file) => ref
-                                .read(documentsProvider.notifier)
-                                .delete(file.path),
-                          ),
-                      ],
-                    ),
-              loading: () => Column(
-                spacing: AppSpacing.sm,
-                children: List.generate(3, (_) => const DocumentCardSkeleton()),
-              ),
-              error: (error, _) => AppAlert(
-                title: Text(l10n.documentsLoadError),
-                subtitle: Text('$error'),
-                variant: AppAlertVariant.destructive,
-              ),
+            DocumentList(
+              documents: recent,
+              emptyMessage: l10n.homeRecentEmpty,
+              skeletonCount: 3,
+              onOpen: (file) => DocumentCommands.open(context, ref, file),
+              confirmDelete: (file) =>
+                  DocumentCommands.confirmDelete(context, file),
+              onDelete: (file) =>
+                  ref.read(documentsProvider.notifier).delete(file.path),
             ),
           ],
         ),

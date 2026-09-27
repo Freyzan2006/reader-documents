@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../application/document_filter.dart';
+import '../../application/document_filter.dart';
 
 class DocumentFilterBar extends StatelessWidget {
   const DocumentFilterBar({

@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/navigation/app_shell.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/features/documents/presentation/shared_pdf_intake.dart';
+import 'package:reader_documents/features/documents/presentation/actions/shared_document_intake.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 class AppBootstrap extends ConsumerStatefulWidget {
@@ -15,22 +15,23 @@ class AppBootstrap extends ConsumerStatefulWidget {
 }
 
 class _AppBootstrapState extends ConsumerState<AppBootstrap> {
-  late final StreamSubscription<List<SharedMediaFile>> _sharedPdfSubscription;
+  late final StreamSubscription<List<SharedMediaFile>>
+  _sharedDocumentSubscription;
   bool _bootstrapping = true;
   bool _revealed = false;
 
   @override
   void initState() {
     super.initState();
-    _sharedPdfSubscription = SharedPdfIntake.listen(context, ref);
+    _sharedDocumentSubscription = SharedDocumentIntake.listen(context, ref);
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _checkInitialSharedPdf(),
+      (_) => _checkInitialSharedDocument(),
     );
   }
 
-  Future<void> _checkInitialSharedPdf() async {
+  Future<void> _checkInitialSharedDocument() async {
     try {
-      await SharedPdfIntake.checkInitial(
+      await SharedDocumentIntake.checkInitial(
         context,
         ref,
         onBeforeNavigate: _reveal,
@@ -49,7 +50,7 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
 
   @override
   void dispose() {
-    _sharedPdfSubscription.cancel();
+    _sharedDocumentSubscription.cancel();
     super.dispose();
   }
 

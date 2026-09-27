@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/features/documents/presentation/document_commands.dart';
+import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 import 'package:reader_documents/features/settings/presentation/theme_commands.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 

@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
-import '../application/documents_providers.dart';
-import 'viewer/document_viewer_screen.dart';
+import '../../application/documents_providers.dart';
+import '../../data/document_file.dart';
+import '../viewer/document_viewer_factory.dart';
+import '../viewer/document_viewer_screen.dart';
 
-abstract final class SharedPdfIntake {
+abstract final class SharedDocumentIntake {
   static bool _handling = false;
   static String? _lastHandledPath;
 
@@ -38,7 +41,12 @@ abstract final class SharedPdfIntake {
     required VoidCallback onBeforeNavigate,
   }) async {
     for (final item in media) {
-      if (!item.path.toLowerCase().endsWith('.pdf')) continue;
+      final extension = p.extension(item.path).replaceFirst('.', '');
+      if (!DocumentViewerFactory.supports(
+        documentTypeFromExtension(extension),
+      )) {
+        continue;
+      }
       if (_handling || item.path == _lastHandledPath) continue;
       if (!context.mounted) return;
 

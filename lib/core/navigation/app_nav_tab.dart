@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/dev/preview.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/features/documents/presentation/documents_screen.dart';
-import 'package:reader_documents/features/documents/presentation/home_screen.dart';
+import 'package:reader_documents/features/documents/presentation/list/documents_screen.dart';
+import 'package:reader_documents/features/home/presentation/home_screen.dart';
 import 'package:reader_documents/features/settings/presentation/settings_screen.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 

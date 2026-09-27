@@ -5,7 +5,7 @@ import 'package:pdfrx/pdfrx.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/document_highlight.dart';
 
-import '../document_viewer.dart';
+import '../contract/document_viewer.dart';
 import 'pdf_document_search_session.dart';
 import 'pdf_document_text_selection.dart';
 import 'pdf_document_viewer_controller.dart';

@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../application/documents_providers.dart';
-import 'document_card.dart';
-import 'document_commands.dart';
+import '../../application/documents_providers.dart';
+import '../actions/document_commands.dart';
 import 'document_filter_bar.dart';
-import 'paginated_document_list.dart';
+import 'document_list.dart';
 
 class DocumentsScreen extends ConsumerStatefulWidget {
   const DocumentsScreen({super.key});
@@ -93,35 +92,15 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
                     ],
                   ),
                   const AppGap.lg(),
-                  documents.when(
-                    data: (files) => files.isEmpty
-                        ? AppEmptyState(
-                            icon: AppIcons.fileText,
-                            message: l10n.documentsEmpty,
-                          )
-                        : PaginatedDocumentList(
-                            key: ValueKey(filter),
-                            files: files,
-                            onOpen: (file) =>
-                                DocumentCommands.open(context, ref, file),
-                            confirmDelete: (file) =>
-                                DocumentCommands.confirmDelete(context, file),
-                            onDelete: (file) => ref
-                                .read(documentsProvider.notifier)
-                                .delete(file.path),
-                          ),
-                    loading: () => Column(
-                      spacing: AppSpacing.sm,
-                      children: List.generate(
-                        6,
-                        (_) => const DocumentCardSkeleton(),
-                      ),
-                    ),
-                    error: (error, _) => AppAlert(
-                      title: Text(l10n.documentsLoadError),
-                      subtitle: Text('$error'),
-                      variant: AppAlertVariant.destructive,
-                    ),
+                  DocumentList(
+                    key: ValueKey(filter),
+                    documents: documents,
+                    emptyMessage: l10n.documentsEmpty,
+                    onOpen: (file) => DocumentCommands.open(context, ref, file),
+                    confirmDelete: (file) =>
+                        DocumentCommands.confirmDelete(context, file),
+                    onDelete: (file) =>
+                        ref.read(documentsProvider.notifier).delete(file.path),
                   ),
                 ],
               ),

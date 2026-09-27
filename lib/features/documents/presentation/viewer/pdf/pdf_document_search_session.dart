@@ -1,5 +1,5 @@
 import 'package:pdfrx/pdfrx.dart';
-import 'package:reader_documents/features/documents/presentation/viewer/document_viewer_controller.dart';
+import 'package:reader_documents/features/documents/presentation/viewer/contract/document_viewer_controller.dart';
 
 class PdfDocumentSearchSession extends DocumentSearchSession {
   PdfDocumentSearchSession(this._searcher, this._rawController) {

@@ -5,7 +5,7 @@ import 'package:reader_documents/features/documents/data/tag_color.dart';
 import 'package:reader_documents/features/documents/data/tag_definition.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../application/documents_providers.dart';
+import '../../application/documents_providers.dart';
 
 abstract final class TagEditorSheet {
   static Future<void> show({

@@ -5,10 +5,10 @@ import 'package:reader_documents/features/documents/data/document_file.dart';
 import 'package:reader_documents/features/documents/data/tag_color.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../application/documents_providers.dart';
-import 'document_rename.dart';
-import 'document_sharing.dart';
-import 'tag_editor.dart';
+import '../../application/documents_providers.dart';
+import '../actions/document_rename.dart';
+import '../actions/document_sharing.dart';
+import '../tags/tag_editor.dart';
 
 class DocumentCard extends ConsumerWidget {
   const DocumentCard({
