@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:pdfrx/pdfrx.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/features/documents/data/document_outline_node.dart';
+import 'package:reader_documents/features/documents/data/models/document_outline_node.dart';
 import 'package:reader_documents/features/documents/presentation/viewer/contract/document_viewer_controller.dart';
 
 import 'pdf_document_search_session.dart';

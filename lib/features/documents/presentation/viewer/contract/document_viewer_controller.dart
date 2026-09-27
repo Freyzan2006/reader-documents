@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:reader_documents/features/documents/data/document_outline_node.dart';
+import 'package:reader_documents/features/documents/data/models/document_outline_node.dart';
 
 abstract class DocumentSearchSession extends ChangeNotifier {
   bool get isPreparing;

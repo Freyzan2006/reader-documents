@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/features/documents/application/document_highlights_controller.dart';
-import 'package:reader_documents/features/documents/data/document_highlight.dart';
+import 'package:reader_documents/features/documents/application/controllers/document_highlights_controller.dart';
+import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 

@@ -7,7 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import '../../application/documents_providers.dart';
-import '../../data/document_file.dart';
+import '../../data/models/document_file.dart';
 import '../viewer/document_viewer_factory.dart';
 import '../viewer/document_viewer_screen.dart';
 

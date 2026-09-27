@@ -1,4 +1,4 @@
-import 'package:reader_documents/features/documents/data/document_highlight.dart';
+import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 
 abstract class DocumentTextSelection {
   bool get isCopyAllowed;

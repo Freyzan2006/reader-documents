@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:reader_documents/features/documents/data/document_highlight.dart';
-import 'package:reader_documents/features/documents/data/highlights_repository.dart';
+import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
+import 'package:reader_documents/features/documents/data/repositories/highlights_repository.dart';
 
 class DocumentHighlightsController
     extends ValueNotifier<List<DocumentHighlight>> {

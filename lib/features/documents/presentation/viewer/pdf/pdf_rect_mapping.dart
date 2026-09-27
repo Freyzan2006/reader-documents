@@ -1,5 +1,5 @@
 import 'package:pdfrx/pdfrx.dart';
-import 'package:reader_documents/features/documents/data/document_rect.dart';
+import 'package:reader_documents/features/documents/data/models/document_rect.dart';
 
 extension PdfRectMapping on PdfRect {
   DocumentRect toDocumentRect() => DocumentRect(left, top, right, bottom);

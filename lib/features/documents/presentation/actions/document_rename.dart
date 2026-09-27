@@ -4,7 +4,7 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../../application/documents_providers.dart';
-import '../../data/document_file.dart';
+import '../../data/models/document_file.dart';
 
 abstract final class DocumentRename {
   static Future<void> show({

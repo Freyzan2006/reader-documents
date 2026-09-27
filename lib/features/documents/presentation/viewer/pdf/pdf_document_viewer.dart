@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:pdfrx/pdfrx.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/features/documents/data/document_highlight.dart';
+import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 
 import '../contract/document_viewer.dart';
 import 'pdf_document_search_session.dart';

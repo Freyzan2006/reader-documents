@@ -1,6 +1,6 @@
 import 'package:reader_documents/core/storage/json_document_store.dart';
 
-import 'document_highlight.dart';
+import '../models/document_highlight.dart';
 
 class HighlightsRepository extends JsonDocumentStore<List<DocumentHighlight>> {
   const HighlightsRepository();

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:pdfrx/pdfrx.dart';
-import 'package:reader_documents/features/documents/data/document_highlight.dart';
+import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 import 'package:reader_documents/features/documents/presentation/viewer/contract/document_text_selection.dart';
 
 import 'pdf_rect_mapping.dart';

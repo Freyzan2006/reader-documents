@@ -1,9 +1,10 @@
+import 'package:reader_documents/core/storage/flat_global_store.dart';
 import 'package:reader_documents/features/settings/data/app_language.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/features/settings/data/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingsRepository {
+class SettingsRepository extends FlatGlobalStore<AppSettings> {
   const SettingsRepository();
 
   static const _themeModeKey = 'settings.themeMode';
@@ -11,8 +12,8 @@ class SettingsRepository {
   static const _profileNameKey = 'settings.profile.name';
   static const _profileEmailKey = 'settings.profile.email';
 
-  Future<AppSettings> load() async {
-    final prefs = await SharedPreferences.getInstance();
+  @override
+  Future<AppSettings> readFields(SharedPreferences prefs) async {
     final themeMode = AppThemeMode.values.firstWhere(
       (mode) => mode.name == prefs.getString(_themeModeKey),
       orElse: () => AppThemeMode.system,
@@ -32,8 +33,11 @@ class SettingsRepository {
     );
   }
 
-  Future<void> save(AppSettings settings) async {
-    final prefs = await SharedPreferences.getInstance();
+  @override
+  Future<void> writeFields(
+    SharedPreferences prefs,
+    AppSettings settings,
+  ) async {
     await prefs.setString(_themeModeKey, settings.themeMode.name);
     await prefs.setString(_languageKey, settings.language.name);
     await prefs.setString(_profileNameKey, settings.profile.name);

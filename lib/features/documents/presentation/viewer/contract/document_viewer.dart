@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/widgets.dart';
-import 'package:reader_documents/features/documents/data/document_file.dart';
-import 'package:reader_documents/features/documents/data/document_highlight.dart';
+import 'package:reader_documents/features/documents/data/models/document_file.dart';
+import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 
 import 'document_text_selection.dart';
 import 'document_viewer_controller.dart';

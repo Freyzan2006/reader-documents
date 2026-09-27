@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:reader_documents/features/documents/application/document_highlights_controller.dart';
+import 'package:reader_documents/features/documents/application/controllers/document_highlights_controller.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
-import 'package:reader_documents/features/documents/application/reading_progress_controller.dart';
-import 'package:reader_documents/features/documents/data/document_file.dart';
+import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
+import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
 import 'common/document_context_menu_content.dart';
 import 'common/document_error_view.dart';

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import 'document_file.dart';
+import '../models/document_file.dart';
 
 class DocumentsRepository {
   const DocumentsRepository();

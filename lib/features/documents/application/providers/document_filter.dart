@@ -1,4 +1,4 @@
-import 'package:reader_documents/features/documents/data/document_file.dart';
+import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
 class DocumentFilter {
   const DocumentFilter([this.types = const {}, this.query = '']);

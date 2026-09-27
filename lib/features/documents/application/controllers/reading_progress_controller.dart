@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:reader_documents/features/documents/data/reading_progress_repository.dart';
+import 'package:reader_documents/features/documents/data/repositories/reading_progress_repository.dart';
 
 class ReadingProgressController extends ChangeNotifier {
   ReadingProgressController(this._repository, this._documentPath);
