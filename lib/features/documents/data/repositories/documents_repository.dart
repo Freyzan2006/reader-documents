@@ -1,26 +1,20 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:reader_documents/core/storage/directory_file_store.dart';
 
 import '../models/document_file.dart';
 
-class DocumentsRepository {
+class DocumentsRepository extends DirectoryFileStore {
   const DocumentsRepository();
 
   static const _allowedExtensions = {'pdf', 'docx', 'djvu'};
 
-  Future<Directory> _documentsDirectory() async {
-    final root = await getApplicationDocumentsDirectory();
-    final dir = Directory(p.join(root.path, 'documents'));
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-    return dir;
-  }
+  @override
+  String get directoryName => 'documents';
 
   Future<List<DocumentFile>> list() async {
-    final dir = await _documentsDirectory();
+    final dir = await resolveDirectory();
     final entries = await dir.list().toList();
     final files = <DocumentFile>[];
 
@@ -50,7 +44,7 @@ class DocumentsRepository {
   }
 
   Future<DocumentFile> import(String sourcePath) async {
-    final dir = await _documentsDirectory();
+    final dir = await resolveDirectory();
     final destinationPath = p.join(dir.path, p.basename(sourcePath));
     final copied = await File(sourcePath).copy(destinationPath);
     final stat = await copied.stat();

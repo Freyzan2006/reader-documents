@@ -21,7 +21,7 @@ class ReadingProgressController extends ChangeNotifier {
   int get initialPage => _initialPage;
 
   Future<void> load() async {
-    final page = await _repository.loadPage(_documentPath);
+    final page = await _repository.load(_documentPath);
     _initialPage = page ?? 1;
     _isReady = true;
     notifyListeners();
@@ -38,7 +38,7 @@ class ReadingProgressController extends ChangeNotifier {
     final page = _pendingPage;
     if (page == null) return;
     _pendingPage = null;
-    _repository.savePage(_documentPath, page);
+    _repository.save(_documentPath, page);
   }
 
   @override

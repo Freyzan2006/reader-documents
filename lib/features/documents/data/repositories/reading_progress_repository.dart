@@ -1,19 +1,16 @@
+import 'package:reader_documents/core/storage/primitive_document_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ReadingProgressRepository {
+class ReadingProgressRepository extends PrimitiveDocumentStore<int> {
   const ReadingProgressRepository();
 
-  static const _keyPrefix = 'reading_progress.page.';
+  @override
+  String get keyPrefix => 'reading_progress.page.';
 
-  Future<int?> loadPage(String documentPath) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_keyFor(documentPath));
-  }
+  @override
+  int? read(SharedPreferences prefs, String key) => prefs.getInt(key);
 
-  Future<void> savePage(String documentPath, int pageNumber) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_keyFor(documentPath), pageNumber);
-  }
-
-  String _keyFor(String documentPath) => '$_keyPrefix$documentPath';
+  @override
+  Future<void> write(SharedPreferences prefs, String key, int value) =>
+      prefs.setInt(key, value);
 }
