@@ -8,8 +8,6 @@ class DocumentViewerHeaderOverlay extends StatelessWidget {
     super.key,
   });
 
-  static const _animationDuration = Duration(milliseconds: 200);
-
   final bool visible;
   final Widget child;
 
@@ -18,19 +16,15 @@ class DocumentViewerHeaderOverlay extends StatelessWidget {
     top: 0,
     left: 0,
     right: 0,
-    child: IgnorePointer(
-      ignoring: !visible,
-      child: AnimatedOpacity(
-        duration: _animationDuration,
-        opacity: visible ? 1 : 0,
-        child: SafeArea(
-          bottom: false,
-          child: SizedBox(
-            height: AppHeader.height,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: child,
-            ),
+    child: AppFade(
+      visible: visible,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: AppHeader.height,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: child,
           ),
         ),
       ),

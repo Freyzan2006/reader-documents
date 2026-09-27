@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/controllers/document_highlights_controller.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
@@ -13,6 +14,7 @@ import 'common/document_password_prompt.dart';
 import 'common/document_viewer_header_overlay.dart';
 import 'common/document_viewer_search_bar.dart';
 import 'common/document_viewer_toolbar.dart';
+import 'common/document_viewer_zoom_controls.dart';
 import 'contract/document_text_selection.dart';
 import 'contract/document_viewer_controller.dart';
 import 'document_password_controller.dart';
@@ -177,6 +179,17 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
               controller: _passwordController,
               onCancel: () => _resolvePassword(null),
               onUnlock: () => _resolvePassword(_passwordController.text),
+            ),
+          )
+        else
+          Positioned(
+            right: AppSpacing.lg,
+            bottom: AppSpacing.lg,
+            child: SafeArea(
+              child: AppFade(
+                visible: _headerVisibility.visible,
+                child: DocumentViewerZoomControls(controller: viewerController),
+              ),
             ),
           ),
       ],

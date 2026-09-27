@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 class HeaderVisibilityController extends ChangeNotifier {
-  static const _autoHideDelay = Duration(seconds: 3);
+  static const _autoHideDelay = Duration(seconds: 6);
 
   bool _visible = true;
   Timer? _autoHideTimer;

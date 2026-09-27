@@ -39,6 +39,29 @@ class PdfDocumentViewerController extends DocumentViewerController {
   @override
   List<DocumentOutlineNode> get outline => _outline;
 
+  static const _zoomStep = 0.1;
+
+  @override
+  double get zoom => _raw.currentZoom;
+
+  @override
+  double get minZoom => _raw.minScale;
+
+  @override
+  double get maxZoom => _raw.maxScale;
+
+  @override
+  Future<void> setZoom(double zoom) => _raw.setZoom(
+    _raw.centerPosition,
+    zoom.clamp(minZoom, maxZoom).toDouble(),
+  );
+
+  @override
+  Future<void> zoomIn() => setZoom(zoom + _zoomStep);
+
+  @override
+  Future<void> zoomOut() => setZoom(zoom - _zoomStep);
+
   void attachSearchSession(PdfDocumentSearchSession session) {
     _search = session;
     session.addListener(notifyListeners);

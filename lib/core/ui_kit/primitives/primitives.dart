@@ -1,4 +1,5 @@
 export 'center.dart';
+export 'fade.dart';
 export 'gap.dart';
 export 'grid.dart';
 export 'page_view.dart';

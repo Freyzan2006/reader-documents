@@ -20,6 +20,12 @@ abstract class DocumentViewerController extends ChangeNotifier {
   void invalidate();
   DocumentSearchSession? get search;
   List<DocumentOutlineNode> get outline;
+  double get zoom;
+  double get minZoom;
+  double get maxZoom;
+  Future<void> setZoom(double zoom);
+  Future<void> zoomIn();
+  Future<void> zoomOut();
   Widget buildPageThumbnail(
     BuildContext context,
     int pageNumber, {
