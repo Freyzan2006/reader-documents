@@ -17,6 +17,8 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.title,
     required this.viewerController,
     required this.onSearch,
+    required this.onRotate,
+    this.quarterTurns = 0,
     super.key,
   });
 
@@ -24,6 +26,15 @@ class DocumentViewerToolbar extends ConsumerWidget {
   final String title;
   final DocumentViewerController? viewerController;
   final VoidCallback onSearch;
+  final VoidCallback onRotate;
+
+  /// How many quarter turns this toolbar is itself displayed rotated by (an
+  /// ancestor `RotatedBox`). When rotated, the overflow menu shows as a
+  /// bottom sheet instead of an anchored popover — a popover positions
+  /// itself from the trigger's on-screen transform, which forui's portal
+  /// system gets wrong once that transform includes a rotation; a sheet
+  /// anchors to the true screen bounds instead, sidestepping the issue.
+  final int quarterTurns;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,7 +85,8 @@ class DocumentViewerToolbar extends ConsumerWidget {
               ? AppColors.warning(context)
               : null,
         ),
-        AppPopoverMenu(
+        _OverflowMenu(
+          quarterTurns: quarterTurns,
           items: [
             AppCommandItem(
               label: l10n.pdfMenuRename,
@@ -112,14 +124,50 @@ class DocumentViewerToolbar extends ConsumerWidget {
               icon: AppIcons.share2,
               onSelect: () => DocumentSharing.share(file),
             ),
+            AppCommandItem(
+              label: l10n.pdfMenuRotate,
+              icon: AppIcons.rotateCw,
+              onSelect: onRotate,
+            ),
           ],
-          child: const AppIconButton(
-            icon: AppIcons.ellipsisVertical,
-            onPressed: null,
-            enabled: true,
-          ),
         ),
       ],
     );
   }
+}
+
+class _OverflowMenu extends StatelessWidget {
+  const _OverflowMenu({required this.quarterTurns, required this.items});
+
+  final int quarterTurns;
+  final List<AppCommandItem> items;
+
+  static const _trigger = AppIconButton(
+    icon: AppIcons.ellipsisVertical,
+    onPressed: null,
+    enabled: true,
+  );
+
+  /// The true screen edge that corresponds to the rotated reading frame's
+  /// own "bottom" — `RotatedBox` rotates clockwise, so each +1 quarter turn
+  /// walks bottom→left→top→right.
+  static AppEdge _sideFor(int quarterTurns) => const [
+    AppEdge.bottom,
+    AppEdge.left,
+    AppEdge.top,
+    AppEdge.right,
+  ][quarterTurns % 4];
+
+  @override
+  Widget build(BuildContext context) => quarterTurns != 0
+      ? AppIconButton(
+          icon: AppIcons.ellipsisVertical,
+          onPressed: () => AppCommandSidePanel.show(
+            context: context,
+            items: items,
+            side: _sideFor(quarterTurns),
+            quarterTurns: quarterTurns,
+          ),
+        )
+      : AppPopoverMenu(items: items, child: _trigger);
 }

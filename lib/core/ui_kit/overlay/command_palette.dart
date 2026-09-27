@@ -7,6 +7,7 @@ import '../data_display/text.dart';
 import '../layout/divider.dart';
 import '../tokens/app_spacing.dart';
 import 'sheet.dart';
+import 'side_panel.dart';
 
 class AppCommandItem {
   const AppCommandItem({
@@ -25,6 +26,49 @@ class AppCommandGroup {
 
   final String label;
   final List<AppCommandItem> items;
+}
+
+/// A plain list of [AppCommandItem]s shown as a side panel instead of an
+/// anchored popover — for triggers whose on-screen position/transform an
+/// anchored popover can't reliably read (e.g. a button under an ancestor
+/// `RotatedBox`), since a panel is always positioned against the true
+/// screen edge, not the trigger.
+abstract final class AppCommandSidePanel {
+  static AppSidePanelController show({
+    required BuildContext context,
+    required List<AppCommandItem> items,
+    AppEdge side = AppEdge.bottom,
+    int quarterTurns = 0,
+    double panelFraction = 0.6,
+  }) => AppSidePanel.show(
+    context: context,
+    side: side,
+    panelFraction: panelFraction,
+    builder: (context, controller) => RotatedBox(
+      quarterTurns: quarterTurns,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          children: [
+            FTileGroup(
+              children: [
+                for (final item in items)
+                  FTile(
+                    title: Text(item.label),
+                    prefix: item.icon == null ? null : Icon(item.icon),
+                    onPress: () {
+                      controller.close();
+                      item.onSelect();
+                    },
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 abstract final class AppCommandPalette {

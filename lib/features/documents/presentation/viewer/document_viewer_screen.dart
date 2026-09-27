@@ -39,6 +39,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   DocumentViewerController? _viewerController;
   bool _searchActive = false;
+  int _quarterTurns = 0;
   final _searchController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -101,6 +102,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     _headerVisibility.scheduleAutoHide();
   }
 
+  void _rotate() => setState(() => _quarterTurns = _quarterTurns == 0 ? 1 : 0);
+
   bool _handleBackgroundTap() {
     if (_searchActive) return false;
     _headerVisibility.toggle();
@@ -129,7 +132,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     if (!_readingProgress.isReady) return const DocumentLoadingBanner();
     return DocumentViewerFactory.build(
       file: file,
-      initialPageNumber: _readingProgress.initialPage,
+      initialPageNumber:
+          _viewerController?.currentPage ?? _readingProgress.initialPage,
       highlights: _highlights,
       onPageChanged: _readingProgress.onPageChanged,
       onReady: _handleViewerReady,
@@ -156,21 +160,51 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
     return Stack(
       children: [
-        Positioned.fill(child: _buildContent(context, file)),
-        DocumentViewerHeaderOverlay(
-          visible: _headerVisibility.visible,
-          child: _searchActive
-              ? DocumentViewerSearchBar(
-                  controller: _searchController,
-                  session: viewerController?.search,
-                  onClose: _closeSearch,
-                )
-              : DocumentViewerToolbar(
-                  file: file,
-                  title: title,
-                  viewerController: viewerController,
-                  onSearch: _openSearch,
+        Positioned.fill(
+          child: RotatedBox(
+            quarterTurns: _quarterTurns,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: KeyedSubtree(
+                    key: ValueKey(_quarterTurns),
+                    child: _buildContent(context, file),
+                  ),
                 ),
+                DocumentViewerHeaderOverlay(
+                  visible: _headerVisibility.visible,
+                  topSafeArea: _quarterTurns == 0,
+                  child: _searchActive
+                      ? DocumentViewerSearchBar(
+                          controller: _searchController,
+                          session: viewerController?.search,
+                          onClose: _closeSearch,
+                        )
+                      : DocumentViewerToolbar(
+                          file: file,
+                          title: title,
+                          viewerController: viewerController,
+                          onSearch: _openSearch,
+                          onRotate: _rotate,
+                          quarterTurns: _quarterTurns,
+                        ),
+                ),
+                if (!_password.isPrompting)
+                  Positioned(
+                    right: AppSpacing.lg,
+                    bottom: AppSpacing.lg,
+                    child: SafeArea(
+                      child: AppFade(
+                        visible: _headerVisibility.visible,
+                        child: DocumentViewerZoomControls(
+                          controller: viewerController,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
         if (_password.isPrompting)
           Positioned.fill(
@@ -179,17 +213,6 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
               controller: _passwordController,
               onCancel: () => _resolvePassword(null),
               onUnlock: () => _resolvePassword(_passwordController.text),
-            ),
-          )
-        else
-          Positioned(
-            right: AppSpacing.lg,
-            bottom: AppSpacing.lg,
-            child: SafeArea(
-              child: AppFade(
-                visible: _headerVisibility.visible,
-                child: DocumentViewerZoomControls(controller: viewerController),
-              ),
             ),
           ),
       ],

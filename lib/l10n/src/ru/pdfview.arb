@@ -18,5 +18,6 @@
   "pdfMenuOutline": "Оглавление",
   "pdfMenuPages": "Страницы",
   "pdfMenuShare": "Поделиться",
-  "pdfMenuRename": "Переименовать"
+  "pdfMenuRename": "Переименовать",
+  "pdfMenuRotate": "Повернуть"
 }

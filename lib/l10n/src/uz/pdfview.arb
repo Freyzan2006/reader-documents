@@ -18,5 +18,6 @@
   "pdfMenuOutline": "Kontent jadvali",
   "pdfMenuPages": "Sahifalar",
   "pdfMenuShare": "Ulashish",
-  "pdfMenuRename": "Qayta nomlash"
+  "pdfMenuRename": "Qayta nomlash",
+  "pdfMenuRotate": "Aylantirish"
 }

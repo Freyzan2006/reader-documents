@@ -7,6 +7,17 @@ import '../layout/divider.dart';
 import '../tokens/app_spacing.dart';
 import 'sheet_surface.dart';
 
+enum AppEdge { top, bottom, left, right }
+
+extension on AppEdge {
+  FLayout get _layout => switch (this) {
+    AppEdge.top => FLayout.ttb,
+    AppEdge.bottom => FLayout.btt,
+    AppEdge.left => FLayout.ltr,
+    AppEdge.right => FLayout.rtl,
+  };
+}
+
 /// Controls a panel opened by [AppSidePanel.show].
 class AppSidePanelController {
   const AppSidePanelController._(this._close);
@@ -41,7 +52,7 @@ abstract final class AppSidePanel {
       AppSidePanelController controller,
     )
     builder,
-    FLayout side = FLayout.rtl,
+    AppEdge side = AppEdge.right,
     double panelFraction = 0.8,
     bool barrierDismissible = true,
   }) {
@@ -62,7 +73,7 @@ abstract final class AppSidePanel {
     entry = OverlayEntry(
       builder: (context) => _SidePanelOverlay(
         key: key,
-        side: side,
+        side: side._layout,
         panelFraction: panelFraction,
         barrierDismissible: barrierDismissible,
         onBarrierTap: close,

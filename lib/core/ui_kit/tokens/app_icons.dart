@@ -28,6 +28,7 @@ abstract final class AppIcons {
   static const penOff = FLucideIcons.penOff;
   static const plus = FLucideIcons.plus;
   static const pencil = FLucideIcons.pencil;
+  static const rotateCw = FLucideIcons.rotateCw;
   static const search = FLucideIcons.search;
   static const settings = FLucideIcons.settings;
   static const share2 = FLucideIcons.share2;

@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 class AppFade extends StatelessWidget {
   const AppFade({required this.visible, required this.child, super.key});
 
-  static const _animationDuration = Duration(milliseconds: 200);
+  static const _animationDuration = Duration(milliseconds: 450);
 
   final bool visible;
   final Widget child;
