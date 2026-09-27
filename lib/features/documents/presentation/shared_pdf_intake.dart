@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import '../application/documents_providers.dart';
-import 'pdf_viewer_screen.dart';
+import 'viewer/document_viewer_screen.dart';
 
 abstract final class SharedPdfIntake {
   static bool _handling = false;
@@ -55,7 +55,9 @@ abstract final class SharedPdfIntake {
         if (!context.mounted) return;
 
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => PdfViewerScreen(file: file)),
+          MaterialPageRoute(
+            builder: (context) => DocumentViewerScreen(file: file),
+          ),
         );
       } finally {
         _handling = false;

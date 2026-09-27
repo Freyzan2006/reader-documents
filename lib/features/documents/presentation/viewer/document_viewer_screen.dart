@@ -1,49 +1,46 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pdfrx/pdfrx.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/data/document_file.dart';
-import 'package:reader_documents/features/documents/data/pdf_highlight.dart';
+import 'package:reader_documents/features/documents/data/document_highlight.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'ai_providers.dart';
-import 'document_rename.dart';
-import 'document_sharing.dart';
-import 'pdf_context_menu.dart';
-import 'pdf_error_view.dart';
-import 'pdf_magnifier.dart';
-import 'pdf_minimap.dart';
-import 'pdf_outline.dart';
-import 'search_providers.dart';
-import 'translate_providers.dart';
+import '../ai_providers.dart';
+import '../document_rename.dart';
+import '../document_sharing.dart';
+import '../search_providers.dart';
+import '../translate_providers.dart';
+import 'document_context_menu.dart';
+import 'document_error_view.dart';
+import 'document_magnifier.dart';
+import 'document_minimap.dart';
+import 'document_outline.dart';
+import 'document_text_selection.dart';
+import 'document_viewer_controller.dart';
+import 'pdf/pdf_document_viewer.dart';
 
-class PdfViewerScreen extends ConsumerStatefulWidget {
-  const PdfViewerScreen({required this.file, super.key});
+class DocumentViewerScreen extends ConsumerStatefulWidget {
+  const DocumentViewerScreen({required this.file, super.key});
 
   final DocumentFile file;
 
   @override
-  ConsumerState<PdfViewerScreen> createState() => _PdfViewerScreenState();
+  ConsumerState<DocumentViewerScreen> createState() =>
+      _DocumentViewerScreenState();
 }
 
-class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
+class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   static const _skeletonPageCount = 3;
   static const _skeletonPageOffset = 10.0;
   static const _autoHideDelay = Duration(seconds: 3);
   static const _visibilityAnimationDuration = Duration(milliseconds: 200);
   static const _saveProgressDebounce = Duration(milliseconds: 400);
-
-  // Trimmed down from pdfrx's defaults (100 MB cache, 1.0 extent) to keep
-  // peak memory lower on weak devices, at the cost of more re-rendering when
-  // scrolling back over already-visited pages.
-  static const _maxImageBytesCachedOnMemory = 40 * 1024 * 1024;
-  static const _pageCacheExtent = 0.5;
+  static const _actionIconSize = 18.0;
 
   bool _headerVisible = true;
   Timer? _autoHideTimer;
@@ -52,17 +49,18 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   int _initialPageNumber = 1;
   int? _pendingPage;
   Timer? _saveProgressTimer;
-  final _pdfController = PdfViewerController();
 
-  PdfTextSearcher? _searcher;
-  List<PdfViewerPagePaintCallback>? _pagePaintCallbacks;
+  DocumentViewerController? _viewerController;
+
   bool _searchActive = false;
-  bool _preparingSearch = false;
-  bool _pagesFullyMeasured = false;
   final _searchController = TextEditingController();
 
-  List<PdfHighlight> _highlights = [];
-  List<PdfOutlineNode>? _outline;
+  final _highlights = ValueNotifier<List<DocumentHighlight>>([]);
+
+  int _passwordAttempts = 0;
+  bool _passwordIncorrect = false;
+  Completer<String?>? _passwordCompleter;
+  final _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -77,62 +75,31 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         .read(highlightsRepositoryProvider)
         .load(widget.file.path);
     if (!mounted) return;
-    setState(() {
-      _highlights = highlights ?? [];
-      _rebuildPaintCallbacks();
-    });
-  }
-
-  void _rebuildPaintCallbacks() {
-    _pagePaintCallbacks = [
-      _paintHighlights,
-      if (_searcher != null) _searcher!.pageTextMatchPaintCallback,
-    ];
-  }
-
-  void _paintHighlights(Canvas canvas, Rect pageRect, PdfPage page) {
-    for (final highlight in _highlights) {
-      if (highlight.pageNumber != page.pageNumber) continue;
-      final paint = Paint()
-        ..color = highlight.color.value.withValues(alpha: 0.4);
-      for (final rect in highlight.rects) {
-        final screenRect = rect
-            .toRect(page: page, scaledPageSize: pageRect.size)
-            .translate(pageRect.left, pageRect.top);
-        canvas.drawRect(screenRect, paint);
-      }
-    }
+    _highlights.value = highlights ?? [];
   }
 
   Future<void> _addHighlight(
-    PdfPageText pageText,
-    int start,
-    int end,
-    PdfHighlightColor color,
+    DocumentHighlightDraft draft,
+    DocumentHighlightColor color,
   ) async {
-    final highlight = PdfHighlight.fromSelection(
+    final highlight = DocumentHighlight.fromDraft(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      pageText: pageText,
-      startIndex: start,
-      endIndex: end,
+      draft: draft,
       color: color,
     );
-    setState(() => _highlights = [..._highlights, highlight]);
-    _pdfController.invalidate();
+    _highlights.value = [..._highlights.value, highlight];
     await ref
         .read(highlightsRepositoryProvider)
-        .save(widget.file.path, _highlights);
+        .save(widget.file.path, _highlights.value);
   }
 
-  Future<void> _removeHighlight(PdfHighlight highlight) async {
-    setState(
-      () =>
-          _highlights = _highlights.where((h) => h.id != highlight.id).toList(),
-    );
-    _pdfController.invalidate();
+  Future<void> _removeHighlight(DocumentHighlight highlight) async {
+    _highlights.value = _highlights.value
+        .where((h) => h.id != highlight.id)
+        .toList();
     await ref
         .read(highlightsRepositoryProvider)
-        .save(widget.file.path, _highlights);
+        .save(widget.file.path, _highlights.value);
   }
 
   Future<void> _loadInitialPage() async {
@@ -167,61 +134,39 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     _autoHideTimer?.cancel();
     _saveProgressTimer?.cancel();
     _flushPendingPage();
-    _searcher?.dispose();
+    _viewerController?.removeListener(_onViewerControllerChanged);
+    _highlights.dispose();
     _searchController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _onViewerReady(PdfDocument document, PdfViewerController controller) {
-    final searcher = PdfTextSearcher(controller)..addListener(_onSearchChanged);
-    setState(() {
-      _searcher = searcher;
-      _rebuildPaintCallbacks();
-    });
-    _loadOutline(document);
+  void _handleViewerReady(DocumentViewerController controller) {
+    controller.addListener(_onViewerControllerChanged);
+    setState(() => _viewerController = controller);
   }
 
-  Future<void> _loadOutline(PdfDocument document) async {
-    final outline = await document.loadOutline();
-    if (!mounted) return;
-    setState(() => _outline = outline);
-  }
-
-  void _onSearchChanged() {
+  void _onViewerControllerChanged() {
     if (mounted) setState(() {});
   }
 
   Future<void> _openSearch() async {
     _autoHideTimer?.cancel();
     setState(() => _searchActive = true);
-    if (_pagesFullyMeasured) return;
-
-    // With loadPageDimensionsOnDemand, pages outside the viewport are never
-    // measured, and PdfPage.loadText (which PdfTextSearcher relies on)
-    // returns nothing for an unmeasured page. Force-measure the whole
-    // document once, only when the user actually opens search, so cold
-    // start stays lazy but search still covers every page.
-    setState(() => _preparingSearch = true);
-    await _pdfController.useDocument((document) => document.reloadPages());
-    if (!mounted) return;
-    setState(() {
-      _pagesFullyMeasured = true;
-      _preparingSearch = false;
-    });
+    await _viewerController?.search?.prepare();
   }
 
   void _closeSearch() {
     setState(() => _searchActive = false);
     _searchController.clear();
-    _searcher?.resetTextSearch();
+    _viewerController?.search?.resetTextSearch();
     _scheduleAutoHide();
   }
 
   Widget _buildSearchBar(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final searcher = _searcher;
-    final hasMatches = searcher?.hasMatches ?? false;
+    final session = _viewerController?.search;
+    final hasMatches = session?.hasMatches ?? false;
 
     return Row(
       spacing: AppSpacing.sm,
@@ -232,25 +177,24 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
             controller: _searchController,
             hint: l10n.pdfSearchHint,
             autofocus: true,
-            enabled: !_preparingSearch,
-            onChanged: searcher?.startTextSearch,
+            enabled: !(session?.isPreparing ?? false),
+            onChanged: session?.startTextSearch,
           ),
         ),
-        if (_preparingSearch) const AppSpinner(size: AppSpinnerSize.sm),
+        if (session?.isPreparing ?? false)
+          const AppSpinner(size: AppSpinnerSize.sm),
         if (hasMatches)
           AppBadge(
             variant: AppBadgeVariant.secondary,
-            child: Text(
-              '${searcher!.currentIndex! + 1}/${searcher.matches.length}',
-            ),
+            child: Text('${session!.currentIndex! + 1}/${session.matchCount}'),
           ),
         AppIconButton(
           icon: AppIcons.chevronUp,
-          onPressed: hasMatches ? searcher!.goToPrevMatch : null,
+          onPressed: hasMatches ? session!.goToPrevMatch : null,
         ),
         AppIconButton(
           icon: AppIcons.chevronDown,
-          onPressed: hasMatches ? searcher!.goToNextMatch : null,
+          onPressed: hasMatches ? session!.goToNextMatch : null,
         ),
       ],
     );
@@ -272,71 +216,58 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     }
   }
 
-  bool _onGeneralTap(
-    BuildContext context,
-    PdfViewerController controller,
-    PdfViewerGeneralTapHandlerDetails details,
-  ) {
-    if (details.type == PdfViewerGeneralTapType.tap &&
-        details.tapOn == PdfViewerPart.background) {
-      if (_searchActive) return false;
-      _toggleHeader();
-      return true;
-    }
-    return false;
+  bool _handleBackgroundTap() {
+    if (_searchActive) return false;
+    _toggleHeader();
+    return true;
   }
-
-  static const _actionIconSize = 18.0;
 
   Widget? _buildContextMenu(
     BuildContext context,
-    PdfViewerContextMenuBuilderParams params,
+    DocumentTextSelection selection,
+    VoidCallback dismiss,
   ) {
     final l10n = AppLocalizations.of(context)!;
     final foreground = AppColors.of(context).foreground;
-    final delegate = params.textSelectionDelegate;
-    final entries = <PdfContextMenuEntry>[];
+    final entries = <DocumentContextMenuEntry>[];
 
-    if (delegate.isCopyAllowed && delegate.hasSelectedText) {
+    if (selection.isCopyAllowed && selection.hasSelectedText) {
       entries.add(
-        PdfContextMenuAction(
+        DocumentContextMenuAction(
           label: l10n.contextMenuCopy,
           icon: Icon(AppIcons.copy, size: _actionIconSize, color: foreground),
           onPressed: () {
-            delegate.copyTextSelection();
-            params.dismissContextMenu();
+            selection.copyTextSelection();
+            dismiss();
           },
         ),
       );
     }
 
-    if (!delegate.isSelectingAllText) {
+    if (!selection.isSelectingAllText) {
       entries.add(
-        PdfContextMenuAction(
+        DocumentContextMenuAction(
           label: l10n.contextMenuSelectAll,
           icon: Icon(
             AppIcons.textSelect,
             size: _actionIconSize,
             color: foreground,
           ),
-          onPressed: delegate.selectAllText,
+          onPressed: selection.selectAllText,
         ),
       );
     }
 
-    if (delegate.hasSelectedText) {
-      final anchorA = params.a;
-      final anchorB = params.b;
-      if (anchorA != null &&
-          anchorB != null &&
-          anchorA.page.pageNumber == anchorB.page.pageNumber) {
-        final pageNumber = anchorA.page.pageNumber;
-        final start = math.min(anchorA.index, anchorB.index);
-        final end = math.max(anchorA.index, anchorB.index) + 1;
-
-        PdfHighlight? existing;
-        for (final highlight in _highlights) {
-          if (highlight.overlapsRange(pageNumber, start, end)) {
+    if (selection.hasSelectedText) {
+      final draft = selection.highlightDraft;
+      if (draft != null) {
+        DocumentHighlight? existing;
+        for (final highlight in _highlights.value) {
+          if (highlight.overlapsRange(
+            draft.pageNumber,
+            draft.startIndex,
+            draft.endIndex,
+          )) {
             existing = highlight;
             break;
           }
@@ -345,7 +276,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         if (existing != null) {
           final highlight = existing;
           entries.add(
-            PdfContextMenuAction(
+            DocumentContextMenuAction(
               label: l10n.removeHighlight,
               icon: Icon(
                 AppIcons.penOff,
@@ -354,13 +285,13 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
               ),
               onPressed: () {
                 _removeHighlight(highlight);
-                params.dismissContextMenu();
+                dismiss();
               },
             ),
           );
         } else {
           entries.add(
-            PdfContextMenuGroup(
+            DocumentContextMenuGroup(
               label: 'Highlight',
               icon: Icon(
                 AppIcons.highlighter,
@@ -368,13 +299,13 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                 color: foreground,
               ),
               children: [
-                for (final color in PdfHighlightColor.values)
-                  PdfContextMenuAction(
+                for (final color in DocumentHighlightColor.values)
+                  DocumentContextMenuAction(
                     label: color.name,
                     icon: _HighlightSwatch(color: color, size: _actionIconSize),
                     onPressed: () {
-                      _addHighlight(anchorA.page, start, end, color);
-                      params.dismissContextMenu();
+                      _addHighlight(draft, color);
+                      dismiss();
                     },
                   ),
               ],
@@ -384,7 +315,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       }
 
       entries.add(
-        PdfContextMenuGroup(
+        DocumentContextMenuGroup(
           label: 'AI',
           icon: Icon(
             AppIcons.sparkles,
@@ -393,10 +324,10 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           ),
           children: [
             for (final provider in AiProviders.all)
-              PdfContextMenuAction(
+              DocumentContextMenuAction(
                 label: provider.label,
                 icon: AiProviderIcon(provider: provider, size: _actionIconSize),
-                onPressed: () => _askProvider(params, provider),
+                onPressed: () => _askProvider(selection, dismiss, provider),
               ),
           ],
         ),
@@ -404,7 +335,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
       final languageCode = Localizations.localeOf(context).languageCode;
       entries.add(
-        PdfContextMenuGroup(
+        DocumentContextMenuGroup(
           label: 'Translate',
           icon: Icon(
             AppIcons.languages,
@@ -413,33 +344,35 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           ),
           children: [
             for (final provider in TranslateProviders.all)
-              PdfContextMenuAction(
+              DocumentContextMenuAction(
                 label: provider.label,
                 icon: Icon(
                   provider.icon,
                   size: _actionIconSize,
                   color: provider.color,
                 ),
-                onPressed: () => _translateWith(params, provider, languageCode),
+                onPressed: () =>
+                    _translateWith(selection, dismiss, provider, languageCode),
               ),
           ],
         ),
       );
 
       entries.add(
-        PdfContextMenuGroup(
+        DocumentContextMenuGroup(
           label: 'Search',
           icon: Icon(AppIcons.search, size: _actionIconSize, color: foreground),
           children: [
             for (final provider in SearchProviders.all)
-              PdfContextMenuAction(
+              DocumentContextMenuAction(
                 label: provider.label,
                 icon: Icon(
                   provider.icon,
                   size: _actionIconSize,
                   color: provider.color ?? foreground,
                 ),
-                onPressed: () => _searchWith(params, provider, languageCode),
+                onPressed: () =>
+                    _searchWith(selection, dismiss, provider, languageCode),
               ),
           ],
         ),
@@ -447,28 +380,22 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     }
 
     if (entries.isEmpty) return null;
-    return PdfContextMenu(entries: entries);
+    return DocumentContextMenu(entries: entries);
   }
 
-  Widget? _buildMagnifier(
+  Widget _buildMagnifier(
     BuildContext context,
-    PdfTextSelectionAnchor textAnchor,
-    PdfViewerSelectionMagnifierParams params,
-    Widget magnifierContent,
-    Size magnifierContentSize,
-    Offset pointerPosition,
-    Offset magnifierPosition,
-  ) => PdfMagnifier(
-    content: magnifierContent,
-    contentSize: magnifierContentSize,
-  );
+    Widget content,
+    Size contentSize,
+  ) => DocumentMagnifier(content: content, contentSize: contentSize);
 
   Future<void> _askProvider(
-    PdfViewerContextMenuBuilderParams params,
+    DocumentTextSelection selection,
+    VoidCallback dismiss,
     AiProvider provider,
   ) async {
-    final text = await params.textSelectionDelegate.getSelectedText();
-    params.dismissContextMenu();
+    final text = await selection.getSelectedText();
+    dismiss();
     if (text.trim().isEmpty) return;
 
     if (!provider.prefillsText) {
@@ -489,12 +416,13 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   }
 
   Future<void> _translateWith(
-    PdfViewerContextMenuBuilderParams params,
+    DocumentTextSelection selection,
+    VoidCallback dismiss,
     TranslateProvider provider,
     String targetLanguageCode,
   ) async {
-    final text = await params.textSelectionDelegate.getSelectedText();
-    params.dismissContextMenu();
+    final text = await selection.getSelectedText();
+    dismiss();
     if (text.trim().isEmpty) return;
     await launchUrl(
       provider.buildUri(text, targetLanguageCode),
@@ -503,12 +431,13 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   }
 
   Future<void> _searchWith(
-    PdfViewerContextMenuBuilderParams params,
+    DocumentTextSelection selection,
+    VoidCallback dismiss,
     SearchProvider provider,
     String languageCode,
   ) async {
-    final text = await params.textSelectionDelegate.getSelectedText();
-    params.dismissContextMenu();
+    final text = await selection.getSelectedText();
+    dismiss();
     if (text.trim().isEmpty) return;
     await launchUrl(
       provider.buildUri(text, languageCode),
@@ -516,16 +445,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     );
   }
 
-  int _passwordAttempts = 0;
-  bool _passwordIncorrect = false;
-  Completer<String?>? _passwordCompleter;
-  final _passwordController = TextEditingController();
-
-  // pdfrx calls this from its own native-load retry loop on every wrong
-  // password, not from a user gesture, so pushing a Navigator route here
-  // raced that loop badly (duplicate GlobalKeys, disposed controllers).
-  // Resolving a Completer that gates a plain in-tree overlay avoids the
-  // Navigator entirely.
   Future<String?> _providePassword() {
     final isRetry = _passwordAttempts > 0;
     _passwordAttempts++;
@@ -594,17 +513,15 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   }
 
   Widget _buildErrorBanner(
-    BuildContext context,
-    Object error,
-    StackTrace? stackTrace,
-    PdfDocumentRef documentRef,
-  ) => PdfErrorView(error: error, onBack: () => Navigator.of(context).pop());
+    BuildContext context, {
+    required bool isPasswordProtected,
+    required VoidCallback onBack,
+  }) => DocumentErrorView(
+    isPasswordProtected: isPasswordProtected,
+    onBack: onBack,
+  );
 
-  static Widget _buildLoadingBanner(
-    BuildContext context,
-    int bytesDownloaded,
-    int? totalBytes,
-  ) => Center(
+  static Widget _buildLoadingBanner(BuildContext context) => Center(
     child: Padding(
       padding: const EdgeInsets.all(AppSpacing.xl),
       child: AspectRatio(
@@ -635,54 +552,28 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
     final l10n = AppLocalizations.of(context)!;
     final file = widget.file;
     final title = ref.watch(documentTitleProvider(file.path)) ?? file.name;
+    final viewerController = _viewerController;
 
     return Stack(
       children: [
         Positioned.fill(
           child: !_initialPageReady
-              ? _buildLoadingBanner(context, 0, null)
-              : AppTextSelectionTheme(
-                  color: AppColors.accent(context).withValues(alpha: 0.35),
-                  child: PdfViewer.file(
-                    file.path,
-                    initialPageNumber: _initialPageNumber,
-                    controller: _pdfController,
-                    passwordProvider: _providePassword,
-                    params: PdfViewerParams(
-                      backgroundColor: colors.background,
-                      maxImageBytesCachedOnMemory: _maxImageBytesCachedOnMemory,
-                      horizontalCacheExtent: _pageCacheExtent,
-                      verticalCacheExtent: _pageCacheExtent,
-                      sizeDelegateProvider:
-                          const PdfViewerSizeDelegateProviderLegacy(
-                            useAlternativeFitScaleAsMinScale: false,
-                          ),
-                      behaviorControlParams:
-                          const PdfViewerBehaviorControlParams(
-                            loadPageDimensionsOnDemand: true,
-                          ),
-                      loadingBannerBuilder: _buildLoadingBanner,
-                      errorBannerBuilder: _buildErrorBanner,
-                      onGeneralTap: _onGeneralTap,
-                      onPageChanged: _onPageChanged,
-                      onViewerReady: _onViewerReady,
-                      buildContextMenu: _buildContextMenu,
-                      pagePaintCallbacks: _pagePaintCallbacks,
-                      matchTextColor: AppColors.accent(context)
-                          .withValues(alpha: 0.35),
-                      activeMatchTextColor: AppColors.accent(context)
-                          .withValues(alpha: 0.65),
-                      textSelectionParams: PdfTextSelectionParams(
-                        magnifier: PdfViewerSelectionMagnifierParams(
-                          builder: _buildMagnifier,
-                        ),
-                      ),
-                    ),
-                  ),
+              ? _buildLoadingBanner(context)
+              : PdfDocumentViewer(
+                  file: file,
+                  initialPageNumber: _initialPageNumber,
+                  highlights: _highlights,
+                  onPageChanged: _onPageChanged,
+                  onReady: _handleViewerReady,
+                  onBackgroundTap: _handleBackgroundTap,
+                  passwordProvider: _providePassword,
+                  buildContextMenu: _buildContextMenu,
+                  buildMagnifier: _buildMagnifier,
+                  buildErrorBanner: _buildErrorBanner,
+                  buildLoadingBanner: _buildLoadingBanner,
                 ),
         ),
         Positioned(
@@ -761,31 +652,32 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                                       file: file,
                                     ),
                                   ),
-                                  if (_searcher != null)
+                                  if (viewerController?.search != null)
                                     AppCommandItem(
                                       label: l10n.pdfMenuSearch,
                                       icon: AppIcons.search,
                                       onSelect: _openSearch,
                                     ),
-                                  if (_outline?.isNotEmpty ?? false)
+                                  if (viewerController?.outline.isNotEmpty ??
+                                      false)
                                     AppCommandItem(
                                       label: l10n.pdfMenuOutline,
                                       icon: AppIcons.tableOfContents,
-                                      onSelect: () => PdfOutlineSheet.show(
+                                      onSelect: () => DocumentOutlineSheet.show(
                                         context: context,
-                                        controller: _pdfController,
-                                        outline: _outline!,
+                                        controller: viewerController!,
                                       ),
                                     ),
-                                  AppCommandItem(
-                                    label: l10n.pdfMenuPages,
-                                    icon: AppIcons.layoutGrid,
-                                    onSelect: () => PdfMinimapSheet.show(
-                                      context: context,
-                                      controller: _pdfController,
-                                      fileFormatLabel: file.type.label,
+                                  if (viewerController != null)
+                                    AppCommandItem(
+                                      label: l10n.pdfMenuPages,
+                                      icon: AppIcons.layoutGrid,
+                                      onSelect: () => DocumentMinimapSheet.show(
+                                        context: context,
+                                        controller: viewerController,
+                                        fileFormatLabel: file.type.label,
+                                      ),
                                     ),
-                                  ),
                                   AppCommandItem(
                                     label: l10n.pdfMenuShare,
                                     icon: AppIcons.share2,
@@ -816,7 +708,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 class _HighlightSwatch extends StatelessWidget {
   const _HighlightSwatch({required this.color, required this.size});
 
-  final PdfHighlightColor color;
+  final DocumentHighlightColor color;
   final double size;
 
   @override

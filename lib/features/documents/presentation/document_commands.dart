@@ -7,7 +7,7 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../application/documents_providers.dart';
 import '../data/document_file.dart';
-import 'pdf_viewer_screen.dart';
+import 'viewer/document_viewer_screen.dart';
 
 abstract final class DocumentCommands {
   static List<AppCommandItem> items(BuildContext context, WidgetRef ref) {
@@ -42,7 +42,9 @@ abstract final class DocumentCommands {
 
     if (file.type == DocumentType.pdf) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => PdfViewerScreen(file: file)),
+        MaterialPageRoute(
+          builder: (context) => DocumentViewerScreen(file: file),
+        ),
       );
       return;
     }

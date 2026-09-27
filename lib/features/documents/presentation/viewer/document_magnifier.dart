@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 
-class PdfMagnifier extends StatelessWidget {
-  const PdfMagnifier({
+class DocumentMagnifier extends StatelessWidget {
+  const DocumentMagnifier({
     required this.content,
     required this.contentSize,
     super.key,
@@ -13,8 +13,6 @@ class PdfMagnifier extends StatelessWidget {
   static const _targetSize = 96.0;
   static const _frameColor = Color(0xFF1A1A1A);
 
-  // Inverts RGB so light document pages read as light text on a dark frame,
-  // without needing to distinguish text pixels from background pixels.
   static const _invertColorFilter = ColorFilter.matrix([
     -1,
     0,

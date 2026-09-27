@@ -2,15 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-sealed class PdfContextMenuEntry {
-  const PdfContextMenuEntry({required this.label, required this.icon});
+sealed class DocumentContextMenuEntry {
+  const DocumentContextMenuEntry({required this.label, required this.icon});
 
   final String label;
   final Widget icon;
 }
 
-class PdfContextMenuAction extends PdfContextMenuEntry {
-  const PdfContextMenuAction({
+class DocumentContextMenuAction extends DocumentContextMenuEntry {
+  const DocumentContextMenuAction({
     required super.label,
     required super.icon,
     required this.onPressed,
@@ -19,27 +19,27 @@ class PdfContextMenuAction extends PdfContextMenuEntry {
   final VoidCallback? onPressed;
 }
 
-class PdfContextMenuGroup extends PdfContextMenuEntry {
-  const PdfContextMenuGroup({
+class DocumentContextMenuGroup extends DocumentContextMenuEntry {
+  const DocumentContextMenuGroup({
     required super.label,
     required super.icon,
     required this.children,
   });
 
-  final List<PdfContextMenuAction> children;
+  final List<DocumentContextMenuAction> children;
 }
 
-class PdfContextMenu extends StatefulWidget {
-  const PdfContextMenu({required this.entries, super.key});
+class DocumentContextMenu extends StatefulWidget {
+  const DocumentContextMenu({required this.entries, super.key});
 
-  final List<PdfContextMenuEntry> entries;
+  final List<DocumentContextMenuEntry> entries;
 
   @override
-  State<PdfContextMenu> createState() => _PdfContextMenuState();
+  State<DocumentContextMenu> createState() => _DocumentContextMenuState();
 }
 
-class _PdfContextMenuState extends State<PdfContextMenu> {
-  PdfContextMenuGroup? _expandedGroup;
+class _DocumentContextMenuState extends State<DocumentContextMenu> {
+  DocumentContextMenuGroup? _expandedGroup;
 
   Widget _iconButton({
     required String label,
@@ -53,14 +53,14 @@ class _PdfContextMenuState extends State<PdfContextMenu> {
     ),
   );
 
-  Widget _buildEntry(BuildContext context, PdfContextMenuEntry entry) =>
+  Widget _buildEntry(BuildContext context, DocumentContextMenuEntry entry) =>
       switch (entry) {
-        PdfContextMenuAction() => _iconButton(
+        DocumentContextMenuAction() => _iconButton(
           label: entry.label,
           icon: entry.icon,
           onPressed: entry.onPressed,
         ),
-        PdfContextMenuGroup() => _iconButton(
+        DocumentContextMenuGroup() => _iconButton(
           label: entry.label,
           icon: entry.icon,
           onPressed: () => setState(() => _expandedGroup = entry),

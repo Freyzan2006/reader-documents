@@ -1,19 +1,19 @@
 import 'package:reader_documents/core/storage/json_document_store.dart';
 
-import 'pdf_highlight.dart';
+import 'document_highlight.dart';
 
-class HighlightsRepository extends JsonDocumentStore<List<PdfHighlight>> {
+class HighlightsRepository extends JsonDocumentStore<List<DocumentHighlight>> {
   const HighlightsRepository();
 
   @override
-  String get keyPrefix => 'pdf_highlights.';
+  String get keyPrefix => 'highlights.';
 
   @override
-  Object? encode(List<PdfHighlight> value) =>
+  Object? encode(List<DocumentHighlight> value) =>
       value.map((h) => h.toJson()).toList();
 
   @override
-  List<PdfHighlight> decode(Object? json) => (json as List<dynamic>)
-      .map((entry) => PdfHighlight.fromJson(entry as Map<String, dynamic>))
+  List<DocumentHighlight> decode(Object? json) => (json as List<dynamic>)
+      .map((entry) => DocumentHighlight.fromJson(entry as Map<String, dynamic>))
       .toList();
 }

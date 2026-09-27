@@ -1,19 +1,21 @@
 import 'package:flutter/widgets.dart';
-import 'package:pdfrx/pdfrx.dart' show PdfPasswordException;
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-class PdfErrorView extends StatelessWidget {
-  const PdfErrorView({required this.error, required this.onBack, super.key});
+class DocumentErrorView extends StatelessWidget {
+  const DocumentErrorView({
+    required this.isPasswordProtected,
+    required this.onBack,
+    super.key,
+  });
 
-  final Object error;
+  final bool isPasswordProtected;
   final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = AppColors.of(context);
-    final isPasswordProtected = error is PdfPasswordException;
 
     return ColoredBox(
       color: colors.background,
