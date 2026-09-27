@@ -1,4 +1,4 @@
-package com.example.reader_documents
+package uz.freyzan.mdocumentsmanager
 
 import io.flutter.embedding.android.FlutterActivity
 

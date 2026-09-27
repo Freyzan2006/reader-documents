@@ -16,7 +16,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('RD'), findsOneWidget);
+    expect(find.text('MDM'), findsOneWidget);
     expect(find.text('Home'), findsNWidgets(2));
   });
 }
