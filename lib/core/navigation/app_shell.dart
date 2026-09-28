@@ -21,6 +21,7 @@ class AppShell extends ConsumerWidget {
     return AppScaffold(
       header: AppHeader(
         title: AppBrand.shortName,
+        titleTooltip: AppBrand.name,
         onMenuTap: () => _openMenu(context, ref, tabs, l10n),
         actionIcon: AppIcons.command,
         onActionTap: () => AppCommandLauncher.show(context, ref),

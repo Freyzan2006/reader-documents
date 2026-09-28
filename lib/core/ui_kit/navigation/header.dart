@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import '../controls/icon_button.dart';
 import '../data_display/card.dart';
 import '../data_display/text.dart';
+import '../overlay/tooltip.dart';
 import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
 
@@ -15,6 +16,7 @@ class AppHeader extends StatelessWidget {
 
   const AppHeader({
     required this.title,
+    this.titleTooltip,
     this.onMenuTap,
     this.actionLabel,
     this.actionIcon,
@@ -23,34 +25,45 @@ class AppHeader extends StatelessWidget {
   });
 
   final String title;
+
+  /// Shown on hover/long-press of the title (e.g. the full brand name
+  /// behind a shortened logo/title).
+  final String? titleTooltip;
+
   final VoidCallback? onMenuTap;
   final String? actionLabel;
   final IconData? actionIcon;
   final VoidCallback? onActionTap;
 
   @override
-  Widget build(BuildContext context) => FHeader.nested(
-    style: const FHeaderStyleDelta.delta(
-      constraints: BoxConstraints(minHeight: height, maxHeight: height),
-    ),
-    title: AppCard(
+  Widget build(BuildContext context) {
+    final titleCard = AppCard(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs,
       ),
       child: AppText(title, variant: AppTextVariant.title),
-    ),
-    prefixes: [
-      if (onMenuTap != null)
-        AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
-    ],
-    suffixes: [
-      if (actionIcon != null && onActionTap != null)
-        AppIconButton(icon: actionIcon!, onPressed: onActionTap!)
-      else if (actionLabel != null && onActionTap != null)
-        _PillButton(label: actionLabel!, onPressed: onActionTap!),
-    ],
-  );
+    );
+
+    return FHeader.nested(
+      style: const FHeaderStyleDelta.delta(
+        constraints: BoxConstraints(minHeight: height, maxHeight: height),
+      ),
+      title: titleTooltip == null
+          ? titleCard
+          : AppTooltip(message: titleTooltip, child: titleCard),
+      prefixes: [
+        if (onMenuTap != null)
+          AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
+      ],
+      suffixes: [
+        if (actionIcon != null && onActionTap != null)
+          AppIconButton(icon: actionIcon!, onPressed: onActionTap!)
+        else if (actionLabel != null && onActionTap != null)
+          _PillButton(label: actionLabel!, onPressed: onActionTap!),
+      ],
+    );
+  }
 }
 
 class _PillButton extends StatelessWidget {
