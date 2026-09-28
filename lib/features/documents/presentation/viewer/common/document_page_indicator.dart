@@ -34,35 +34,57 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
 
     AppDialog.show(
       context: context,
-      title: Text(l10n.minimapJumpToPageHint),
-      body: AppNumberInput(
-        controller: _pageInputController,
-        hint: l10n.minimapJumpToPageHint,
-        min: 1,
-        max: totalPages,
-        autofocus: true,
-        onSubmitted: (value) {
-          if (value != null && value >= 1 && value <= totalPages) {
-            controller.goToPage(value);
-          }
-          Navigator.of(context).pop();
-        },
+      actionsWrap: false,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: AppSpacing.sm,
+        children: [
+          Icon(
+            AppIcons.fileText,
+            size: 20,
+            color: AppColors.accent(context),
+          ),
+          Text(l10n.minimapJumpToPageHint),
+        ],
+      ),
+      body: Center(
+        child: SizedBox(
+          width: 140,
+          child: AppNumberInput(
+            controller: _pageInputController,
+            hint: l10n.minimapJumpToPageHint,
+            min: 1,
+            max: totalPages,
+            autofocus: true,
+            onSubmitted: (value) {
+              if (value != null && value >= 1 && value <= totalPages) {
+                controller.goToPage(value);
+              }
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
       ),
       actions: [
-        AppButton(
-          variant: AppButtonVariant.ghost,
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.goBack),
+        AppTooltip(
+          message: l10n.goBack,
+          child: AppIconButton(
+            icon: AppIcons.arrowLeft,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-        AppButton(
-          onPressed: () {
-            final value = int.tryParse(_pageInputController.text);
-            if (value != null && value >= 1 && value <= totalPages) {
-              controller.goToPage(value);
-            }
-            Navigator.of(context).pop();
-          },
-          child: Text(l10n.minimapJumpToPageHint),
+        AppTooltip(
+          message: l10n.minimapJumpToPageHint,
+          child: AppIconButton(
+            icon: AppIcons.fileText,
+            onPressed: () {
+              final value = int.tryParse(_pageInputController.text);
+              if (value != null && value >= 1 && value <= totalPages) {
+                controller.goToPage(value);
+              }
+              Navigator.of(context).pop();
+            },
+          ),
         ),
       ],
     );

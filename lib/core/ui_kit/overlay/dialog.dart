@@ -16,6 +16,7 @@ abstract final class AppDialog {
     Widget? body,
     List<Widget> actions = const [],
     bool barrierDismissible = true,
+    bool actionsWrap = true,
   }) => showFDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
@@ -30,21 +31,29 @@ abstract final class AppDialog {
     builder: (context, style, animation) => FDialog(
       style: style,
       animation: animation,
-      constraints: const BoxConstraints(minWidth: 280, maxWidth: 640),
+      constraints: const BoxConstraints(minWidth: 280, maxWidth: 480),
       builder: (context, style) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DefaultTextStyle.merge(style: style.titleTextStyle, child: title),
             if (body != null) ...[const SizedBox(height: AppSpacing.sm), body],
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: AppSpacing.sm,
-              children: actions,
-            ),
+            const SizedBox(height: AppSpacing.md),
+            if (actionsWrap)
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: actions,
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: AppSpacing.sm,
+                children: actions,
+              ),
           ],
         ),
       ),

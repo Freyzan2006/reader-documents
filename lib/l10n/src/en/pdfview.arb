@@ -39,5 +39,7 @@
   "pdfMenuExportNotes": "Export notes",
   "exportNotesHighlightsSection": "Highlights",
   "pdfMenuNotes": "Notes",
-  "highlightsEmpty": "No highlights yet"
+  "highlightsEmpty": "No highlights yet",
+  "pdfMenuWarmFilterOn": "Turn on warm filter",
+  "pdfMenuWarmFilterOff": "Turn off warm filter"
 }

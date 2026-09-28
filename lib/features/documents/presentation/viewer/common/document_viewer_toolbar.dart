@@ -22,6 +22,8 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.isBookmarked,
     required this.onToggleBookmark,
     required this.onShowNotes,
+    required this.warmReadingFilterEnabled,
+    required this.onToggleWarmFilter,
     this.onExportNotes,
     this.quarterTurns = 0,
     super.key,
@@ -36,6 +38,8 @@ class DocumentViewerToolbar extends ConsumerWidget {
   final bool isBookmarked;
   final VoidCallback onToggleBookmark;
   final VoidCallback onShowNotes;
+  final bool warmReadingFilterEnabled;
+  final VoidCallback onToggleWarmFilter;
 
   /// Null when there's nothing (no bookmarks, no highlights) to export yet.
   final VoidCallback? onExportNotes;
@@ -149,6 +153,13 @@ class DocumentViewerToolbar extends ConsumerWidget {
               label: l10n.pdfMenuScreenshot,
               icon: AppIcons.camera,
               onSelect: onScreenshot,
+            ),
+            AppCommandItem(
+              label: warmReadingFilterEnabled
+                  ? l10n.pdfMenuWarmFilterOff
+                  : l10n.pdfMenuWarmFilterOn,
+              icon: AppIcons.lamp,
+              onSelect: onToggleWarmFilter,
             ),
             if (onExportNotes != null)
               AppCommandItem(

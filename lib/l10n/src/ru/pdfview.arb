@@ -29,5 +29,7 @@
   "pdfMenuExportNotes": "Экспорт заметок",
   "exportNotesHighlightsSection": "Выделения",
   "pdfMenuNotes": "Заметки",
-  "highlightsEmpty": "Пока нет выделений"
+  "highlightsEmpty": "Пока нет выделений",
+  "pdfMenuWarmFilterOn": "Включить тёплый фильтр",
+  "pdfMenuWarmFilterOff": "Выключить тёплый фильтр"
 }

@@ -20,6 +20,7 @@ abstract final class AppIcons {
   static const highlighter = FLucideIcons.highlighter;
   static const history = FLucideIcons.history;
   static const house = FLucideIcons.house;
+  static const lamp = FLucideIcons.lamp;
   static const languages = FLucideIcons.languages;
   static const layoutGrid = FLucideIcons.layoutGrid;
   static const lock = FLucideIcons.lock;

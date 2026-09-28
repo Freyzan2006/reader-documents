@@ -9,17 +9,23 @@ class AppSettings {
     required this.themeMode,
     required this.language,
     required this.profile,
+    required this.warmReadingFilter,
   });
 
   static const defaults = AppSettings(
     themeMode: AppThemeMode.system,
     language: AppLanguage.system,
     profile: UserProfile.empty,
+    warmReadingFilter: false,
   );
 
   final AppThemeMode themeMode;
   final AppLanguage language;
   final UserProfile profile;
+
+  /// A warm, sepia-like color filter over document pages, independent of
+  /// [themeMode] — for reading comfort in low light, not app chrome.
+  final bool warmReadingFilter;
 
   Brightness resolveBrightness(Brightness platformBrightness) =>
       switch (themeMode) {
@@ -32,9 +38,11 @@ class AppSettings {
     AppThemeMode? themeMode,
     AppLanguage? language,
     UserProfile? profile,
+    bool? warmReadingFilter,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
     language: language ?? this.language,
     profile: profile ?? this.profile,
+    warmReadingFilter: warmReadingFilter ?? this.warmReadingFilter,
   );
 }

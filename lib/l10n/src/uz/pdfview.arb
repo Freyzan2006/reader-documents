@@ -29,5 +29,7 @@
   "pdfMenuExportNotes": "Qaydlarni eksport qilish",
   "exportNotesHighlightsSection": "Taʼkidlashlar",
   "pdfMenuNotes": "Qaydlar",
-  "highlightsEmpty": "Hozircha taʼkidlashlar yoʻq"
+  "highlightsEmpty": "Hozircha taʼkidlashlar yoʻq",
+  "pdfMenuWarmFilterOn": "Issiq filtrni yoqish",
+  "pdfMenuWarmFilterOff": "Issiq filtrni oʻchirish"
 }

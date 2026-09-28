@@ -6,6 +6,7 @@ import 'package:reader_documents/features/documents/application/controllers/docu
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
+import 'package:reader_documents/features/settings/application/settings_providers.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../actions/document_bookmark_prompt.dart';
@@ -18,6 +19,7 @@ import 'common/document_loading_banner.dart';
 import 'common/document_magnifier.dart';
 import 'common/document_page_indicator.dart';
 import 'common/document_password_prompt.dart';
+import 'common/document_reading_filter.dart';
 import 'common/document_viewer_header_overlay.dart';
 import 'common/document_viewer_search_bar.dart';
 import 'common/document_viewer_toolbar.dart';
@@ -123,6 +125,12 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   void _rotate() => setState(() => _quarterTurns = _quarterTurns == 0 ? 1 : 0);
 
+  void _toggleWarmFilter() {
+    final current =
+        ref.read(settingsProvider).value?.warmReadingFilter ?? false;
+    ref.read(settingsProvider.notifier).setWarmReadingFilter(!current);
+  }
+
   Future<void> _captureScreenshot() =>
       DocumentPageCapture.capture(context, _captureKey, widget.file.name);
 
@@ -213,6 +221,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     final file = widget.file;
     final title = ref.watch(documentTitleProvider(file.path)) ?? file.name;
     final viewerController = _viewerController;
+    final warmReadingFilter =
+        ref.watch(settingsProvider).value?.warmReadingFilter ?? false;
 
     return Stack(
       children: [
@@ -224,9 +234,12 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                 Positioned.fill(
                   child: RepaintBoundary(
                     key: _captureKey,
-                    child: KeyedSubtree(
-                      key: ValueKey(_quarterTurns),
-                      child: _buildContent(context, file),
+                    child: DocumentReadingFilter(
+                      enabled: warmReadingFilter,
+                      child: KeyedSubtree(
+                        key: ValueKey(_quarterTurns),
+                        child: _buildContent(context, file),
+                      ),
                     ),
                   ),
                 ),
@@ -253,6 +266,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                               : false,
                           onToggleBookmark: _toggleBookmark,
                           onShowNotes: _showNotes,
+                          warmReadingFilterEnabled: warmReadingFilter,
+                          onToggleWarmFilter: _toggleWarmFilter,
                           onExportNotes:
                               DocumentNotesExport.hasContent(
                                 _bookmarks.value,

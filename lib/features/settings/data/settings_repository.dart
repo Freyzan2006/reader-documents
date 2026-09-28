@@ -11,6 +11,7 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
   static const _languageKey = 'settings.language';
   static const _profileNameKey = 'settings.profile.name';
   static const _profileEmailKey = 'settings.profile.email';
+  static const _warmReadingFilterKey = 'settings.warmReadingFilter';
 
   @override
   Future<AppSettings> readFields(SharedPreferences prefs) async {
@@ -30,6 +31,7 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
         name: prefs.getString(_profileNameKey) ?? '',
         email: prefs.getString(_profileEmailKey) ?? '',
       ),
+      warmReadingFilter: prefs.getBool(_warmReadingFilterKey) ?? false,
     );
   }
 
@@ -42,5 +44,6 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
     await prefs.setString(_languageKey, settings.language.name);
     await prefs.setString(_profileNameKey, settings.profile.name);
     await prefs.setString(_profileEmailKey, settings.profile.email);
+    await prefs.setBool(_warmReadingFilterKey, settings.warmReadingFilter);
   }
 }

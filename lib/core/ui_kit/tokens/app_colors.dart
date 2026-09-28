@@ -23,9 +23,8 @@ abstract final class AppColors {
   static const successForegroundLight = Color(0xFFFFFFFF);
   static const successForegroundDark = Color(0xFF0A0A0A);
 
-  // Pantone 18-1438 "Marsala".
-  static const accentLight = Color(0xFF955251);
-  static const accentDark = Color(0xFFC98C8B);
+  static const accentLight = Color(0xFF0066FF);
+  static const accentDark = Color(0xFF4D94FF);
   static const accentForegroundLight = Color(0xFFFFFFFF);
   static const accentForegroundDark = Color(0xFF0A0A0A);
 
