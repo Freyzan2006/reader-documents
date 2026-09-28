@@ -25,5 +25,9 @@
   "bookmarksEmpty": "Hozircha xatchoʻplar yoʻq",
   "addBookmarkTitle": "Xatchoʻp qoʻshish",
   "bookmarkNoteHint": "Izoh (ixtiyoriy)",
-  "bookmarkPageLabel": "{page}-sahifa"
+  "bookmarkPageLabel": "{page}-sahifa",
+  "pdfMenuExportNotes": "Qaydlarni eksport qilish",
+  "exportNotesHighlightsSection": "Taʼkidlashlar",
+  "pdfMenuNotes": "Qaydlar",
+  "highlightsEmpty": "Hozircha taʼkidlashlar yoʻq"
 }

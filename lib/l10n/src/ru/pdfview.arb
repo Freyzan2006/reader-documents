@@ -25,5 +25,9 @@
   "bookmarksEmpty": "Пока нет закладок",
   "addBookmarkTitle": "Добавить закладку",
   "bookmarkNoteHint": "Заметка (необязательно)",
-  "bookmarkPageLabel": "Страница {page}"
+  "bookmarkPageLabel": "Страница {page}",
+  "pdfMenuExportNotes": "Экспорт заметок",
+  "exportNotesHighlightsSection": "Выделения",
+  "pdfMenuNotes": "Заметки",
+  "highlightsEmpty": "Пока нет выделений"
 }

@@ -35,5 +35,9 @@
     "placeholders": {
       "page": { "type": "int" }
     }
-  }
+  },
+  "pdfMenuExportNotes": "Export notes",
+  "exportNotesHighlightsSection": "Highlights",
+  "pdfMenuNotes": "Notes",
+  "highlightsEmpty": "No highlights yet"
 }

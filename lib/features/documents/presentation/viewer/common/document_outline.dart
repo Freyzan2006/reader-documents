@@ -5,35 +5,23 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../contract/document_viewer_controller.dart';
 
-abstract final class DocumentOutlineSheet {
-  static Future<void> show({
-    required BuildContext context,
-    required DocumentViewerController controller,
-  }) => AppSheet.show(
-    context: context,
-    initialSize: 0.6,
-    builder: (context, scrollController) => DocumentOutlineView(
-      controller: controller,
-      scrollController: scrollController,
-    ),
-  );
-}
-
 class DocumentOutlineView extends StatelessWidget {
   const DocumentOutlineView({
     required this.controller,
-    required this.scrollController,
+    required this.onDismiss,
+    this.scrollController,
     super.key,
   });
 
   final DocumentViewerController controller;
-  final ScrollController scrollController;
+  final VoidCallback onDismiss;
+  final ScrollController? scrollController;
 
-  void _select(BuildContext context, DocumentOutlineNode node) {
+  void _select(DocumentOutlineNode node) {
     final pageNumber = node.pageNumber;
     if (pageNumber == null) return;
     controller.goToPage(pageNumber);
-    Navigator.of(context).pop();
+    onDismiss();
   }
 
   @override
@@ -50,11 +38,7 @@ class DocumentOutlineView extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       children: [
         for (final node in outline)
-          _DocumentOutlineTile(
-            node: node,
-            depth: 0,
-            onSelect: (selected) => _select(context, selected),
-          ),
+          _DocumentOutlineTile(node: node, depth: 0, onSelect: _select),
       ],
     );
   }

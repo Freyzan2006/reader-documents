@@ -4,28 +4,58 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../contract/document_viewer_controller.dart';
+import 'rotated_reading_edge.dart';
 
 abstract final class DocumentMinimapSheet {
-  static Future<void> show({
+  static void show({
     required BuildContext context,
     required DocumentViewerController controller,
     required String fileFormatLabel,
-  }) => AppSheet.show(
-    context: context,
-    initialSize: 0.6,
-    builder: (context, scrollController) => DocumentMinimap(
-      controller: controller,
-      scrollController: scrollController,
-      fileFormatLabel: fileFormatLabel,
-    ),
-  );
+    int quarterTurns = 0,
+  }) {
+    if (quarterTurns != 0) {
+      AppSidePanel.show(
+        context: context,
+        side: rotatedReadingBottomEdge(quarterTurns),
+        panelFraction: 0.6,
+        builder: (context, panel) => Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.md),
+          child: RotatedBox(
+            quarterTurns: quarterTurns,
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context)
+                  .copyWith(overscroll: false),
+              child: DocumentMinimap(
+                controller: controller,
+                fileFormatLabel: fileFormatLabel,
+                onDismiss: panel.close,
+              ),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    AppSheet.show(
+      context: context,
+      initialSize: 0.6,
+      builder: (context, scrollController) => DocumentMinimap(
+        controller: controller,
+        scrollController: scrollController,
+        fileFormatLabel: fileFormatLabel,
+        onDismiss: () => Navigator.of(context).pop(),
+      ),
+    );
+  }
 }
 
 class DocumentMinimap extends StatefulWidget {
   const DocumentMinimap({
     required this.controller,
-    required this.scrollController,
     required this.fileFormatLabel,
+    required this.onDismiss,
+    this.scrollController,
     super.key,
   });
 
@@ -33,8 +63,9 @@ class DocumentMinimap extends StatefulWidget {
   static const _gridCacheExtent = 100.0;
 
   final DocumentViewerController controller;
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
   final String fileFormatLabel;
+  final VoidCallback onDismiss;
 
   @override
   State<DocumentMinimap> createState() => _DocumentMinimapState();
@@ -55,7 +86,7 @@ class _DocumentMinimapState extends State<DocumentMinimap> {
     if (pageNumber == null || pageNumber < 1 || pageNumber > totalPages) return;
     widget.controller.goToPage(pageNumber);
     _pageInputController.clear();
-    Navigator.of(context).pop();
+    widget.onDismiss();
   }
 
   @override
@@ -140,7 +171,7 @@ class _DocumentMinimapState extends State<DocumentMinimap> {
                   isCurrent: pageNumber == currentPage,
                   onTap: () {
                     widget.controller.goToPage(pageNumber);
-                    Navigator.of(context).pop();
+                    widget.onDismiss();
                   },
                 );
               },

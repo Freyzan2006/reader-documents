@@ -6,37 +6,23 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../contract/document_viewer_controller.dart';
 
-abstract final class DocumentBookmarksSheet {
-  static Future<void> show({
-    required BuildContext context,
-    required DocumentBookmarksController bookmarks,
-    required DocumentViewerController viewerController,
-  }) => AppSheet.show(
-    context: context,
-    initialSize: 0.5,
-    builder: (context, scrollController) => DocumentBookmarksView(
-      bookmarks: bookmarks,
-      viewerController: viewerController,
-      scrollController: scrollController,
-    ),
-  );
-}
-
 class DocumentBookmarksView extends StatelessWidget {
   const DocumentBookmarksView({
     required this.bookmarks,
     required this.viewerController,
-    required this.scrollController,
+    required this.onDismiss,
+    this.scrollController,
     super.key,
   });
 
   final DocumentBookmarksController bookmarks;
   final DocumentViewerController viewerController;
-  final ScrollController scrollController;
+  final VoidCallback onDismiss;
+  final ScrollController? scrollController;
 
-  void _goTo(BuildContext context, DocumentBookmark bookmark) {
+  void _goTo(DocumentBookmark bookmark) {
     viewerController.goToPage(bookmark.pageNumber);
-    Navigator.of(context).pop();
+    onDismiss();
   }
 
   @override
@@ -66,7 +52,7 @@ class DocumentBookmarksView extends StatelessWidget {
                       : l10n.bookmarkPageLabel(bookmark.pageNumber),
                   leading: AppIcons.bookmark,
                   trailing: AppIcons.trash2,
-                  onTap: () => _goTo(context, bookmark),
+                  onTap: () => _goTo(bookmark),
                   onTrailingTap: () => bookmarks.remove(bookmark.id),
                 ),
             ],

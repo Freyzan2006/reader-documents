@@ -6,14 +6,17 @@ import 'package:reader_documents/features/documents/application/controllers/docu
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
+import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../actions/document_bookmark_prompt.dart';
+import '../actions/document_notes_export.dart';
 import '../actions/document_page_capture.dart';
-import 'common/document_bookmarks.dart';
 import 'common/document_context_menu_content.dart';
+import 'common/document_notes.dart';
 import 'common/document_error_view.dart';
 import 'common/document_loading_banner.dart';
 import 'common/document_magnifier.dart';
+import 'common/document_page_indicator.dart';
 import 'common/document_password_prompt.dart';
 import 'common/document_viewer_header_overlay.dart';
 import 'common/document_viewer_search_bar.dart';
@@ -138,15 +141,24 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     }
   }
 
-  void _showBookmarks() {
+  void _showNotes() {
     final controller = _viewerController;
     if (controller == null) return;
-    DocumentBookmarksSheet.show(
+    DocumentNotesSheet.show(
       context: context,
+      controller: controller,
       bookmarks: _bookmarks,
-      viewerController: controller,
+      highlights: _highlights,
+      quarterTurns: _quarterTurns,
     );
   }
+
+  Future<void> _exportNotes(String documentTitle) => DocumentNotesExport.export(
+    l10n: AppLocalizations.of(context)!,
+    documentTitle: documentTitle,
+    bookmarks: _bookmarks.value,
+    highlights: _highlights.value,
+  );
 
   bool _handleBackgroundTap() {
     if (_searchActive) return false;
@@ -240,11 +252,18 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                                 )
                               : false,
                           onToggleBookmark: _toggleBookmark,
-                          onShowBookmarks: _showBookmarks,
+                          onShowNotes: _showNotes,
+                          onExportNotes:
+                              DocumentNotesExport.hasContent(
+                                _bookmarks.value,
+                                _highlights.value,
+                              )
+                              ? () => _exportNotes(title)
+                              : null,
                           quarterTurns: _quarterTurns,
                         ),
                 ),
-                if (!_password.isPrompting)
+                if (!_password.isPrompting) ...[
                   Positioned(
                     right: AppSpacing.lg,
                     bottom: AppSpacing.lg,
@@ -257,6 +276,19 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                       ),
                     ),
                   ),
+                  Positioned(
+                    left: AppSpacing.lg,
+                    bottom: AppSpacing.lg,
+                    child: SafeArea(
+                      child: AppFade(
+                        visible: _headerVisibility.visible,
+                        child: DocumentPageIndicator(
+                          controller: viewerController,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

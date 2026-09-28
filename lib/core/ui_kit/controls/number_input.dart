@@ -113,6 +113,19 @@ class _AppNumberInputState extends State<AppNumberInput> {
 
   void _step(int delta) => _setValue((_value ?? (widget.min ?? 0)) + delta);
 
+  void _clampAndUpdate() {
+    final value = _value;
+    if (value == null) return;
+    final clamped = _clamp(value);
+    if (clamped == value) return;
+    setState(() {
+      _controller.text = clamped.toString();
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final value = _value;
@@ -139,11 +152,16 @@ class _AppNumberInputState extends State<AppNumberInput> {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onEditingComplete: _clampAndUpdate,
             onSubmit: widget.onSubmitted == null
                 ? null
                 : (text) {
                     _debounceTimer?.cancel();
-                    widget.onSubmitted!(int.tryParse(text));
+                    _clampAndUpdate();
+                    final value = _value;
+                    if (value != null) {
+                      widget.onSubmitted!(value);
+                    }
                   },
             enabled: widget.enabled,
             autofocus: widget.autofocus,

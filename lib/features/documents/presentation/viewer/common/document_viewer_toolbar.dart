@@ -9,7 +9,7 @@ import '../../actions/document_rename.dart';
 import '../../actions/document_sharing.dart';
 import '../contract/document_viewer_controller.dart';
 import 'document_minimap.dart';
-import 'document_outline.dart';
+import 'rotated_reading_edge.dart';
 
 class DocumentViewerToolbar extends ConsumerWidget {
   const DocumentViewerToolbar({
@@ -21,7 +21,8 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.onScreenshot,
     required this.isBookmarked,
     required this.onToggleBookmark,
-    required this.onShowBookmarks,
+    required this.onShowNotes,
+    this.onExportNotes,
     this.quarterTurns = 0,
     super.key,
   });
@@ -34,7 +35,10 @@ class DocumentViewerToolbar extends ConsumerWidget {
   final VoidCallback onScreenshot;
   final bool isBookmarked;
   final VoidCallback onToggleBookmark;
-  final VoidCallback onShowBookmarks;
+  final VoidCallback onShowNotes;
+
+  /// Null when there's nothing (no bookmarks, no highlights) to export yet.
+  final VoidCallback? onExportNotes;
 
   /// How many quarter turns this toolbar is itself displayed rotated by (an
   /// ancestor `RotatedBox`). When rotated, the overflow menu shows as a
@@ -103,6 +107,11 @@ class DocumentViewerToolbar extends ConsumerWidget {
           quarterTurns: quarterTurns,
           items: [
             AppCommandItem(
+              label: l10n.pdfMenuRotate,
+              icon: AppIcons.rotateCw,
+              onSelect: onRotate,
+            ),
+            AppCommandItem(
               label: l10n.pdfMenuRename,
               icon: AppIcons.pencil,
               onSelect: () =>
@@ -114,14 +123,11 @@ class DocumentViewerToolbar extends ConsumerWidget {
                 icon: AppIcons.search,
                 onSelect: onSearch,
               ),
-            if (controller?.outline.isNotEmpty ?? false)
+            if (controller != null)
               AppCommandItem(
-                label: l10n.pdfMenuOutline,
+                label: l10n.pdfMenuNotes,
                 icon: AppIcons.tableOfContents,
-                onSelect: () => DocumentOutlineSheet.show(
-                  context: context,
-                  controller: controller!,
-                ),
+                onSelect: onShowNotes,
               ),
             if (controller != null)
               AppCommandItem(
@@ -131,6 +137,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
                   context: context,
                   controller: controller,
                   fileFormatLabel: file.type.label,
+                  quarterTurns: quarterTurns,
                 ),
               ),
             AppCommandItem(
@@ -139,20 +146,16 @@ class DocumentViewerToolbar extends ConsumerWidget {
               onSelect: () => DocumentSharing.share(file),
             ),
             AppCommandItem(
-              label: l10n.pdfMenuRotate,
-              icon: AppIcons.rotateCw,
-              onSelect: onRotate,
-            ),
-            AppCommandItem(
               label: l10n.pdfMenuScreenshot,
               icon: AppIcons.camera,
               onSelect: onScreenshot,
             ),
-            AppCommandItem(
-              label: l10n.pdfMenuBookmarks,
-              icon: AppIcons.bookmark,
-              onSelect: onShowBookmarks,
-            ),
+            if (onExportNotes != null)
+              AppCommandItem(
+                label: l10n.pdfMenuExportNotes,
+                icon: AppIcons.download,
+                onSelect: onExportNotes!,
+              ),
           ],
         ),
       ],
@@ -172,16 +175,6 @@ class _OverflowMenu extends StatelessWidget {
     enabled: true,
   );
 
-  /// The true screen edge that corresponds to the rotated reading frame's
-  /// own "bottom" — `RotatedBox` rotates clockwise, so each +1 quarter turn
-  /// walks bottom→left→top→right.
-  static AppEdge _sideFor(int quarterTurns) => const [
-    AppEdge.bottom,
-    AppEdge.left,
-    AppEdge.top,
-    AppEdge.right,
-  ][quarterTurns % 4];
-
   @override
   Widget build(BuildContext context) => quarterTurns != 0
       ? AppIconButton(
@@ -189,7 +182,7 @@ class _OverflowMenu extends StatelessWidget {
           onPressed: () => AppCommandSidePanel.show(
             context: context,
             items: items,
-            side: _sideFor(quarterTurns),
+            side: rotatedReadingBottomEdge(quarterTurns),
             quarterTurns: quarterTurns,
           ),
         )
