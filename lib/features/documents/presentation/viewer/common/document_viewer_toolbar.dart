@@ -19,6 +19,9 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.onSearch,
     required this.onRotate,
     required this.onScreenshot,
+    required this.isBookmarked,
+    required this.onToggleBookmark,
+    required this.onShowBookmarks,
     this.quarterTurns = 0,
     super.key,
   });
@@ -29,6 +32,9 @@ class DocumentViewerToolbar extends ConsumerWidget {
   final VoidCallback onSearch;
   final VoidCallback onRotate;
   final VoidCallback onScreenshot;
+  final bool isBookmarked;
+  final VoidCallback onToggleBookmark;
+  final VoidCallback onShowBookmarks;
 
   /// How many quarter turns this toolbar is itself displayed rotated by (an
   /// ancestor `RotatedBox`). When rotated, the overflow menu shows as a
@@ -87,6 +93,12 @@ class DocumentViewerToolbar extends ConsumerWidget {
               ? AppColors.warning(context)
               : null,
         ),
+        if (viewerController != null)
+          AppIconButton(
+            icon: isBookmarked ? AppIcons.bookmarkCheck : AppIcons.bookmark,
+            onPressed: onToggleBookmark,
+            color: isBookmarked ? AppColors.accent(context) : null,
+          ),
         _OverflowMenu(
           quarterTurns: quarterTurns,
           items: [
@@ -135,6 +147,11 @@ class DocumentViewerToolbar extends ConsumerWidget {
               label: l10n.pdfMenuScreenshot,
               icon: AppIcons.camera,
               onSelect: onScreenshot,
+            ),
+            AppCommandItem(
+              label: l10n.pdfMenuBookmarks,
+              icon: AppIcons.bookmark,
+              onSelect: onShowBookmarks,
             ),
           ],
         ),

@@ -3,6 +3,8 @@ import 'package:forui/forui.dart';
 abstract final class AppIcons {
   static const arrowLeft = FLucideIcons.arrowLeft;
   static const arrowRight = FLucideIcons.arrowRight;
+  static const bookmark = FLucideIcons.bookmark;
+  static const bookmarkCheck = FLucideIcons.bookmarkCheck;
   static const camera = FLucideIcons.camera;
   static const check = FLucideIcons.check;
   static const chevronDown = FLucideIcons.chevronDown;

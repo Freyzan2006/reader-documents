@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/features/documents/data/models/tag_color.dart';
+import 'package:reader_documents/features/documents/data/repositories/bookmarks_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/document_titles_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/documents_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/favorites_repository.dart';
@@ -29,6 +30,10 @@ final readingProgressRepositoryProvider = Provider<ReadingProgressRepository>(
 
 final highlightsRepositoryProvider = Provider<HighlightsRepository>(
   (ref) => const HighlightsRepository(),
+);
+
+final bookmarksRepositoryProvider = Provider<BookmarksRepository>(
+  (ref) => const BookmarksRepository(),
 );
 
 final tagsRepositoryProvider = Provider<TagsRepository>(

@@ -25,5 +25,15 @@
   "pdfMenuShare": "Share",
   "pdfMenuRename": "Rename",
   "pdfMenuRotate": "Rotate",
-  "pdfMenuScreenshot": "Screenshot"
+  "pdfMenuScreenshot": "Screenshot",
+  "pdfMenuBookmarks": "Bookmarks",
+  "bookmarksEmpty": "No bookmarks yet",
+  "addBookmarkTitle": "Add bookmark",
+  "bookmarkNoteHint": "Note (optional)",
+  "bookmarkPageLabel": "Page {page}",
+  "@bookmarkPageLabel": {
+    "placeholders": {
+      "page": { "type": "int" }
+    }
+  }
 }

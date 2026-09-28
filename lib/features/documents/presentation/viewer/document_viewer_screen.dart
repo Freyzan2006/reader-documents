@@ -1,12 +1,15 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
+import 'package:reader_documents/features/documents/application/controllers/document_bookmarks_controller.dart';
 import 'package:reader_documents/features/documents/application/controllers/document_highlights_controller.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
+import '../actions/document_bookmark_prompt.dart';
 import '../actions/document_page_capture.dart';
+import 'common/document_bookmarks.dart';
 import 'common/document_context_menu_content.dart';
 import 'common/document_error_view.dart';
 import 'common/document_loading_banner.dart';
@@ -36,6 +39,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   final _headerVisibility = HeaderVisibilityController();
   late final ReadingProgressController _readingProgress;
   late final DocumentHighlightsController _highlights;
+  late final DocumentBookmarksController _bookmarks;
   final _password = DocumentPasswordController();
 
   final _captureKey = GlobalKey();
@@ -57,12 +61,18 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
       ref.read(readingProgressRepositoryProvider),
       widget.file.path,
     );
+    _bookmarks = DocumentBookmarksController(
+      ref.read(bookmarksRepositoryProvider),
+      widget.file.path,
+    );
     _headerVisibility.addListener(_onControllerChanged);
     _readingProgress.addListener(_onControllerChanged);
+    _bookmarks.addListener(_onControllerChanged);
     _password.addListener(_onControllerChanged);
     _headerVisibility.scheduleAutoHide();
     _readingProgress.load();
     _highlights.load();
+    _bookmarks.load();
   }
 
   void _onControllerChanged() {
@@ -75,6 +85,9 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
       ..removeListener(_onControllerChanged)
       ..dispose();
     _readingProgress
+      ..removeListener(_onControllerChanged)
+      ..dispose();
+    _bookmarks
       ..removeListener(_onControllerChanged)
       ..dispose();
     _viewerController?.removeListener(_onControllerChanged);
@@ -109,6 +122,31 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   Future<void> _captureScreenshot() =>
       DocumentPageCapture.capture(context, _captureKey, widget.file.name);
+
+  Future<void> _toggleBookmark() async {
+    final page = _viewerController?.currentPage;
+    if (page == null) return;
+    final existing = _bookmarks.forPage(page);
+    if (existing != null) {
+      await _bookmarks.remove(existing.id);
+    } else {
+      await DocumentBookmarkPrompt.add(
+        context: context,
+        controller: _bookmarks,
+        pageNumber: page,
+      );
+    }
+  }
+
+  void _showBookmarks() {
+    final controller = _viewerController;
+    if (controller == null) return;
+    DocumentBookmarksSheet.show(
+      context: context,
+      bookmarks: _bookmarks,
+      viewerController: controller,
+    );
+  }
 
   bool _handleBackgroundTap() {
     if (_searchActive) return false;
@@ -196,6 +234,13 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                           onSearch: _openSearch,
                           onRotate: _rotate,
                           onScreenshot: _captureScreenshot,
+                          isBookmarked: viewerController?.currentPage != null
+                              ? _bookmarks.isBookmarked(
+                                  viewerController!.currentPage!,
+                                )
+                              : false,
+                          onToggleBookmark: _toggleBookmark,
+                          onShowBookmarks: _showBookmarks,
                           quarterTurns: _quarterTurns,
                         ),
                 ),

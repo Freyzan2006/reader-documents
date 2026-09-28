@@ -20,5 +20,10 @@
   "pdfMenuShare": "Поделиться",
   "pdfMenuRename": "Переименовать",
   "pdfMenuRotate": "Повернуть",
-  "pdfMenuScreenshot": "Скриншот"
+  "pdfMenuScreenshot": "Скриншот",
+  "pdfMenuBookmarks": "Закладки",
+  "bookmarksEmpty": "Пока нет закладок",
+  "addBookmarkTitle": "Добавить закладку",
+  "bookmarkNoteHint": "Заметка (необязательно)",
+  "bookmarkPageLabel": "Страница {page}"
 }

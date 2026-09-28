@@ -20,5 +20,10 @@
   "pdfMenuShare": "Ulashish",
   "pdfMenuRename": "Qayta nomlash",
   "pdfMenuRotate": "Aylantirish",
-  "pdfMenuScreenshot": "Skrinshot"
+  "pdfMenuScreenshot": "Skrinshot",
+  "pdfMenuBookmarks": "Xatchoʻplar",
+  "bookmarksEmpty": "Hozircha xatchoʻplar yoʻq",
+  "addBookmarkTitle": "Xatchoʻp qoʻshish",
+  "bookmarkNoteHint": "Izoh (ixtiyoriy)",
+  "bookmarkPageLabel": "{page}-sahifa"
 }
