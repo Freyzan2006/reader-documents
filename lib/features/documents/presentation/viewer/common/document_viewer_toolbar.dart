@@ -18,6 +18,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.viewerController,
     required this.onSearch,
     required this.onRotate,
+    required this.onScreenshot,
     this.quarterTurns = 0,
     super.key,
   });
@@ -27,6 +28,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
   final DocumentViewerController? viewerController;
   final VoidCallback onSearch;
   final VoidCallback onRotate;
+  final VoidCallback onScreenshot;
 
   /// How many quarter turns this toolbar is itself displayed rotated by (an
   /// ancestor `RotatedBox`). When rotated, the overflow menu shows as a
@@ -128,6 +130,11 @@ class DocumentViewerToolbar extends ConsumerWidget {
               label: l10n.pdfMenuRotate,
               icon: AppIcons.rotateCw,
               onSelect: onRotate,
+            ),
+            AppCommandItem(
+              label: l10n.pdfMenuScreenshot,
+              icon: AppIcons.camera,
+              onSelect: onScreenshot,
             ),
           ],
         ),

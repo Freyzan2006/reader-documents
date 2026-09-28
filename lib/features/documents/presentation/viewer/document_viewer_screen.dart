@@ -6,6 +6,7 @@ import 'package:reader_documents/features/documents/application/documents_provid
 import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
+import '../actions/document_page_capture.dart';
 import 'common/document_context_menu_content.dart';
 import 'common/document_error_view.dart';
 import 'common/document_loading_banner.dart';
@@ -36,6 +37,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   late final ReadingProgressController _readingProgress;
   late final DocumentHighlightsController _highlights;
   final _password = DocumentPasswordController();
+
+  final _captureKey = GlobalKey();
 
   DocumentViewerController? _viewerController;
   bool _searchActive = false;
@@ -104,6 +107,9 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   void _rotate() => setState(() => _quarterTurns = _quarterTurns == 0 ? 1 : 0);
 
+  Future<void> _captureScreenshot() =>
+      DocumentPageCapture.capture(context, _captureKey, widget.file.name);
+
   bool _handleBackgroundTap() {
     if (_searchActive) return false;
     _headerVisibility.toggle();
@@ -166,9 +172,12 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: KeyedSubtree(
-                    key: ValueKey(_quarterTurns),
-                    child: _buildContent(context, file),
+                  child: RepaintBoundary(
+                    key: _captureKey,
+                    child: KeyedSubtree(
+                      key: ValueKey(_quarterTurns),
+                      child: _buildContent(context, file),
+                    ),
                   ),
                 ),
                 DocumentViewerHeaderOverlay(
@@ -186,6 +195,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                           viewerController: viewerController,
                           onSearch: _openSearch,
                           onRotate: _rotate,
+                          onScreenshot: _captureScreenshot,
                           quarterTurns: _quarterTurns,
                         ),
                 ),

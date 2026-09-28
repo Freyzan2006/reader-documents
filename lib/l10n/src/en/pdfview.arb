@@ -24,5 +24,6 @@
   "pdfMenuPages": "Pages",
   "pdfMenuShare": "Share",
   "pdfMenuRename": "Rename",
-  "pdfMenuRotate": "Rotate"
+  "pdfMenuRotate": "Rotate",
+  "pdfMenuScreenshot": "Screenshot"
 }

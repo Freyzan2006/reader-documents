@@ -19,5 +19,6 @@
   "pdfMenuPages": "Sahifalar",
   "pdfMenuShare": "Ulashish",
   "pdfMenuRename": "Qayta nomlash",
-  "pdfMenuRotate": "Aylantirish"
+  "pdfMenuRotate": "Aylantirish",
+  "pdfMenuScreenshot": "Skrinshot"
 }

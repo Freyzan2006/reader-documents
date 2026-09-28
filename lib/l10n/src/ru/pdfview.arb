@@ -19,5 +19,6 @@
   "pdfMenuPages": "Страницы",
   "pdfMenuShare": "Поделиться",
   "pdfMenuRename": "Переименовать",
-  "pdfMenuRotate": "Повернуть"
+  "pdfMenuRotate": "Повернуть",
+  "pdfMenuScreenshot": "Скриншот"
 }
