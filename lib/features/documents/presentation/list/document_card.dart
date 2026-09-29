@@ -9,6 +9,7 @@ import '../../application/documents_providers.dart';
 import '../actions/document_rename.dart';
 import '../actions/document_sharing.dart';
 import '../tags/tag_editor.dart';
+import 'document_icon.dart';
 
 class DocumentCard extends ConsumerWidget {
   const DocumentCard({
@@ -48,7 +49,7 @@ class DocumentCard extends ConsumerWidget {
         child: Row(
           spacing: AppSpacing.sm,
           children: [
-            const Icon(AppIcons.fileText, size: 20),
+            DocumentIcon(type: file.type),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
