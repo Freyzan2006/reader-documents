@@ -1,5 +1,6 @@
 {
-  "homeTitle": "Bosh sahifa",
+  "homeWelcome": "Xush kelibsiz",
+  "homeWelcomeName": "Xush kelibsiz, {name}",
   "homeRecentTitle": "Yaqinda ochilgan",
   "homeRecentEmpty": "Yaqinda ochilgan hujjatlar yo'q",
   "homeContinueReadingTitle": "O'qishni davom ettirish",

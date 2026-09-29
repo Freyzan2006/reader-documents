@@ -1,5 +1,11 @@
 {
-  "homeTitle": "Home",
+  "homeWelcome": "Welcome",
+  "homeWelcomeName": "Welcome, {name}",
+  "@homeWelcomeName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "homeRecentTitle": "Recently opened",
   "homeRecentEmpty": "No recently opened documents",
   "homeContinueReadingTitle": "Continue reading",

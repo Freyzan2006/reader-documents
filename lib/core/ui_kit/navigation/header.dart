@@ -71,13 +71,13 @@ class AppHeader extends StatelessWidget {
           right: 0,
           child: IgnorePointer(
             child: Container(
-              height: 8,
+              height: 16,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    context.theme.colors.foreground.withValues(alpha: 0.08),
+                    context.theme.colors.foreground.withValues(alpha: 0.2),
                     context.theme.colors.foreground.withValues(alpha: 0.0),
                   ],
                 ),

@@ -1,5 +1,6 @@
 {
-  "homeTitle": "Главная",
+  "homeWelcome": "Добро пожаловать",
+  "homeWelcomeName": "Добро пожаловать, {name}",
   "homeRecentTitle": "Недавно открытые",
   "homeRecentEmpty": "Нет недавно открытых документов",
   "homeContinueReadingTitle": "Продолжить чтение",

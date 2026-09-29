@@ -6,15 +6,14 @@ import 'package:reader_documents/features/home/presentation/quick_actions/home_q
 import 'package:reader_documents/features/home/presentation/recent/home_recent_section.dart';
 import 'package:reader_documents/features/home/presentation/stats/home_stats_section.dart';
 import 'package:reader_documents/features/home/presentation/tags/home_tags_section.dart';
-import 'package:reader_documents/l10n/app_localizations.dart';
+
+import 'home_welcome_title.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return AppScrollArea(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
@@ -27,7 +26,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.xl,
           children: [
-            AppText(l10n.homeTitle, variant: AppTextVariant.title),
+            const HomeWelcomeTitle(),
             const HomeStatsSection(),
             const HomeQuickActions(),
             const HomeContinueReadingSection(),
