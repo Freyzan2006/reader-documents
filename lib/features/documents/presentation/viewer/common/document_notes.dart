@@ -8,7 +8,6 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 import '../contract/document_viewer_controller.dart';
 import 'document_bookmarks.dart';
 import 'document_outline.dart';
-import 'rotated_reading_edge.dart';
 
 abstract final class DocumentNotesSheet {
   static void show({
@@ -16,41 +15,16 @@ abstract final class DocumentNotesSheet {
     required DocumentViewerController controller,
     required DocumentBookmarksController bookmarks,
     required DocumentHighlightsController highlights,
-    int quarterTurns = 0,
-  }) {
-    if (quarterTurns != 0) {
-      AppSidePanel.show(
-        context: context,
-        side: rotatedReadingBottomEdge(quarterTurns),
-        panelFraction: 0.7,
-        builder: (context, panel) => RotatedBox(
-          quarterTurns: quarterTurns,
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(context)
-                .copyWith(overscroll: false),
-            child: _DocumentNotesTabs(
-              controller: controller,
-              bookmarks: bookmarks,
-              highlights: highlights,
-              onDismiss: panel.close,
-            ),
-          ),
-        ),
-      );
-      return;
-    }
-
-    AppSheet.show(
-      context: context,
-      initialSize: 0.6,
-      builder: (context, _) => _DocumentNotesTabs(
-        controller: controller,
-        bookmarks: bookmarks,
-        highlights: highlights,
-        onDismiss: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
+  }) => AppRotatedSheet.show(
+    context: context,
+    initialSize: 0.6,
+    builder: (context, _, dismiss) => _DocumentNotesTabs(
+      controller: controller,
+      bookmarks: bookmarks,
+      highlights: highlights,
+      onDismiss: dismiss,
+    ),
+  );
 }
 
 class _DocumentNotesTabs extends StatelessWidget {

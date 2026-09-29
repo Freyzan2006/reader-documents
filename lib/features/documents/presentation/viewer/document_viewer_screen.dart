@@ -157,7 +157,6 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
       controller: controller,
       bookmarks: _bookmarks,
       highlights: _highlights,
-      quarterTurns: _quarterTurns,
     );
   }
 
@@ -227,84 +226,86 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: RotatedBox(
+          child: AppRotation(
             quarterTurns: _quarterTurns,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: RepaintBoundary(
-                    key: _captureKey,
-                    child: DocumentReadingFilter(
-                      enabled: warmReadingFilter,
-                      child: KeyedSubtree(
-                        key: ValueKey(_quarterTurns),
-                        child: _buildContent(context, file),
+            child: RotatedBox(
+              quarterTurns: _quarterTurns,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: RepaintBoundary(
+                      key: _captureKey,
+                      child: DocumentReadingFilter(
+                        enabled: warmReadingFilter,
+                        child: KeyedSubtree(
+                          key: ValueKey(_quarterTurns),
+                          child: _buildContent(context, file),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                DocumentViewerHeaderOverlay(
-                  visible: _headerVisibility.visible,
-                  topSafeArea: _quarterTurns == 0,
-                  child: _searchActive
-                      ? DocumentViewerSearchBar(
-                          controller: _searchController,
-                          session: viewerController?.search,
-                          onClose: _closeSearch,
-                        )
-                      : DocumentViewerToolbar(
-                          file: file,
-                          title: title,
-                          viewerController: viewerController,
-                          onSearch: _openSearch,
-                          onRotate: _rotate,
-                          onScreenshot: _captureScreenshot,
-                          isBookmarked: viewerController?.currentPage != null
-                              ? _bookmarks.isBookmarked(
-                                  viewerController!.currentPage!,
+                  DocumentViewerHeaderOverlay(
+                    visible: _headerVisibility.visible,
+                    topSafeArea: _quarterTurns == 0,
+                    child: _searchActive
+                        ? DocumentViewerSearchBar(
+                            controller: _searchController,
+                            session: viewerController?.search,
+                            onClose: _closeSearch,
+                          )
+                        : DocumentViewerToolbar(
+                            file: file,
+                            title: title,
+                            viewerController: viewerController,
+                            onSearch: _openSearch,
+                            onRotate: _rotate,
+                            onScreenshot: _captureScreenshot,
+                            isBookmarked: viewerController?.currentPage != null
+                                ? _bookmarks.isBookmarked(
+                                    viewerController!.currentPage!,
+                                  )
+                                : false,
+                            onToggleBookmark: _toggleBookmark,
+                            onShowNotes: _showNotes,
+                            warmReadingFilterEnabled: warmReadingFilter,
+                            onToggleWarmFilter: _toggleWarmFilter,
+                            onExportNotes:
+                                DocumentNotesExport.hasContent(
+                                  _bookmarks.value,
+                                  _highlights.value,
                                 )
-                              : false,
-                          onToggleBookmark: _toggleBookmark,
-                          onShowNotes: _showNotes,
-                          warmReadingFilterEnabled: warmReadingFilter,
-                          onToggleWarmFilter: _toggleWarmFilter,
-                          onExportNotes:
-                              DocumentNotesExport.hasContent(
-                                _bookmarks.value,
-                                _highlights.value,
-                              )
-                              ? () => _exportNotes(title)
-                              : null,
-                          quarterTurns: _quarterTurns,
-                        ),
-                ),
-                if (!_password.isPrompting) ...[
-                  Positioned(
-                    right: AppSpacing.lg,
-                    bottom: AppSpacing.lg,
-                    child: SafeArea(
-                      child: AppFade(
-                        visible: _headerVisibility.visible,
-                        child: DocumentViewerZoomControls(
-                          controller: viewerController,
+                                ? () => _exportNotes(title)
+                                : null,
+                          ),
+                  ),
+                  if (!_password.isPrompting) ...[
+                    Positioned(
+                      right: AppSpacing.lg,
+                      bottom: AppSpacing.lg,
+                      child: SafeArea(
+                        child: AppFade(
+                          visible: _headerVisibility.visible,
+                          child: DocumentViewerZoomControls(
+                            controller: viewerController,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    left: AppSpacing.lg,
-                    bottom: AppSpacing.lg,
-                    child: SafeArea(
-                      child: AppFade(
-                        visible: _headerVisibility.visible,
-                        child: DocumentPageIndicator(
-                          controller: viewerController,
+                    Positioned(
+                      left: AppSpacing.lg,
+                      bottom: AppSpacing.lg,
+                      child: SafeArea(
+                        child: AppFade(
+                          visible: _headerVisibility.visible,
+                          child: DocumentPageIndicator(
+                            controller: viewerController,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

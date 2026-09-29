@@ -4,7 +4,6 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../contract/document_viewer_controller.dart';
-import 'rotated_reading_edge.dart';
 
 abstract final class DocumentMinimapSheet {
   /// Sized off the grid's row count rather than a fixed fraction, so a short
@@ -23,45 +22,17 @@ abstract final class DocumentMinimapSheet {
     required BuildContext context,
     required DocumentViewerController controller,
     required String fileFormatLabel,
-    int quarterTurns = 0,
-  }) {
-    final initialSize = _initialSizeFor(controller.pageCount);
-
-    if (quarterTurns != 0) {
-      AppSidePanel.show(
-        context: context,
-        side: rotatedReadingBottomEdge(quarterTurns),
-        panelFraction: initialSize,
-        builder: (context, panel) => Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.md),
-          child: RotatedBox(
-            quarterTurns: quarterTurns,
-            child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context)
-                  .copyWith(overscroll: false),
-              child: DocumentMinimap(
-                controller: controller,
-                fileFormatLabel: fileFormatLabel,
-                onDismiss: panel.close,
-              ),
-            ),
-          ),
-        ),
-      );
-      return;
-    }
-
-    AppSheet.show(
-      context: context,
-      initialSize: initialSize,
-      builder: (context, scrollController) => DocumentMinimap(
-        controller: controller,
-        scrollController: scrollController,
-        fileFormatLabel: fileFormatLabel,
-        onDismiss: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
+  }) => AppRotatedSheet.show(
+    context: context,
+    initialSize: _initialSizeFor(controller.pageCount),
+    panelPadding: const EdgeInsets.only(top: AppSpacing.md),
+    builder: (context, scrollController, dismiss) => DocumentMinimap(
+      controller: controller,
+      scrollController: scrollController,
+      fileFormatLabel: fileFormatLabel,
+      onDismiss: dismiss,
+    ),
+  );
 }
 
 class DocumentMinimap extends StatefulWidget {

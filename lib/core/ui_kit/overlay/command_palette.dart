@@ -6,6 +6,7 @@ import '../controls/input.dart';
 import '../data_display/text.dart';
 import '../layout/divider.dart';
 import '../tokens/app_spacing.dart';
+import 'rotation.dart';
 import 'sheet.dart';
 import 'side_panel.dart';
 
@@ -32,43 +33,52 @@ class AppCommandGroup {
 /// anchored popover — for triggers whose on-screen position/transform an
 /// anchored popover can't reliably read (e.g. a button under an ancestor
 /// `RotatedBox`), since a panel is always positioned against the true
-/// screen edge, not the trigger.
+/// screen edge, not the trigger. [side] defaults to [AppRotation.bottomEdge],
+/// so a caller under a rotated surface gets the right edge and counter-
+/// rotation for free without passing anything.
 abstract final class AppCommandSidePanel {
   static AppSidePanelController show({
     required BuildContext context,
     required List<AppCommandItem> items,
-    AppEdge side = AppEdge.bottom,
-    int quarterTurns = 0,
+    AppEdge? side,
     double panelFraction = 0.6,
-  }) => AppSidePanel.show(
-    context: context,
-    side: side,
-    panelFraction: panelFraction,
-    builder: (context, controller) => RotatedBox(
-      quarterTurns: quarterTurns,
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-            FTileGroup(
-              children: [
-                for (final item in items)
-                  FTile(
-                    title: Text(item.label),
-                    prefix: item.icon == null ? null : Icon(item.icon),
-                    onPress: () {
-                      controller.close();
-                      item.onSelect();
-                    },
-                  ),
-              ],
-            ),
-          ],
+  }) {
+    // Resolved from the caller's context, not the panel's own builder
+    // context below — the panel renders into the app's root `Overlay`, which
+    // sits outside whatever ancestor `AppRotation` the caller is under.
+    final quarterTurns = AppRotation.of(context);
+    final resolvedSide = side ?? AppRotation.bottomEdge(context);
+
+    return AppSidePanel.show(
+      context: context,
+      side: resolvedSide,
+      panelFraction: panelFraction,
+      builder: (context, controller) => RotatedBox(
+        quarterTurns: quarterTurns,
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            children: [
+              FTileGroup(
+                children: [
+                  for (final item in items)
+                    FTile(
+                      title: Text(item.label),
+                      prefix: item.icon == null ? null : Icon(item.icon),
+                      onPress: () {
+                        controller.close();
+                        item.onSelect();
+                      },
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 abstract final class AppCommandPalette {

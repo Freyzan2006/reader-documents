@@ -3,6 +3,8 @@ export 'context_menu.dart';
 export 'dialog.dart';
 export 'popover.dart';
 export 'popover_menu.dart';
+export 'rotated_sheet.dart';
+export 'rotation.dart';
 export 'sheet.dart';
 export 'side_panel.dart';
 export 'toast.dart';

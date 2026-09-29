@@ -9,7 +9,6 @@ import '../../actions/document_rename.dart';
 import '../../actions/document_sharing.dart';
 import '../contract/document_viewer_controller.dart';
 import 'document_minimap.dart';
-import 'rotated_reading_edge.dart';
 
 class DocumentViewerToolbar extends ConsumerWidget {
   const DocumentViewerToolbar({
@@ -25,7 +24,6 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.warmReadingFilterEnabled,
     required this.onToggleWarmFilter,
     this.onExportNotes,
-    this.quarterTurns = 0,
     super.key,
   });
 
@@ -43,14 +41,6 @@ class DocumentViewerToolbar extends ConsumerWidget {
 
   /// Null when there's nothing (no bookmarks, no highlights) to export yet.
   final VoidCallback? onExportNotes;
-
-  /// How many quarter turns this toolbar is itself displayed rotated by (an
-  /// ancestor `RotatedBox`). When rotated, the overflow menu shows as a
-  /// bottom sheet instead of an anchored popover — a popover positions
-  /// itself from the trigger's on-screen transform, which forui's portal
-  /// system gets wrong once that transform includes a rotation; a sheet
-  /// anchors to the true screen bounds instead, sidestepping the issue.
-  final int quarterTurns;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -108,7 +98,6 @@ class DocumentViewerToolbar extends ConsumerWidget {
             color: isBookmarked ? AppColors.accent(context) : null,
           ),
         _OverflowMenu(
-          quarterTurns: quarterTurns,
           items: [
             AppCommandItem(
               label: l10n.pdfMenuRotate,
@@ -141,7 +130,6 @@ class DocumentViewerToolbar extends ConsumerWidget {
                   context: context,
                   controller: controller,
                   fileFormatLabel: file.type.label,
-                  quarterTurns: quarterTurns,
                 ),
               ),
             AppCommandItem(
@@ -175,9 +163,8 @@ class DocumentViewerToolbar extends ConsumerWidget {
 }
 
 class _OverflowMenu extends StatelessWidget {
-  const _OverflowMenu({required this.quarterTurns, required this.items});
+  const _OverflowMenu({required this.items});
 
-  final int quarterTurns;
   final List<AppCommandItem> items;
 
   static const _trigger = AppIconButton(
@@ -187,15 +174,11 @@ class _OverflowMenu extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => quarterTurns != 0
+  Widget build(BuildContext context) => AppRotation.of(context) != 0
       ? AppIconButton(
           icon: AppIcons.ellipsisVertical,
-          onPressed: () => AppCommandSidePanel.show(
-            context: context,
-            items: items,
-            side: rotatedReadingBottomEdge(quarterTurns),
-            quarterTurns: quarterTurns,
-          ),
+          onPressed: () =>
+              AppCommandSidePanel.show(context: context, items: items),
         )
       : AppPopoverMenu(items: items, child: _trigger);
 }
