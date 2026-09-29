@@ -24,7 +24,7 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
 
   void _showGoToPageDialog() {
     final controller = widget.controller;
-    if (controller == null) return;
+    if (controller == null || !controller.supportsPagination) return;
 
     final l10n = AppLocalizations.of(context)!;
     final currentPage = controller.currentPage ?? 1;
@@ -39,31 +39,32 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
         mainAxisSize: MainAxisSize.min,
         spacing: AppSpacing.sm,
         children: [
-          Icon(
-            AppIcons.fileText,
-            size: 20,
-            color: AppColors.accent(context),
-          ),
+          Icon(AppIcons.fileText, size: 20, color: AppColors.accent(context)),
           Text(l10n.minimapJumpToPageHint),
         ],
       ),
-      body: Center(
-        child: SizedBox(
-          width: 140,
-          child: AppNumberInput(
-            controller: _pageInputController,
-            hint: l10n.minimapJumpToPageHint,
-            min: 1,
-            max: totalPages,
-            autofocus: true,
-            onSubmitted: (value) {
-              if (value != null && value >= 1 && value <= totalPages) {
-                controller.goToPage(value);
-              }
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          final isLandscape = orientation == Orientation.landscape;
+          return Center(
+            child: SizedBox(
+              width: isLandscape ? 120 : 140,
+              child: AppNumberInput(
+                controller: _pageInputController,
+                hint: l10n.minimapJumpToPageHint,
+                min: 1,
+                max: totalPages,
+                autofocus: true,
+                onSubmitted: (value) {
+                  if (value != null && value >= 1 && value <= totalPages) {
+                    controller.goToPage(value);
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          );
+        },
       ),
       actions: [
         AppTooltip(
@@ -93,10 +94,11 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-    final currentPage = controller?.currentPage;
-    if (controller == null || currentPage == null) {
+    if (controller == null || !controller.supportsPagination) {
       return const SizedBox.shrink();
     }
+    final currentPage = controller.currentPage;
+    if (currentPage == null) return const SizedBox.shrink();
 
     return AppTappable(
       onPressed: _showGoToPageDialog,

@@ -14,7 +14,9 @@ class DocumentViewerZoomControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = this.controller;
-    if (controller == null) return const SizedBox.shrink();
+    if (controller == null || !controller.supportsZoom) {
+      return const SizedBox.shrink();
+    }
 
     final percent = (controller.zoom * 100).round();
 

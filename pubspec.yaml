@@ -49,6 +49,7 @@ dependencies:
   receive_sharing_intent: ^1.8.1
   url_launcher: ^6.3.2
   simple_icons: ^16.23.0
+  docx_file_viewer: ^1.0.4
 
 dev_dependencies:
   flutter_test:

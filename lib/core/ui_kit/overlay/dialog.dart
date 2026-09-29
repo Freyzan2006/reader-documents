@@ -17,6 +17,7 @@ abstract final class AppDialog {
     List<Widget> actions = const [],
     bool barrierDismissible = true,
     bool actionsWrap = true,
+    int quarterTurns = 0,
   }) => showFDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
@@ -32,33 +33,65 @@ abstract final class AppDialog {
       style: style,
       animation: animation,
       constraints: const BoxConstraints(minWidth: 280, maxWidth: 480),
-      builder: (context, style) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DefaultTextStyle.merge(style: style.titleTextStyle, child: title),
-            if (body != null) ...[const SizedBox(height: AppSpacing.sm), body],
-            const SizedBox(height: AppSpacing.md),
-            if (actionsWrap)
-              Wrap(
-                alignment: WrapAlignment.end,
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: actions,
-              )
-            else
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                spacing: AppSpacing.sm,
-                children: actions,
-              ),
-          ],
+      builder: (context, style) => RotatedBox(
+        quarterTurns: quarterTurns,
+        child: _buildDialogContent(
+          context,
+          style,
+          title,
+          body,
+          actions,
+          actionsWrap,
+          quarterTurns != 0,
         ),
       ),
     ),
   );
+
+  static Widget _buildDialogContent(
+    BuildContext context,
+    FDialogStyle style,
+    Widget title,
+    Widget? body,
+    List<Widget> actions,
+    bool actionsWrap,
+    bool isRotated,
+  ) {
+    final horizontalPadding = isRotated ? AppSpacing.sm : AppSpacing.md;
+    final verticalPadding = isRotated ? AppSpacing.sm : AppSpacing.md;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DefaultTextStyle.merge(style: style.titleTextStyle, child: title),
+          if (body != null) ...[
+            SizedBox(height: isRotated ? AppSpacing.xs : AppSpacing.sm),
+            body,
+          ],
+          SizedBox(height: isRotated ? AppSpacing.sm : AppSpacing.md),
+          if (actionsWrap)
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: actions,
+            )
+          else
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              spacing: AppSpacing.sm,
+              children: actions,
+            ),
+        ],
+      ),
+    );
+  }
 
   static ImageFilter _dimBarrierFilter(
     BuildContext context,

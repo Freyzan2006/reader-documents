@@ -101,7 +101,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
               ? AppColors.warning(context)
               : null,
         ),
-        if (viewerController != null)
+        if (controller != null && controller.supportsPagination)
           AppIconButton(
             icon: isBookmarked ? AppIcons.bookmarkCheck : AppIcons.bookmark,
             onPressed: onToggleBookmark,
@@ -133,7 +133,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
                 icon: AppIcons.tableOfContents,
                 onSelect: onShowNotes,
               ),
-            if (controller != null)
+            if (controller != null && controller.supportsPagination)
               AppCommandItem(
                 label: l10n.pdfMenuPages,
                 icon: AppIcons.layoutGrid,

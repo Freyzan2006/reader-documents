@@ -21,6 +21,12 @@ class PdfDocumentViewerController extends DocumentViewerController {
   PdfViewerController get rawController => _raw;
 
   @override
+  bool get supportsPagination => true;
+
+  @override
+  bool get supportsZoom => true;
+
+  @override
   int? get currentPage => _raw.pageNumber;
 
   @override

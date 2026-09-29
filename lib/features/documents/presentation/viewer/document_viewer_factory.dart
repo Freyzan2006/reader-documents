@@ -5,12 +5,13 @@ import 'package:reader_documents/features/documents/data/models/document_highlig
 
 import 'contract/document_viewer.dart';
 import 'contract/document_viewer_controller.dart';
+import 'docx/docx_document_viewer.dart';
 import 'pdf/pdf_document_viewer.dart';
 
 abstract final class DocumentViewerFactory {
   static bool supports(DocumentType type) => switch (type) {
-    DocumentType.pdf => true,
-    DocumentType.docx || DocumentType.djvu || DocumentType.other => false,
+    DocumentType.pdf || DocumentType.docx => true,
+    DocumentType.djvu || DocumentType.other => false,
   };
 
   static DocumentViewer build({
@@ -39,7 +40,21 @@ abstract final class DocumentViewerFactory {
       buildErrorBanner: buildErrorBanner,
       buildLoadingBanner: buildLoadingBanner,
     ),
-    DocumentType.docx || DocumentType.djvu || DocumentType.other =>
-      throw UnsupportedError('No viewer registered for ${file.type}'),
+    DocumentType.docx => DocxDocumentViewer(
+      file: file,
+      initialPageNumber: initialPageNumber,
+      highlights: highlights,
+      onPageChanged: onPageChanged,
+      onReady: onReady,
+      onBackgroundTap: onBackgroundTap,
+      passwordProvider: passwordProvider,
+      buildContextMenu: buildContextMenu,
+      buildMagnifier: buildMagnifier,
+      buildErrorBanner: buildErrorBanner,
+      buildLoadingBanner: buildLoadingBanner,
+    ),
+    DocumentType.djvu || DocumentType.other => throw UnsupportedError(
+      'No viewer registered for ${file.type}',
+    ),
   };
 }
