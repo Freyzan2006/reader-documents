@@ -147,11 +147,15 @@ class DocumentCard extends ConsumerWidget {
 class DocumentCardSkeleton extends StatelessWidget {
   const DocumentCardSkeleton({super.key});
 
+  /// Matches [AppIconButton]'s real footprint: a 20px icon plus
+  /// [AppSpacing.sm] padding on every side.
+  static const _iconButtonSize = 20.0 + AppSpacing.sm * 2;
+
   @override
   Widget build(BuildContext context) => AppCard(
     padding: const EdgeInsets.symmetric(
       horizontal: AppSpacing.md,
-      vertical: AppSpacing.sm,
+      vertical: AppSpacing.md,
     ),
     child: Row(
       spacing: AppSpacing.sm,
@@ -162,18 +166,20 @@ class DocumentCardSkeleton extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.xs,
             children: [
-              const AppSkeleton(width: 120, height: 14),
+              const AppSkeleton(width: 140, height: 16),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 spacing: AppSpacing.xs,
                 children: const [
-                  AppSkeleton(width: 40, height: 20),
-                  AppSkeleton(width: 56, height: 20),
+                  AppSkeleton(width: 48, height: 22),
+                  AppSkeleton(width: 68, height: 22),
                 ],
               ),
             ],
           ),
         ),
+        const AppSkeleton.circle(size: _iconButtonSize),
+        const AppSkeleton.circle(size: _iconButtonSize),
       ],
     ),
   );

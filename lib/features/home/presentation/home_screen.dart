@@ -67,7 +67,7 @@ class HomeScreen extends ConsumerWidget {
             DocumentList(
               documents: recent,
               emptyMessage: l10n.homeRecentEmpty,
-              skeletonCount: 3,
+              skeletonCount: 5,
               onOpen: (file) => DocumentCommands.open(context, ref, file),
               confirmDelete: (file) =>
                   DocumentCommands.confirmDelete(context, file),

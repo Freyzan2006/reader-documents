@@ -14,7 +14,7 @@ class DocumentList extends StatelessWidget {
     required this.onOpen,
     required this.confirmDelete,
     required this.onDelete,
-    this.skeletonCount = 6,
+    this.skeletonCount = 5,
     super.key,
   });
 
