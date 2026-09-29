@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../../config/app_brand.dart';
 import '../tokens/app_colors.dart';
+import '../tokens/app_typography.dart';
 
 /// The app's own theming layer on top of Forui.
 ///
@@ -12,8 +13,7 @@ import '../tokens/app_colors.dart';
 /// Forui for something else later) means touching this file, not every
 /// screen that uses [FButton]/[FCard]/etc.
 abstract final class AppTheme {
-  static final FThemeData light = FThemeData(
-    touch: true,
+  static final FThemeData light = _build(
     debugLabel: '${AppBrand.name} Light',
     colors: FColors.neutralLight.copyWith(
       primary: AppColors.primaryLight,
@@ -21,13 +21,22 @@ abstract final class AppTheme {
     ),
   );
 
-  static final FThemeData dark = FThemeData(
-    touch: true,
+  static final FThemeData dark = _build(
     debugLabel: '${AppBrand.name} Dark',
     colors: FColors.neutralDark.copyWith(
       primary: AppColors.primaryDark,
       primaryForeground: const Color(0xFF0A0A0A),
     ),
+  );
+
+  static FThemeData _build({
+    required String debugLabel,
+    required FColors colors,
+  }) => FThemeData(
+    touch: true,
+    debugLabel: debugLabel,
+    colors: colors,
+    typography: AppTypography.build(colors: colors, touch: true),
   );
 
   static FThemeData of(Brightness brightness) =>

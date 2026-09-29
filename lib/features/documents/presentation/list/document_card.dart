@@ -19,17 +19,12 @@ class DocumentCard extends ConsumerWidget {
     super.key,
   });
 
-  static const _maxNameChars = 20;
   static const _maxVisibleTags = 2;
 
   final DocumentFile file;
   final VoidCallback? onTap;
   final Future<bool> Function(DocumentFile file)? confirmDelete;
   final ValueChanged<DocumentFile>? onDelete;
-
-  String _displayName(String name) => name.length > _maxNameChars
-      ? '${name.substring(0, _maxNameChars - 3)}...'
-      : name;
 
   Future<void> _delete() async {
     if (confirmDelete == null || onDelete == null) return;
@@ -59,7 +54,12 @@ class DocumentCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: AppSpacing.xs,
                 children: [
-                  AppText(_displayName(title)),
+                  AppText(
+                    title,
+                    variant: AppTextVariant.subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     spacing: AppSpacing.xs,

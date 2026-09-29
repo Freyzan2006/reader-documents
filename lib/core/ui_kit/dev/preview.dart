@@ -77,8 +77,13 @@ class _TypographySection extends StatelessWidget {
     children: [
       AppText('Display', variant: AppTextVariant.display),
       AppText('Title', variant: AppTextVariant.title),
+      AppText('Subtitle', variant: AppTextVariant.subtitle),
       AppText('Body', variant: AppTextVariant.body),
+      AppText('Label', variant: AppTextVariant.label),
       AppText('Caption', variant: AppTextVariant.caption),
+      AppText('Overline', variant: AppTextVariant.overline),
+      AppText('Annotation', variant: AppTextVariant.annotation),
+      AppText('final x = 42;', variant: AppTextVariant.code),
     ],
   );
 }

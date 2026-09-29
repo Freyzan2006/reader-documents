@@ -8,7 +8,17 @@ import '../tokens/app_typography.dart';
 /// (`context.theme.typography.display`/`.body`, each with its own `xs`...`xl8`
 /// sizes) — this doesn't re-expose that whole scale, just the roles screens
 /// actually need.
-enum AppTextVariant { display, title, body, caption, annotation }
+enum AppTextVariant {
+  display,
+  title,
+  subtitle,
+  body,
+  label,
+  caption,
+  overline,
+  annotation,
+  code,
+}
 
 /// Themed text. Wraps a plain [Text] styled from [AppTextVariant].
 class AppText extends StatelessWidget {
@@ -34,9 +44,30 @@ class AppText extends StatelessWidget {
     return switch (variant) {
       AppTextVariant.display => typography.display.xl2,
       AppTextVariant.title => typography.display.lg,
+      // Same size as body, but heavier — sits between title and body by
+      // emphasis rather than by size, since Forui's scale has no stop
+      // between them.
+      AppTextVariant.subtitle => typography.body.md.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
       AppTextVariant.body => typography.body.md,
+      AppTextVariant.label => typography.body.xs.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
       AppTextVariant.caption => typography.body.sm,
+      AppTextVariant.overline => typography.body.xs2.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.2,
+      ),
       AppTextVariant.annotation => typography.body.md,
+      // Pinned to the monospace family explicitly (with a system-monospace
+      // fallback), so code stays monospace even if the app's base font ever
+      // stops being one.
+      AppTextVariant.code => typography.body.sm.copyWith(
+        fontFamily: AppTypography.fontFamily,
+        fontFamilyFallback: const ['monospace'],
+      ),
     };
   }
 
@@ -45,9 +76,13 @@ class AppText extends StatelessWidget {
     return switch (variant) {
       AppTextVariant.display => colors.foreground,
       AppTextVariant.title => colors.foreground,
+      AppTextVariant.subtitle => colors.foreground,
       AppTextVariant.body => colors.mutedForeground,
+      AppTextVariant.label => colors.foreground,
       AppTextVariant.caption => colors.mutedForeground,
+      AppTextVariant.overline => colors.mutedForeground,
       AppTextVariant.annotation => colors.foreground,
+      AppTextVariant.code => colors.foreground,
     };
   }
 
