@@ -25,6 +25,7 @@ abstract final class DocumentRename {
         initialText: currentTitle,
         hint: l10n.renameDocumentHint,
       ),
+      actionsWrap: false,
       actions: [
         AppButton(
           variant: AppButtonVariant.ghost,
