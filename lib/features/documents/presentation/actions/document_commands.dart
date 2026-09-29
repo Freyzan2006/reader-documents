@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reader_documents/core/navigation/app_nav_tab.dart';
+import 'package:reader_documents/core/navigation/navigation_providers.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
@@ -31,6 +33,17 @@ abstract final class DocumentCommands {
     final path = file?.path;
     if (path == null) return;
     await ref.read(documentsProvider.notifier).import(path);
+  }
+
+  /// Sets the library filter to just [tag] and switches to the Documents
+  /// tab — Home's "browse by tag" chips land here instead of duplicating
+  /// filter/navigation logic in a widget.
+  static void browseByTag(WidgetRef ref, String tag) {
+    ref.read(documentFilterProvider.notifier).state = ref
+        .read(documentFilterProvider)
+        .withTag(tag);
+    ref.read(currentNavDestinationProvider.notifier).state =
+        AppNavDestination.documents;
   }
 
   static Future<void> open(

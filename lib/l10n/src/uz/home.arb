@@ -2,5 +2,11 @@
   "homeTitle": "Bosh sahifa",
   "homeRecentTitle": "Yaqinda ochilgan",
   "homeRecentEmpty": "Yaqinda ochilgan hujjatlar yo'q",
-  "homeSeeAllDocuments": "Barcha hujjatlarni ko'rish"
+  "homeContinueReadingTitle": "O'qishni davom ettirish",
+  "homeFavoritesTitle": "Sevimlilar",
+  "homeQuickActionImport": "Import",
+  "homeQuickActionSearch": "Qidiruv",
+  "homeStatsTotalSize": "Umumiy hajm",
+  "homeTagsTitle": "Teg bo'yicha",
+  "homeTagsLoadError": "Teglarni yuklab bo'lmadi"
 }

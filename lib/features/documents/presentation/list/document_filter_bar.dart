@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
+import 'package:reader_documents/features/documents/data/models/tag_color.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../../application/providers/document_filter.dart';
+import '../../application/documents_providers.dart';
 
-class DocumentFilterBar extends StatelessWidget {
+class DocumentFilterBar extends ConsumerWidget {
   const DocumentFilterBar({
     required this.filter,
     required this.onChanged,
@@ -15,7 +17,7 @@ class DocumentFilterBar extends StatelessWidget {
   final ValueChanged<DocumentFilter> onChanged;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context, WidgetRef ref) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(
@@ -52,6 +54,12 @@ class DocumentFilterBar extends StatelessWidget {
               AppTag(
                 label: Text(type.label),
                 onRemove: () => onChanged(filter.toggle(type)),
+              ),
+            for (final tag in filter.tags)
+              AppTag(
+                label: Text(tag),
+                color: ref.watch(tagColorProvider(tag)).value,
+                onRemove: () => onChanged(filter.toggleTag(tag)),
               ),
           ],
         ),

@@ -2,5 +2,11 @@
   "homeTitle": "Home",
   "homeRecentTitle": "Recently opened",
   "homeRecentEmpty": "No recently opened documents",
-  "homeSeeAllDocuments": "See all documents"
+  "homeContinueReadingTitle": "Continue reading",
+  "homeFavoritesTitle": "Favorites",
+  "homeQuickActionImport": "Import",
+  "homeQuickActionSearch": "Search",
+  "homeStatsTotalSize": "Total size",
+  "homeTagsTitle": "By tag",
+  "homeTagsLoadError": "Couldn't load tags"
 }

@@ -45,22 +45,46 @@ class AppHeader extends StatelessWidget {
       child: AppText(title, variant: AppTextVariant.title),
     );
 
-    return FHeader.nested(
-      style: const FHeaderStyleDelta.delta(
-        constraints: BoxConstraints(minHeight: height, maxHeight: height),
-      ),
-      title: titleTooltip == null
-          ? titleCard
-          : AppTooltip(message: titleTooltip, child: titleCard),
-      prefixes: [
-        if (onMenuTap != null)
-          AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
-      ],
-      suffixes: [
-        if (actionIcon != null && onActionTap != null)
-          AppIconButton(icon: actionIcon!, onPressed: onActionTap!)
-        else if (actionLabel != null && onActionTap != null)
-          _PillButton(label: actionLabel!, onPressed: onActionTap!),
+    return Stack(
+      children: [
+        FHeader.nested(
+          style: const FHeaderStyleDelta.delta(
+            constraints: BoxConstraints(minHeight: height, maxHeight: height),
+          ),
+          title: titleTooltip == null
+              ? titleCard
+              : AppTooltip(message: titleTooltip, child: titleCard),
+          prefixes: [
+            if (onMenuTap != null)
+              AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
+          ],
+          suffixes: [
+            if (actionIcon != null && onActionTap != null)
+              AppIconButton(icon: actionIcon!, onPressed: onActionTap!)
+            else if (actionLabel != null && onActionTap != null)
+              _PillButton(label: actionLabel!, onPressed: onActionTap!),
+          ],
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: IgnorePointer(
+            child: Container(
+              height: 8,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    context.theme.colors.foreground.withValues(alpha: 0.08),
+                    context.theme.colors.foreground.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

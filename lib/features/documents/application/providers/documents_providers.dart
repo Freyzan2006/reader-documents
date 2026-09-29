@@ -19,6 +19,7 @@ import '../notifiers/recently_opened_notifier.dart';
 import '../notifiers/tag_definitions_notifier.dart';
 import '../notifiers/tags_notifier.dart';
 import 'document_filter.dart';
+import 'document_stats.dart';
 
 final documentsRepositoryProvider = Provider<DocumentsRepository>(
   (ref) => const DocumentsRepository(),
@@ -99,12 +100,36 @@ final filteredDocumentsProvider = Provider<AsyncValue<List<DocumentFile>>>((
   return documents.whenData(
     (files) => files.where((file) {
       if (!filter.matches(file.type)) return false;
+      if (filter.tags.isNotEmpty) {
+        final fileTags = ref.watch(documentTagsProvider(file.path));
+        if (!filter.tags.any(fileTags.contains)) return false;
+      }
       if (query.isEmpty) return true;
       final title = ref.watch(documentTitleProvider(file.path)) ?? file.name;
       return title.toLowerCase().contains(query);
     }).toList(),
   );
 });
+
+final favoriteDocumentsProvider = Provider<AsyncValue<List<DocumentFile>>>((
+  ref,
+) {
+  final documents = ref.watch(documentsProvider);
+  final favorites = ref.watch(favoritesProvider).value ?? const {};
+
+  return documents.whenData(
+    (files) => files.where((file) => favorites.contains(file.path)).toList(),
+  );
+});
+
+/// The saved reading-progress page for a document, or `null` if it's never
+/// been opened (or nothing was saved yet). There's no persisted page *count*
+/// alongside it — see [ReadingProgressRepository] — so this can only report
+/// a page number, not a fraction/percentage.
+final lastReadingProgressPageProvider = FutureProvider.family<int?, String>(
+  (ref, documentPath) =>
+      ref.watch(readingProgressRepositoryProvider).load(documentPath),
+);
 
 const recentDocumentsLimit = 4;
 
@@ -122,3 +147,12 @@ final recentDocumentsProvider = Provider<AsyncValue<List<DocumentFile>>>((ref) {
     return opened.take(recentDocumentsLimit).toList();
   });
 });
+
+final mostRecentDocumentProvider = Provider<AsyncValue<DocumentFile?>>(
+  (ref) =>
+      ref.watch(recentDocumentsProvider).whenData((files) => files.firstOrNull),
+);
+
+final documentStatsProvider = Provider<AsyncValue<DocumentStats>>(
+  (ref) => ref.watch(documentsProvider).whenData(DocumentStats.from),
+);

@@ -2,5 +2,11 @@
   "homeTitle": "Главная",
   "homeRecentTitle": "Недавно открытые",
   "homeRecentEmpty": "Нет недавно открытых документов",
-  "homeSeeAllDocuments": "Посмотреть все документы"
+  "homeContinueReadingTitle": "Продолжить чтение",
+  "homeFavoritesTitle": "Избранное",
+  "homeQuickActionImport": "Импорт",
+  "homeQuickActionSearch": "Поиск",
+  "homeStatsTotalSize": "Общий размер",
+  "homeTagsTitle": "По тегам",
+  "homeTagsLoadError": "Не удалось загрузить теги"
 }

@@ -35,11 +35,11 @@ class DocumentFile {
   final int sizeBytes;
   final DateTime modifiedAt;
 
-  String get formattedSize {
-    if (sizeBytes < 1024) return '$sizeBytes B';
-    if (sizeBytes < 1024 * 1024) {
-      return '${(sizeBytes / 1024).toStringAsFixed(1)} KB';
-    }
-    return '${(sizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  String get formattedSize => formatBytes(sizeBytes);
+
+  static String formatBytes(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }
