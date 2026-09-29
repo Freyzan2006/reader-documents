@@ -5,6 +5,7 @@ import 'package:pdfrx/pdfrx.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 
+import '../common/document_loading_overlay.dart';
 import '../contract/document_viewer.dart';
 import 'pdf_document_search_session.dart';
 import 'pdf_document_text_selection.dart';
@@ -145,7 +146,7 @@ class _PdfDocumentViewerState extends State<PdfDocumentViewer> {
     BuildContext context,
     int bytesDownloaded,
     int? totalBytes,
-  ) => widget.buildLoadingBanner(context);
+  ) => DocumentLoadingOverlay(banner: widget.buildLoadingBanner(context));
 
   @override
   Widget build(BuildContext context) {

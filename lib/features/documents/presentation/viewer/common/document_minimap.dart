@@ -7,17 +7,31 @@ import '../contract/document_viewer_controller.dart';
 import 'rotated_reading_edge.dart';
 
 abstract final class DocumentMinimapSheet {
+  /// Sized off the grid's row count rather than a fixed fraction, so a short
+  /// document doesn't open to mostly empty space below its thumbnails.
+  static double _initialSizeFor(int pageCount) {
+    final rows = (pageCount / DocumentMinimap._crossAxisCount).ceil();
+    return switch (rows) {
+      <= 1 => 0.35,
+      2 => 0.45,
+      3 => 0.55,
+      _ => 0.6,
+    };
+  }
+
   static void show({
     required BuildContext context,
     required DocumentViewerController controller,
     required String fileFormatLabel,
     int quarterTurns = 0,
   }) {
+    final initialSize = _initialSizeFor(controller.pageCount);
+
     if (quarterTurns != 0) {
       AppSidePanel.show(
         context: context,
         side: rotatedReadingBottomEdge(quarterTurns),
-        panelFraction: 0.6,
+        panelFraction: initialSize,
         builder: (context, panel) => Padding(
           padding: const EdgeInsets.only(top: AppSpacing.md),
           child: RotatedBox(
@@ -39,7 +53,7 @@ abstract final class DocumentMinimapSheet {
 
     AppSheet.show(
       context: context,
-      initialSize: 0.6,
+      initialSize: initialSize,
       builder: (context, scrollController) => DocumentMinimap(
         controller: controller,
         scrollController: scrollController,

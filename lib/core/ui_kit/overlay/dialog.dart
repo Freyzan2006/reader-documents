@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import '../tokens/app_shadows.dart';
 import '../tokens/app_spacing.dart';
 
 /// A centered modal dialog. Wraps Forui's [FDialog]/[showFDialog].
@@ -29,20 +30,23 @@ abstract final class AppDialog {
         const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       ),
     ),
-    builder: (context, style, animation) => FDialog(
-      style: style,
-      animation: animation,
-      constraints: const BoxConstraints(minWidth: 280, maxWidth: 480),
-      builder: (context, style) => RotatedBox(
-        quarterTurns: quarterTurns,
-        child: _buildDialogContent(
-          context,
-          style,
-          title,
-          body,
-          actions,
-          actionsWrap,
-          quarterTurns != 0,
+    builder: (context, style, animation) => DecoratedBox(
+      decoration: const BoxDecoration(boxShadow: AppShadows.floating),
+      child: FDialog(
+        style: style,
+        animation: animation,
+        constraints: const BoxConstraints(minWidth: 280, maxWidth: 480),
+        builder: (context, style) => RotatedBox(
+          quarterTurns: quarterTurns,
+          child: _buildDialogContent(
+            context,
+            style,
+            title,
+            body,
+            actions,
+            actionsWrap,
+            quarterTurns != 0,
+          ),
         ),
       ),
     ),

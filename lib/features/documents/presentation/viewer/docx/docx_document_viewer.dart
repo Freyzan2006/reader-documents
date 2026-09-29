@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:docx_file_viewer/docx_file_viewer.dart';
 import 'package:flutter/widgets.dart';
 
+import '../common/document_loading_overlay.dart';
 import '../contract/document_viewer.dart';
 import 'docx_document_viewer_controller.dart';
 
@@ -31,6 +32,7 @@ class _DocxDocumentViewerState extends State<DocxDocumentViewer> {
   late final _file = File(widget.file.path);
   DocxDocumentViewerController? _controller;
   Object? _error;
+  bool _loaded = false;
 
   @override
   void initState() {
@@ -50,6 +52,8 @@ class _DocxDocumentViewerState extends State<DocxDocumentViewer> {
 
   void _onError(Object error) => setState(() => _error = error);
 
+  void _onLoaded() => setState(() => _loaded = true);
+
   @override
   Widget build(BuildContext context) {
     final error = _error;
@@ -64,11 +68,18 @@ class _DocxDocumentViewerState extends State<DocxDocumentViewer> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: widget.onBackgroundTap,
-      child: DocxView(
-        file: _file,
-        searchController: _searchController,
-        onError: _onError,
-        config: const DocxViewConfig(pageMode: DocxPageMode.continuous),
+      child: Stack(
+        children: [
+          DocxView(
+            file: _file,
+            searchController: _searchController,
+            onLoaded: _onLoaded,
+            onError: _onError,
+            config: const DocxViewConfig(pageMode: DocxPageMode.continuous),
+          ),
+          if (!_loaded)
+            DocumentLoadingOverlay(banner: widget.buildLoadingBanner(context)),
+        ],
       ),
     );
   }

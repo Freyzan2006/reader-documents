@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../tokens/app_borders.dart';
 import '../tokens/app_radius.dart';
+import '../tokens/app_shadows.dart';
 
 /// Shared visual chrome for [AppSheet] and [AppSidePanel].
 ///
@@ -47,6 +48,15 @@ class SheetSurface extends StatelessWidget {
     FLayout.ttb || FLayout.btt => const Border(),
   };
 
+  /// The free edge's direction, for [AppShadows.towards] — the side facing
+  /// the dimmed barrier, not the rest of the app.
+  static Offset _freeEdgeDirection(FLayout side) => switch (side) {
+    FLayout.btt => const Offset(0, -1),
+    FLayout.ttb => const Offset(0, 1),
+    FLayout.ltr => const Offset(1, 0),
+    FLayout.rtl => const Offset(-1, 0),
+  };
+
   @override
   Widget build(BuildContext context) => SizedBox.expand(
     // Forui's `FSheets` (backing both `showFSheet` and `showFPersistentSheet`)
@@ -62,6 +72,7 @@ class SheetSurface extends StatelessWidget {
         border: side.vertical
             ? null
             : _edgeBorder(side, AppBorders.color(context)),
+        boxShadow: AppShadows.towards(_freeEdgeDirection(side)),
       ),
       child: SafeArea(
         child: side.vertical
