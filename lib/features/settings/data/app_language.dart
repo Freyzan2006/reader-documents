@@ -19,4 +19,13 @@ enum AppLanguage {
     AppLanguage.en => 'English',
     AppLanguage.uz => 'Oʻzbekcha',
   };
+
+  /// A short uppercase tag identifying the language at a glance, e.g. for a
+  /// language picker. Empty for [AppLanguage.system], which has no code.
+  String get code => switch (this) {
+    AppLanguage.system => '',
+    AppLanguage.ru => 'RU',
+    AppLanguage.en => 'EN',
+    AppLanguage.uz => 'UZ',
+  };
 }

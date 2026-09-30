@@ -13,28 +13,18 @@ class AboutSettingsCard extends StatelessWidget {
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.sm,
+        spacing: AppSpacing.xs,
         children: [
           AppText(l10n.aboutSectionTitle, variant: AppTextVariant.subtitle),
+          AppText(AppBrand.name, variant: AppTextVariant.body),
           AppText(
-            l10n.appVersion(AppBrand.version),
+            // Both parts are already loaded by AppBrand.load() at startup;
+            // the build number is what distinguishes two installs of the same
+            // version, so it's worth showing.
+            l10n.appVersion(
+              '${AppBrand.version} (${AppBrand.buildNumber})',
+            ),
             variant: AppTextVariant.caption,
-          ),
-          AppTappable(
-            onPressed: () {},
-            child: AppText(
-              l10n.privacyPolicy,
-              variant: AppTextVariant.body,
-              color: AppColors.accent(context),
-            ),
-          ),
-          AppTappable(
-            onPressed: () {},
-            child: AppText(
-              l10n.support,
-              variant: AppTextVariant.body,
-              color: AppColors.accent(context),
-            ),
           ),
         ],
       ),

@@ -7,7 +7,6 @@ import '../application/settings_providers.dart';
 import 'about_settings_card.dart';
 import 'language_settings_card.dart';
 import 'profile_settings_card.dart';
-import 'settings_welcome_title.dart';
 import 'theme_settings_card.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -16,7 +15,6 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final settings = ref.watch(settingsProvider);
 
     return AppScrollArea(
       child: Padding(
@@ -30,54 +28,40 @@ class SettingsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.xl,
           children: [
-            const SettingsWelcomeTitle(),
-            settings.when(
-              data: (value) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.xl,
-                children: [
-                  _Section(
-                    title: l10n.profileSectionTitle,
-                    child: ProfileSettingsCard(
-                      profile: value.profile,
-                      onSave: (profile) => ref
-                          .read(settingsProvider.notifier)
-                          .updateProfile(profile),
-                    ),
+            AppText(l10n.settingsTitle, variant: AppTextVariant.title),
+            ref
+                .watch(settingsProvider)
+                .when(
+                  data: (value) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: AppSpacing.xl,
+                    children: [
+                      ProfileSettingsCard(
+                        profile: value.profile,
+                        onSave: (profile) => ref
+                            .read(settingsProvider.notifier)
+                            .updateProfile(profile),
+                      ),
+                      ThemeSettingsCard(
+                        themeMode: value.themeMode,
+                        onChanged: (mode) => ref
+                            .read(settingsProvider.notifier)
+                            .setThemeMode(mode),
+                      ),
+                      LanguageSettingsCard(
+                        language: value.language,
+                        onChanged: (language) => ref
+                            .read(settingsProvider.notifier)
+                            .setLanguage(language),
+                      ),
+                      const AboutSettingsCard(),
+                    ],
                   ),
-                  _Section(
-                    title: l10n.themeSectionTitle,
-                    child: ThemeSettingsCard(
-                      themeMode: value.themeMode,
-                      onChanged: (mode) => ref
-                          .read(settingsProvider.notifier)
-                          .setThemeMode(mode),
-                    ),
+                  loading: () => const _SettingsSkeleton(),
+                  error: (error, _) => _SettingsError(
+                    onRetry: () => ref.invalidate(settingsProvider),
                   ),
-                  _Section(
-                    title: l10n.languageSectionTitle,
-                    child: LanguageSettingsCard(
-                      language: value.language,
-                      onChanged: (language) => ref
-                          .read(settingsProvider.notifier)
-                          .setLanguage(language),
-                    ),
-                  ),
-                  _Section(
-                    title: l10n.aboutSectionTitle,
-                    child: const AboutSettingsCard(),
-                  ),
-                ],
-              ),
-              loading: () => const Column(
-                children: [AppSkeletonText(), AppGap.sm(), AppSkeletonText()],
-              ),
-              error: (error, _) => AppAlert(
-                title: Text(l10n.settingsLoadError),
-                subtitle: Text('$error'),
-                variant: AppAlertVariant.destructive,
-              ),
-            ),
+                ),
           ],
         ),
       ),
@@ -85,20 +69,48 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
+/// Mirrors the real cards' heights so the layout doesn't jump when the
+/// settings finish loading.
+class _SettingsSkeleton extends StatelessWidget {
+  const _SettingsSkeleton();
 
-  final String title;
-  final Widget child;
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.xl,
+    children: const [
+      AppCard(child: AppSkeletonText(lines: 3, lineHeight: 16)),
+      AppCard(child: AppSkeletonText(lines: 3, lineHeight: 16)),
+      AppCard(child: AppSkeletonText(lines: 3, lineHeight: 16)),
+      AppCard(child: AppSkeletonText(lines: 2, lineHeight: 16)),
+    ],
+  );
+}
+
+class _SettingsError extends StatelessWidget {
+  const _SettingsError({required this.onRetry});
+
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.sm,
+      spacing: AppSpacing.md,
       children: [
-        AppText(title, variant: AppTextVariant.subtitle),
-        child,
+        // The underlying exception is deliberately not shown: it is either
+        // noise to the reader or, for a corrupt settings file, a file path.
+        AppAlert(
+          title: Text(l10n.settingsLoadError),
+          variant: AppAlertVariant.destructive,
+        ),
+        AppButton(
+          mainAxisSize: MainAxisSize.min,
+          onPressed: onRetry,
+          child: Text(l10n.retry),
+        ),
       ],
     );
   }

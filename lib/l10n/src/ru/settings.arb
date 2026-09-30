@@ -1,6 +1,5 @@
 {
   "settingsTitle": "Настройки",
-  "settingsTitleName": "Настройки",
   "settingsLoadError": "Не удалось загрузить настройки",
   "themeSectionTitle": "Тема",
   "languageSectionTitle": "Язык",
@@ -10,13 +9,14 @@
   "lightTheme": "Светлая тема",
   "darkTheme": "Тёмная тема",
   "systemTheme": "Системная тема",
+  "lightThemeShort": "Светлая",
+  "darkThemeShort": "Тёмная",
+  "systemThemeShort": "Системная",
   "aboutSectionTitle": "О приложении",
   "appVersion": "Версия {version}",
   "@appVersion": {
     "placeholders": {
       "version": { "type": "String" }
     }
-  },
-  "privacyPolicy": "Политика конфиденциальности",
-  "support": "Поддержка"
+  }
 }

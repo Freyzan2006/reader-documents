@@ -1,6 +1,5 @@
 {
   "settingsTitle": "Settings",
-  "settingsTitleName": "Settings",
   "settingsLoadError": "Could not load settings",
   "themeSectionTitle": "Theme",
   "languageSectionTitle": "Language",
@@ -10,13 +9,14 @@
   "lightTheme": "Light theme",
   "darkTheme": "Dark theme",
   "systemTheme": "System theme",
+  "lightThemeShort": "Light",
+  "darkThemeShort": "Dark",
+  "systemThemeShort": "System",
   "aboutSectionTitle": "About",
   "appVersion": "Version {version}",
   "@appVersion": {
     "placeholders": {
       "version": { "type": "String" }
     }
-  },
-  "privacyPolicy": "Privacy Policy",
-  "support": "Support"
+  }
 }

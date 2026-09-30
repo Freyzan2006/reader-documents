@@ -18,15 +18,46 @@ class ProfileSettingsCard extends StatefulWidget {
 }
 
 class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
-  late final _nameController = TextEditingController(text: widget.profile.name);
+  final _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.profile.name;
+    // Keeps the field in step when the profile is replaced from elsewhere
+    // (a settings reload, say) — without this the greeting would update while
+    // the input kept showing the old name.
+    _nameController.addListener(_syncDirty);
+  }
+
+  @override
+  void didUpdateWidget(ProfileSettingsCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.profile.name != oldWidget.profile.name) {
+      _nameController.text = widget.profile.name;
+    }
+  }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _nameController
+      ..removeListener(_syncDirty)
+      ..dispose();
     super.dispose();
   }
 
-  void _save() => widget.onSave(UserProfile(name: _nameController.text));
+  void _syncDirty() => setState(() {});
+
+  /// Nothing to save until the field actually differs from what is stored.
+  bool get _isDirty => _nameController.text != widget.profile.name;
+
+  void _save() {
+    widget.onSave(UserProfile(name: _nameController.text));
+    AppToast.show(
+      context: context,
+      title: Text(AppLocalizations.of(context)!.saved),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +68,22 @@ class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: AppSpacing.md,
         children: [
+          AppText(l10n.profileSectionTitle, variant: AppTextVariant.subtitle),
           AppRow(
             children: [
-              AppAvatar(initials: widget.profile.initials),
-              AppText(l10n.profileSectionTitle, variant: AppTextVariant.body),
+              AppAvatar(
+                // An empty name yields no initials, so fall back to a neutral
+                // silhouette rather than showing a literal "?".
+                initials: widget.profile.initialsOrNull,
+                fallbackIcon: AppIcons.lamp,
+              ),
+              AppText(widget.profile.name, variant: AppTextVariant.body),
             ],
           ),
           AppInput(controller: _nameController, label: l10n.nameLabel),
           AppButton(
             mainAxisSize: MainAxisSize.min,
-            onPressed: _save,
+            onPressed: _isDirty ? _save : null,
             child: Text(l10n.save),
           ),
         ],

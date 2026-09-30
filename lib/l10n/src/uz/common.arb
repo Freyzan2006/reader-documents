@@ -1,6 +1,8 @@
 {
   "cancel": "Bekor qilish",
   "save": "Saqlash",
+  "saved": "Saqlandi",
+  "retry": "Qayta urinish",
   "delete": "O'chirish",
   "menuTitle": "Menyu"
 }
