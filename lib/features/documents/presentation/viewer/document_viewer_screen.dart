@@ -192,7 +192,9 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   }
 
   Widget _buildContent(BuildContext context, DocumentFile file) {
-    if (!_readingProgress.isReady) return const DocumentLoadingBanner();
+    if (!_readingProgress.isReady) {
+      return DocumentLoadingBanner(type: file.type);
+    }
     return DocumentViewerFactory.build(
       file: file,
       initialPageNumber:
@@ -211,7 +213,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                 isPasswordProtected: isPasswordProtected,
                 onBack: onBack,
               ),
-      buildLoadingBanner: (context) => const DocumentLoadingBanner(),
+      buildLoadingBanner: (context) => DocumentLoadingBanner(type: file.type),
     );
   }
 

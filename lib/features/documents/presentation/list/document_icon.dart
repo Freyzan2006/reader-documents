@@ -5,10 +5,17 @@ import 'package:reader_documents/features/documents/data/models/document_file.da
 /// A document's file-type glyph — a bundled PNG for the formats that have
 /// one, falling back to a generic file icon for the rest.
 ///
-/// The PNGs are flat black glyphs, so they're tinted to the ambient icon
-/// color via [Image.asset]'s `color`/`colorBlendMode` (the same technique
-/// [Icon] uses internally) — otherwise they'd stay solid black regardless of
+/// The PNGs are flat black glyphs, so they're tinted via [Image.asset]'s
+/// `color`/`colorBlendMode` — otherwise they'd stay solid black regardless of
 /// theme, disappearing against a dark card in dark mode.
+///
+/// Tinted from [AppColors.foreground] directly, not `IconTheme.of(context)`:
+/// Forui's [FCard] (what every call site here sits inside) never sets its own
+/// `IconTheme`, so that ambient value is whatever Flutter's generic Material
+/// default happens to be — a fixed color with no relationship to this app's
+/// actual (Forui-driven) light/dark theme, which is exactly how this icon
+/// ended up dark-on-dark in dark mode despite the theme-aware fallback beside
+/// it.
 class DocumentIcon extends StatelessWidget {
   const DocumentIcon({required this.type, this.size = 20, super.key});
 
@@ -23,10 +30,9 @@ class DocumentIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final asset = _assetByType[type];
-    if (asset == null) return Icon(AppIcons.fileText, size: size);
+    final color = AppColors.of(context).foreground;
+    if (asset == null) return Icon(AppIcons.fileText, size: size, color: color);
 
-    final color =
-        IconTheme.of(context).color ?? AppColors.of(context).foreground;
     return Image.asset(
       asset,
       width: size,

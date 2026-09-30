@@ -1,13 +1,22 @@
 {
   "settingsTitle": "Sozlamalar",
+  "settingsTitleName": "Sozlamalar",
   "settingsLoadError": "Sozlamalarni yuklab bo'lmadi",
   "themeSectionTitle": "Mavzu",
   "languageSectionTitle": "Til",
   "systemLanguage": "Tizim",
   "profileSectionTitle": "Profil",
   "nameLabel": "Ism",
-  "emailLabel": "Email",
   "lightTheme": "Yorug' mavzu",
   "darkTheme": "Qorong'i mavzu",
-  "systemTheme": "Tizim mavzusi"
+  "systemTheme": "Tizim mavzusi",
+  "aboutSectionTitle": "Ilova haqida",
+  "appVersion": "{version} versiyasi",
+  "@appVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "privacyPolicy": "Maxfiylik siyosati",
+  "support": "Qo'llab-quvvatlash"
 }

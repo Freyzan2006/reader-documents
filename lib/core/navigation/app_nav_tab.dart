@@ -1,13 +1,11 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/widgets.dart';
-import 'package:reader_documents/core/ui_kit/dev/preview.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/presentation/list/documents_screen.dart';
 import 'package:reader_documents/features/home/presentation/home_screen.dart';
 import 'package:reader_documents/features/settings/presentation/settings_screen.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-enum AppNavDestination { home, documents, uiKit, settings }
+enum AppNavDestination { home, documents, settings }
 
 class AppNavTab {
   const AppNavTab({
@@ -37,13 +35,7 @@ abstract final class AppNavTabs {
       label: l10n.navDocuments,
       screen: const DocumentsScreen(),
     ),
-    if (kDebugMode)
-      AppNavTab(
-        destination: AppNavDestination.uiKit,
-        icon: AppIcons.palette,
-        label: l10n.navUiKit,
-        screen: const UiKitGalleryScreen(),
-      ),
+
     AppNavTab(
       destination: AppNavDestination.settings,
       icon: AppIcons.settings,

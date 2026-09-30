@@ -19,20 +19,14 @@ class ProfileSettingsCard extends StatefulWidget {
 
 class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
   late final _nameController = TextEditingController(text: widget.profile.name);
-  late final _emailController = TextEditingController(
-    text: widget.profile.email,
-  );
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
     super.dispose();
   }
 
-  void _save() => widget.onSave(
-    UserProfile(name: _nameController.text, email: _emailController.text),
-  );
+  void _save() => widget.onSave(UserProfile(name: _nameController.text));
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +44,6 @@ class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
             ],
           ),
           AppInput(controller: _nameController, label: l10n.nameLabel),
-          AppInput(controller: _emailController, label: l10n.emailLabel),
           AppButton(
             mainAxisSize: MainAxisSize.min,
             onPressed: _save,

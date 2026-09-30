@@ -4,8 +4,10 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../application/settings_providers.dart';
+import 'about_settings_card.dart';
 import 'language_settings_card.dart';
 import 'profile_settings_card.dart';
+import 'settings_welcome_title.dart';
 import 'theme_settings_card.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -26,30 +28,44 @@ class SettingsScreen extends ConsumerWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.xl,
           children: [
-            AppText(l10n.settingsTitle, variant: AppTextVariant.title),
-            const AppGap.lg(),
+            const SettingsWelcomeTitle(),
             settings.when(
               data: (value) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.lg,
+                spacing: AppSpacing.xl,
                 children: [
-                  ProfileSettingsCard(
-                    profile: value.profile,
-                    onSave: (profile) => ref
-                        .read(settingsProvider.notifier)
-                        .updateProfile(profile),
+                  _Section(
+                    title: l10n.profileSectionTitle,
+                    child: ProfileSettingsCard(
+                      profile: value.profile,
+                      onSave: (profile) => ref
+                          .read(settingsProvider.notifier)
+                          .updateProfile(profile),
+                    ),
                   ),
-                  ThemeSettingsCard(
-                    themeMode: value.themeMode,
-                    onChanged: (mode) =>
-                        ref.read(settingsProvider.notifier).setThemeMode(mode),
+                  _Section(
+                    title: l10n.themeSectionTitle,
+                    child: ThemeSettingsCard(
+                      themeMode: value.themeMode,
+                      onChanged: (mode) => ref
+                          .read(settingsProvider.notifier)
+                          .setThemeMode(mode),
+                    ),
                   ),
-                  LanguageSettingsCard(
-                    language: value.language,
-                    onChanged: (language) => ref
-                        .read(settingsProvider.notifier)
-                        .setLanguage(language),
+                  _Section(
+                    title: l10n.languageSectionTitle,
+                    child: LanguageSettingsCard(
+                      language: value.language,
+                      onChanged: (language) => ref
+                          .read(settingsProvider.notifier)
+                          .setLanguage(language),
+                    ),
+                  ),
+                  _Section(
+                    title: l10n.aboutSectionTitle,
+                    child: const AboutSettingsCard(),
                   ),
                 ],
               ),
@@ -65,6 +81,25 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.sm,
+      children: [
+        AppText(title, variant: AppTextVariant.subtitle),
+        child,
+      ],
     );
   }
 }

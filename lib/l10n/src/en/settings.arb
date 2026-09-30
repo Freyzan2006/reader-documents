@@ -1,13 +1,22 @@
 {
   "settingsTitle": "Settings",
+  "settingsTitleName": "Settings",
   "settingsLoadError": "Could not load settings",
   "themeSectionTitle": "Theme",
   "languageSectionTitle": "Language",
   "systemLanguage": "System",
   "profileSectionTitle": "Profile",
   "nameLabel": "Name",
-  "emailLabel": "Email",
   "lightTheme": "Light theme",
   "darkTheme": "Dark theme",
-  "systemTheme": "System theme"
+  "systemTheme": "System theme",
+  "aboutSectionTitle": "About",
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "privacyPolicy": "Privacy Policy",
+  "support": "Support"
 }

@@ -10,7 +10,6 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
   static const _themeModeKey = 'settings.themeMode';
   static const _languageKey = 'settings.language';
   static const _profileNameKey = 'settings.profile.name';
-  static const _profileEmailKey = 'settings.profile.email';
   static const _warmReadingFilterKey = 'settings.warmReadingFilter';
 
   @override
@@ -27,10 +26,7 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
     return AppSettings(
       themeMode: themeMode,
       language: language,
-      profile: UserProfile(
-        name: prefs.getString(_profileNameKey) ?? '',
-        email: prefs.getString(_profileEmailKey) ?? '',
-      ),
+      profile: UserProfile(name: prefs.getString(_profileNameKey) ?? ''),
       warmReadingFilter: prefs.getBool(_warmReadingFilterKey) ?? false,
     );
   }
@@ -43,7 +39,6 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
     await prefs.setString(_themeModeKey, settings.themeMode.name);
     await prefs.setString(_languageKey, settings.language.name);
     await prefs.setString(_profileNameKey, settings.profile.name);
-    await prefs.setString(_profileEmailKey, settings.profile.email);
     await prefs.setBool(_warmReadingFilterKey, settings.warmReadingFilter);
   }
 }

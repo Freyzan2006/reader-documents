@@ -1,10 +1,9 @@
 class UserProfile {
-  const UserProfile({required this.name, required this.email});
+  const UserProfile({required this.name});
 
-  static const empty = UserProfile(name: '', email: '');
+  static const empty = UserProfile(name: '');
 
   final String name;
-  final String email;
 
   List<String> get _nameParts => name
       .trim()
@@ -23,6 +22,5 @@ class UserProfile {
   /// The first token of [name], or `''` if no name has been set.
   String get firstName => _nameParts.firstOrNull ?? '';
 
-  UserProfile copyWith({String? name, String? email}) =>
-      UserProfile(name: name ?? this.name, email: email ?? this.email);
+  UserProfile copyWith({String? name}) => UserProfile(name: name ?? this.name);
 }
