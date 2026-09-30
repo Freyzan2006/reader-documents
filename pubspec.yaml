@@ -52,6 +52,7 @@ dependencies:
   package_info_plus: ^10.2.1
   # Vendored fork, not the plain pub.dev package — see
   # packages/docx_file_viewer/PATCH.md for why and how to update it.
+  # origin source: https://pub.dev/packages/docx_file_viewer
   docx_file_viewer:
     path: packages/docx_file_viewer
 
