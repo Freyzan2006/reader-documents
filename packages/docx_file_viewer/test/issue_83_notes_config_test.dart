@@ -8,7 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 DocxBuiltDocument _docWithNotes() {
   return DocxBuiltDocument(
-    elements: [DocxParagraph(children: [DocxText('Body text')])],
+    elements: [
+      DocxParagraph(children: [DocxText('Body text')])
+    ],
     footnotes: [
       DocxFootnote(footnoteId: 1, content: [
         DocxParagraph(children: [DocxText('Footnote one')])

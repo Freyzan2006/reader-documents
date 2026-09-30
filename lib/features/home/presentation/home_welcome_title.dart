@@ -17,8 +17,9 @@ class HomeWelcomeTitle extends ConsumerWidget {
 
     return WelcomeTitle(
       title: l10n.homeWelcome,
-      personalizedTitle:
-          firstName.isEmpty ? null : l10n.homeWelcomeName(firstName),
+      personalizedTitle: firstName.isEmpty
+          ? null
+          : l10n.homeWelcomeName(firstName),
     );
   }
 }

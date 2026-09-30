@@ -36,9 +36,13 @@ class ArbMerger {
       exit(1);
     }
 
-    final locales = root.listSync().whereType<Directory>().map(
-      (dir) => p.basename(dir.path),
-    ).toList()..sort();
+    final locales =
+        root
+            .listSync()
+            .whereType<Directory>()
+            .map((dir) => p.basename(dir.path))
+            .toList()
+          ..sort();
 
     if (locales.isEmpty) {
       stderr.writeln('No locale directories found under $sourceDir.');

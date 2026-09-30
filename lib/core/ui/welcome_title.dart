@@ -3,11 +3,7 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 
 /// A reusable welcome title for main screens.
 class WelcomeTitle extends StatelessWidget {
-  const WelcomeTitle({
-    required this.title,
-    this.personalizedTitle,
-    super.key,
-  });
+  const WelcomeTitle({required this.title, this.personalizedTitle, super.key});
 
   /// Default title when no personalization is available.
   final String title;

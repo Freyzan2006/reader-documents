@@ -17,8 +17,7 @@ class SettingsWelcomeTitle extends ConsumerWidget {
 
     return WelcomeTitle(
       title: l10n.settingsTitle,
-      personalizedTitle:
-          firstName.isEmpty ? null : l10n.settingsTitleName,
+      personalizedTitle: firstName.isEmpty ? null : l10n.settingsTitleName,
     );
   }
 }

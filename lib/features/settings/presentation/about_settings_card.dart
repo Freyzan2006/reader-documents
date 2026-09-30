@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:reader_documents/core/config/app_brand.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
@@ -15,7 +16,10 @@ class AboutSettingsCard extends StatelessWidget {
         spacing: AppSpacing.sm,
         children: [
           AppText(l10n.aboutSectionTitle, variant: AppTextVariant.subtitle),
-          AppText(l10n.appVersion('1.0.0'), variant: AppTextVariant.caption),
+          AppText(
+            l10n.appVersion(AppBrand.version),
+            variant: AppTextVariant.caption,
+          ),
           AppTappable(
             onPressed: () {},
             child: AppText(

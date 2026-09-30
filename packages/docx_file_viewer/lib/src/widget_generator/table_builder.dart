@@ -442,7 +442,8 @@ class TableBuilder {
       // Flutter's Border/BorderSide only supports solid or none - dotted
       // and dashed styles are drawn as solid rather than silently
       // disappearing, which is the closer approximation of the two.
-      return BorderSide(color: borderColor, width: borderWidth, style: BorderStyle.solid);
+      return BorderSide(
+          color: borderColor, width: borderWidth, style: BorderStyle.solid);
     }
 
     // Determine which table-level border to use based on position
