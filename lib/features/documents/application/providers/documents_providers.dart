@@ -7,6 +7,7 @@ import 'package:reader_documents/features/documents/data/repositories/document_t
 import 'package:reader_documents/features/documents/data/repositories/documents_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/favorites_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/highlights_repository.dart';
+import 'package:reader_documents/features/documents/data/repositories/reading_offset_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_progress_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/recently_opened_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/tag_definitions_repository.dart';
@@ -27,6 +28,10 @@ final documentsRepositoryProvider = Provider<DocumentsRepository>(
 
 final readingProgressRepositoryProvider = Provider<ReadingProgressRepository>(
   (ref) => const ReadingProgressRepository(),
+);
+
+final readingOffsetRepositoryProvider = Provider<ReadingOffsetRepository>(
+  (ref) => const ReadingOffsetRepository(),
 );
 
 final highlightsRepositoryProvider = Provider<HighlightsRepository>(
@@ -129,6 +134,18 @@ final favoriteDocumentsProvider = Provider<AsyncValue<List<DocumentFile>>>((
 final lastReadingProgressPageProvider = FutureProvider.family<int?, String>(
   (ref, documentPath) =>
       ref.watch(readingProgressRepositoryProvider).load(documentPath),
+);
+
+/// The saved reading position for a document rendered as a continuous flow
+/// (DOCX), as a fraction of the scrollable extent, or `null` if nothing was
+/// saved — which is also the case for a document read to the end, see
+/// [ReadingProgressController.flush].
+///
+/// Meaningless for paginated documents: they save a page number instead, and
+/// this stays `null` for them rather than pretending to be 0%.
+final lastReadingOffsetProvider = FutureProvider.family<double?, String>(
+  (ref, documentPath) =>
+      ref.watch(readingOffsetRepositoryProvider).load(documentPath),
 );
 
 const recentDocumentsLimit = 4;

@@ -62,10 +62,17 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
       ref.read(highlightsRepositoryProvider),
       widget.file.path,
     );
-    _readingProgress = ReadingProgressController(
-      ref.read(readingProgressRepositoryProvider),
-      widget.file.path,
-    );
+    _readingProgress = widget.file.type == DocumentType.docx
+        ? ReadingProgressController.offset(
+            repository: ref.read(readingOffsetRepositoryProvider),
+            documentPath: widget.file.path,
+            onSaved: _onReadingProgressSaved,
+          )
+        : ReadingProgressController.page(
+            repository: ref.read(readingProgressRepositoryProvider),
+            documentPath: widget.file.path,
+            onSaved: _onReadingProgressSaved,
+          );
     _bookmarks = DocumentBookmarksController(
       ref.read(bookmarksRepositoryProvider),
       widget.file.path,
@@ -78,6 +85,16 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     _readingProgress.load();
     _highlights.load();
     _bookmarks.load();
+  }
+
+  // The home screen keeps a cached copy of the saved position, and closing a
+  // document here is the only moment anything learns the position changed. The
+  // write has already landed by the time this fires, so re-reading yields the
+  // new value instead of the one it replaced.
+  void _onReadingProgressSaved() {
+    if (!mounted) return;
+    ref.invalidate(lastReadingProgressPageProvider(widget.file.path));
+    ref.invalidate(lastReadingOffsetProvider(widget.file.path));
   }
 
   void _onControllerChanged() {
@@ -214,6 +231,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                 onBack: onBack,
               ),
       buildLoadingBanner: (context) => DocumentLoadingBanner(type: file.type),
+      initialReadFraction: _readingProgress.initialFraction,
+      onReadFractionChanged: _readingProgress.onScrollFraction,
     );
   }
 

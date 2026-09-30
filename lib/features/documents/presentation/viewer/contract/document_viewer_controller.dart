@@ -22,6 +22,12 @@ abstract class DocumentViewerController extends ChangeNotifier {
   /// interface, but callers must not invoke them when this is false.
   bool get supportsPagination;
 
+  /// Reading position in 0..1 for formats with no addressable pages. Formats
+  /// that paginate leave it at 0 and expose [currentPage]/[pageCount] instead.
+  /// Implementations must guard against a non-positive or non-finite max
+  /// extent — a document that fits the viewport has nothing to scroll.
+  double get readProgress => 0;
+
   int? get currentPage;
   int get pageCount;
   Future<void> goToPage(int pageNumber);

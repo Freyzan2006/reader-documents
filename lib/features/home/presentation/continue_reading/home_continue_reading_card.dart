@@ -20,6 +20,12 @@ class HomeContinueReadingCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final title = ref.watch(documentTitleProvider(file.path)) ?? file.name;
     final page = ref.watch(lastReadingProgressPageProvider(file.path)).value;
+    final offset = ref.watch(lastReadingOffsetProvider(file.path)).value;
+    // Clamped because the value comes off disk and FDeterminateProgress asserts
+    // its argument into 0..1 — a stale or hand-edited key would otherwise take
+    // the whole home screen down. Null for paginated documents, which save a
+    // page number instead, so only DOCX grows a bar.
+    final progress = offset?.clamp(0.0, 1.0);
 
     return AppTappable(
       onPressed: () => DocumentCommands.open(context, ref, file),
@@ -45,6 +51,7 @@ class HomeContinueReadingCard extends ConsumerWidget {
                       l10n.bookmarkPageLabel(page),
                       variant: AppTextVariant.caption,
                     ),
+                  if (progress != null) AppProgress(value: progress),
                 ],
               ),
             ),

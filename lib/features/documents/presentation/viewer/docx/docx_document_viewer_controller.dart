@@ -13,6 +13,26 @@ class DocxDocumentViewerController extends DocumentViewerController {
 
   late final DocxDocumentSearchSession _search;
 
+  double _readProgress = 0;
+  int _reportedPercent = 0;
+
+  /// Scroll position as a fraction of the scrollable extent.
+  @override
+  double get readProgress => _readProgress;
+
+  /// Records a new reading position.
+  ///
+  /// Listeners are notified only when the whole-percent readout changes: this
+  /// is called on every scroll frame, and rebuilding the indicator that often
+  /// would cost more than the readout is worth.
+  void setReadProgress(double fraction) {
+    _readProgress = fraction;
+    final percent = (fraction * 100).round();
+    if (percent == _reportedPercent) return;
+    _reportedPercent = percent;
+    notifyListeners();
+  }
+
   @override
   bool get supportsPagination => false;
 

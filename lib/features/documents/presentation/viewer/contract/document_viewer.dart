@@ -43,6 +43,8 @@ abstract class DocumentViewer extends StatefulWidget {
     required this.buildMagnifier,
     required this.buildErrorBanner,
     required this.buildLoadingBanner,
+    this.initialReadFraction = 0,
+    this.onReadFractionChanged,
     super.key,
   });
 
@@ -50,6 +52,14 @@ abstract class DocumentViewer extends StatefulWidget {
   final int initialPageNumber;
   final ValueListenable<List<DocumentHighlight>> highlights;
   final ValueChanged<int?> onPageChanged;
+
+  /// Restored reading position in 0..1, for formats with no addressable page
+  /// numbers. Ignored by viewers that paginate.
+  final double initialReadFraction;
+
+  /// Reports the live reading position in 0..1. Null in viewers that paginate,
+  /// where [onPageChanged] carries the position instead.
+  final ValueChanged<double>? onReadFractionChanged;
   final ValueChanged<DocumentViewerController> onReady;
   final DocumentBackgroundTapHandler onBackgroundTap;
   final DocumentPasswordProvider passwordProvider;

@@ -26,6 +26,8 @@ abstract final class DocumentViewerFactory {
     required DocumentMagnifierBuilder buildMagnifier,
     required DocumentErrorBannerBuilder buildErrorBanner,
     required DocumentLoadingBannerBuilder buildLoadingBanner,
+    double initialReadFraction = 0,
+    ValueChanged<double>? onReadFractionChanged,
   }) => switch (file.type) {
     DocumentType.pdf => PdfDocumentViewer(
       file: file,
@@ -52,6 +54,8 @@ abstract final class DocumentViewerFactory {
       buildMagnifier: buildMagnifier,
       buildErrorBanner: buildErrorBanner,
       buildLoadingBanner: buildLoadingBanner,
+      initialReadFraction: initialReadFraction,
+      onReadFractionChanged: onReadFractionChanged,
     ),
     DocumentType.djvu || DocumentType.other => throw UnsupportedError(
       'No viewer registered for ${file.type}',

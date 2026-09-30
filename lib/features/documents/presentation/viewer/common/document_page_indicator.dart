@@ -94,21 +94,31 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-    if (controller == null || !controller.supportsPagination) {
-      return const SizedBox.shrink();
-    }
-    final currentPage = controller.currentPage;
-    if (currentPage == null) return const SizedBox.shrink();
+    if (controller == null) return const SizedBox.shrink();
 
-    return AppTappable(
-      onPressed: _showGoToPageDialog,
-      child: AppCard(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.xs,
-        ),
-        child: AppText('$currentPage/${controller.pageCount}'),
-      ),
-    );
+    if (controller.supportsPagination) {
+      // Still nothing to report until the page is known — don't fall through
+      // to the percentage here or a paginated document would flash "0%" while
+      // it loads.
+      final currentPage = controller.currentPage;
+      if (currentPage == null) return const SizedBox.shrink();
+      return AppTappable(
+        onPressed: _showGoToPageDialog,
+        child: _chip('$currentPage/${controller.pageCount}'),
+      );
+    }
+
+    // No addressable pages: show how far through the document we are. Purely
+    // a readout — there is no page to jump to, so it is not tappable.
+    final percent = (controller.readProgress * 100).round().clamp(0, 100);
+    return _chip('$percent%');
   }
+
+  Widget _chip(String label) => AppCard(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.xs,
+    ),
+    child: AppText(label),
+  );
 }
