@@ -140,7 +140,9 @@ class _DocxDocumentViewerState extends State<DocxDocumentViewer> {
                 searchController: _searchController,
                 onLoaded: _onLoaded,
                 onError: _onError,
-                config: const DocxViewConfig(pageMode: DocxPageMode.continuous),
+                config: const DocxViewConfig(
+                  pageMode: DocxPageMode.continuous,
+                ),
               ),
             ),
           ),

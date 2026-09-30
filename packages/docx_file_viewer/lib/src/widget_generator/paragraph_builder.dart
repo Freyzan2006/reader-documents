@@ -13,6 +13,10 @@ import '../widgets/drop_cap_text.dart';
 
 /// Builds Flutter widgets from [DocxParagraph] elements.
 class ParagraphBuilder {
+  /// Width kept for the text run beside floating images/shapes once those
+  /// start needing more room than the page provides.
+  static const double _minFloatTextWidth = 64;
+
   final DocxViewTheme theme;
   final DocxViewConfig config;
   final DocxTheme? docxTheme;
@@ -345,21 +349,55 @@ class ParagraphBuilder {
         : RichText(text: textSpan, textAlign: textAlign);
 
     // Use IntrinsicHeight to allow text to wrap naturally beside floats
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (leftElements.isNotEmpty) ...[
-            buildFloatColumn(leftElements),
-            const SizedBox(width: floatSpacing),
-          ],
-          Expanded(child: textWidget),
-          if (rightElements.isNotEmpty) ...[
-            const SizedBox(width: floatSpacing),
-            buildFloatColumn(rightElements),
-          ],
+    final rowWidget = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (leftElements.isNotEmpty) ...[
+          buildFloatColumn(leftElements),
+          const SizedBox(width: floatSpacing),
         ],
-      ),
+        Expanded(child: textWidget),
+        if (rightElements.isNotEmpty) ...[
+          const SizedBox(width: floatSpacing),
+          buildFloatColumn(rightElements),
+        ],
+      ],
+    );
+
+    // Floats keep their intrinsic width from the document, so past that width
+    // the row overflows regardless of the flexible text child. Scroll the
+    // paragraph sideways in that case instead of dropping the overflow.
+    double floatColumnWidth(List<DocxInline> elements) {
+      var widest = 0.0;
+      for (final element in elements) {
+        // Mirrors `buildFloatWidget` above: both branches size off
+        // `pointsToPixels`, but only these two element types have a width.
+        double? width;
+        if (element is DocxInlineImage) {
+          width = DocxUnits.pointsToPixels(element.width);
+        } else if (element is DocxShape) {
+          width = DocxUnits.pointsToPixels(element.width);
+        }
+        if (width != null && width > widest) widest = width;
+      }
+      return widest;
+    }
+
+    final reservedWidth = floatColumnWidth(leftElements) +
+        floatColumnWidth(rightElements) +
+        floatSpacing *
+            ((leftElements.isNotEmpty ? 1 : 0) + (rightElements.isNotEmpty ? 1 : 0)) +
+        _minFloatTextWidth;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final floatRow = IntrinsicHeight(child: rowWidget);
+        if (reservedWidth <= constraints.maxWidth) return floatRow;
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(width: reservedWidth, child: floatRow),
+        );
+      },
     );
   }
 

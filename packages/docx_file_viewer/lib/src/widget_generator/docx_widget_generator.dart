@@ -5,6 +5,7 @@ import '../docx_view_config.dart';
 import '../search/docx_search_controller.dart';
 import '../theme/docx_view_theme.dart';
 import '../utils/block_index_counter.dart';
+import '../utils/docx_units.dart';
 import 'image_builder.dart';
 import 'list_builder.dart';
 import 'paragraph_builder.dart';
@@ -15,6 +16,10 @@ import 'table_builder.dart';
 ///
 /// This is the core "brain" that maps OpenXML elements to Flutter widgets.
 class DocxWidgetGenerator {
+  /// Width kept for the text run beside floating images/shapes once those
+  /// start needing more room than the page provides.
+  static const double _minFloatTextWidth = 64;
+
   final DocxViewConfig config;
   final DocxViewTheme theme;
   final DocxTheme? docxTheme;
@@ -559,6 +564,38 @@ class DocxWidgetGenerator {
             }).toList();
           }
 
+          // A `Column` sizes its cross axis to its widest child, so each float
+          // column demands as much width as the widest float in it. Mirrors the
+          // sizing `buildFloatColumn` below applies, so the scroll width we
+          // derive here matches what actually gets laid out.
+          double floatColumnWidth(List<DocxInline> floats) {
+            var widest = 0.0;
+            for (final float in floats) {
+              var width = 0.0;
+              if (float is DocxInlineImage) {
+                width = float.width;
+              } else if (float is DocxShape) {
+                width = DocxUnits.pointsToPixels(float.width);
+              }
+              if (width > widest) widest = width;
+            }
+            return widest;
+          }
+
+          const floatSpacing = 12.0;
+
+          // Floats carry their own intrinsic width from the document and never
+          // shrink, so once they exceed the available width the `Row` below
+          // overflows no matter how the flexible text child is sized. Reserve
+          // a narrow text column and, when the floats do not fit, scroll the
+          // whole paragraph horizontally rather than clipping it.
+          final reservedWidth = floatColumnWidth(activeLefts) +
+              floatColumnWidth(finalRights) +
+              floatSpacing *
+                  ((activeLefts.isNotEmpty ? 1 : 0) +
+                      (finalRights.isNotEmpty ? 1 : 0)) +
+              _minFloatTextWidth;
+
           final rowWidget = Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -567,11 +604,11 @@ class DocxWidgetGenerator {
                   mainAxisSize: MainAxisSize.min,
                   children: buildFloatColumn(activeLefts),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: floatSpacing),
               ],
               Expanded(child: contentWidget),
               if (finalRights.isNotEmpty) ...[
-                const SizedBox(width: 12),
+                const SizedBox(width: floatSpacing),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: buildFloatColumn(finalRights),
@@ -582,7 +619,18 @@ class DocxWidgetGenerator {
 
           widgets.add(Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: rowWidget,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                if (reservedWidth <= constraints.maxWidth) return rowWidget;
+                // A horizontal scroll view hands its child unbounded width,
+                // which `Expanded` inside [rowWidget] cannot lay out against,
+                // hence the explicit finite `SizedBox`.
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(width: reservedWidth, child: rowWidget),
+                );
+              },
+            ),
           ));
 
           i++;
