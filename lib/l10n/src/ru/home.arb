@@ -9,5 +9,7 @@
   "homeQuickActionSearch": "Поиск",
   "homeStatsTotalSize": "Общий размер",
   "homeTagsTitle": "По тегам",
-  "homeTagsLoadError": "Не удалось загрузить теги"
+  "homeTagsLoadError": "Не удалось загрузить теги",
+  "seeAll": "Все",
+  "favoritesEmpty": "Пока нет избранных документов"
 }

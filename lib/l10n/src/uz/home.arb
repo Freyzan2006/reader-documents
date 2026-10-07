@@ -9,5 +9,7 @@
   "homeQuickActionSearch": "Qidiruv",
   "homeStatsTotalSize": "Umumiy hajm",
   "homeTagsTitle": "Teg bo'yicha",
-  "homeTagsLoadError": "Teglarni yuklab bo'lmadi"
+  "homeTagsLoadError": "Teglarni yuklab bo'lmadi",
+  "seeAll": "Barchasi",
+  "favoritesEmpty": "Hozircha sevimli hujjatlar yo'q"
 }

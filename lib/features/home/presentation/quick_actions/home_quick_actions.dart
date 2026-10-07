@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:reader_documents/core/navigation/app_nav_tab.dart';
-import 'package:reader_documents/core/navigation/navigation_providers.dart';
+import 'package:reader_documents/core/navigation/app_command_launcher.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 import 'package:reader_documents/features/settings/application/settings_providers.dart';
@@ -33,9 +32,7 @@ class HomeQuickActions extends ConsumerWidget {
           child: HomeQuickActionButton(
             icon: AppIcons.search,
             label: l10n.homeQuickActionSearch,
-            onTap: () =>
-                ref.read(currentNavDestinationProvider.notifier).state =
-                    AppNavDestination.documents,
+            onTap: () => AppCommandLauncher.show(context, ref),
           ),
         ),
         Expanded(

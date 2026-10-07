@@ -1,5 +1,11 @@
 {
   "navHome": "Главная",
   "navDocuments": "Документы",
-  "navSettings": "Настройки"
+  "navSettings": "Настройки",
+  "menuRecentTitle": "Недавние",
+  "menuDocumentsCount": "{count, plural, =0{Нет документов} one{{count} документ} few{{count} документа} many{{count} документов} other{{count} документа}}",
+  "searchHint": "Поиск документов и действий…",
+  "searchRecentCommands": "Недавние действия",
+  "searchNoResults": "Ничего не найдено",
+  "searchActionsTitle": "Действия"
 }

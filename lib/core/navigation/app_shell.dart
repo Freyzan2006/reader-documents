@@ -24,7 +24,7 @@ class AppShell extends ConsumerWidget {
         title: AppBrand.shortName,
         titleTooltip: AppBrand.name,
         onMenuTap: () => AppSideMenu.show(context, ref),
-        actionIcon: AppIcons.command,
+        actionIcon: AppIcons.search,
         onActionTap: () => AppCommandLauncher.show(context, ref),
       ),
       footer: AppBottomNav(

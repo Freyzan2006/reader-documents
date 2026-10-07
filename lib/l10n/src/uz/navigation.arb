@@ -1,5 +1,11 @@
 {
   "navHome": "Bosh sahifa",
   "navDocuments": "Hujjatlar",
-  "navSettings": "Sozlamalar"
+  "navSettings": "Sozlamalar",
+  "menuRecentTitle": "Yaqindagilar",
+  "menuDocumentsCount": "{count, plural, =0{Hujjatlar yo'q} other{{count} ta hujjat}}",
+  "searchHint": "Hujjat va amallarni qidirish…",
+  "searchRecentCommands": "Oxirgi amallar",
+  "searchNoResults": "Hech narsa topilmadi",
+  "searchActionsTitle": "Amallar"
 }

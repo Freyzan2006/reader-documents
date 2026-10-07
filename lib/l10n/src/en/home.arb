@@ -3,7 +3,9 @@
   "homeWelcomeName": "Welcome, {name}",
   "@homeWelcomeName": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "homeRecentTitle": "Recently opened",
@@ -14,5 +16,7 @@
   "homeQuickActionSearch": "Search",
   "homeStatsTotalSize": "Total size",
   "homeTagsTitle": "By tag",
-  "homeTagsLoadError": "Couldn't load tags"
+  "homeTagsLoadError": "Couldn't load tags",
+  "seeAll": "See all",
+  "favoritesEmpty": "No favorite documents yet"
 }
