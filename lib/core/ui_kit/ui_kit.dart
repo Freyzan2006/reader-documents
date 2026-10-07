@@ -5,5 +5,6 @@ export 'layout/layout.dart';
 export 'navigation/navigation.dart';
 export 'overlay/overlay.dart';
 export 'primitives/primitives.dart';
+export 'theme/app_effects.dart';
 export 'theme/app_theme.dart';
 export 'tokens/tokens.dart';

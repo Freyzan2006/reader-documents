@@ -18,5 +18,10 @@
     "placeholders": {
       "version": { "type": "String" }
     }
-  }
+  },
+  "effectsSectionTitle": "Визуальные эффекты",
+  "effectsSectionHint": "Анимации и эффекты интерфейса. «Производительность» делает приложение быстрее и плавнее на старых устройствах.",
+  "effectsSystem": "Системные",
+  "effectsQuality": "Качество",
+  "effectsPerformance": "Производительность"
 }

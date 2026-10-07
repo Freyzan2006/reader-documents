@@ -1,12 +1,13 @@
-import 'dart:ui';
-
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart' show FBuildContext, FTappable;
 
+import '../primitives/frosted_surface.dart';
 import '../tokens/app_borders.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
+
+enum AppBottomNavVariant { standard, blur }
 
 class AppBottomNavItem {
   const AppBottomNavItem({required this.icon, required this.label});
@@ -20,6 +21,7 @@ class AppBottomNav extends StatelessWidget {
     required this.items,
     required this.currentIndex,
     required this.onChanged,
+    this.variant = AppBottomNavVariant.standard,
     super.key,
   });
 
@@ -36,6 +38,7 @@ class AppBottomNav extends StatelessWidget {
   final List<AppBottomNavItem> items;
   final int currentIndex;
   final ValueChanged<int> onChanged;
+  final AppBottomNavVariant variant;
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -46,31 +49,25 @@ class AppBottomNav extends StatelessWidget {
       AppSpacing.lg,
       AppSpacing.md,
     ),
-    child: ClipRRect(
+    child: AppFrostedSurface(
+      frosted: variant == AppBottomNavVariant.blur,
+      color: context.theme.colors.secondary,
       borderRadius: AppRadius.of(context).xl2,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: context.theme.colors.secondary.withValues(alpha: 0.7),
-            border: AppBorders.all(context),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                for (final (index, item) in items.indexed)
-                  Expanded(
-                    child: _AppBottomNavTab(
-                      item: item,
-                      selected: index == currentIndex,
-                      onPress: () => onChanged(index),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+      border: AppBorders.all(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            for (final (index, item) in items.indexed)
+              Expanded(
+                child: _AppBottomNavTab(
+                  item: item,
+                  selected: index == currentIndex,
+                  onPress: () => onChanged(index),
+                ),
+              ),
+          ],
         ),
       ),
     ),

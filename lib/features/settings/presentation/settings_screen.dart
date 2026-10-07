@@ -4,10 +4,11 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../application/settings_providers.dart';
-import 'about_settings_card.dart';
-import 'language_settings_card.dart';
-import 'profile_settings_card.dart';
-import 'theme_settings_card.dart';
+import 'about_settings_section.dart';
+import 'effects_settings_section.dart';
+import 'language_settings_section.dart';
+import 'profile_settings_section.dart';
+import 'theme_settings_section.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -36,25 +37,31 @@ class SettingsScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: AppSpacing.xl,
                     children: [
-                      ProfileSettingsCard(
+                      ProfileSettingsSection(
                         profile: value.profile,
                         onSave: (profile) => ref
                             .read(settingsProvider.notifier)
                             .updateProfile(profile),
                       ),
-                      ThemeSettingsCard(
+                      ThemeSettingsSection(
                         themeMode: value.themeMode,
                         onChanged: (mode) => ref
                             .read(settingsProvider.notifier)
                             .setThemeMode(mode),
                       ),
-                      LanguageSettingsCard(
+                      EffectsSettingsSection(
+                        effectsMode: value.effectsMode,
+                        onChanged: (mode) => ref
+                            .read(settingsProvider.notifier)
+                            .setEffectsMode(mode),
+                      ),
+                      LanguageSettingsSection(
                         language: value.language,
                         onChanged: (language) => ref
                             .read(settingsProvider.notifier)
                             .setLanguage(language),
                       ),
-                      const AboutSettingsCard(),
+                      const AboutSettingsSection(),
                     ],
                   ),
                   loading: () => const _SettingsSkeleton(),
@@ -79,10 +86,11 @@ class _SettingsSkeleton extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     spacing: AppSpacing.xl,
     children: const [
-      AppCard(child: AppSkeletonText(lines: 3, lineHeight: 16)),
-      AppCard(child: AppSkeletonText(lines: 3, lineHeight: 16)),
-      AppCard(child: AppSkeletonText(lines: 3, lineHeight: 16)),
-      AppCard(child: AppSkeletonText(lines: 2, lineHeight: 16)),
+      AppSkeletonText(lines: 3, lineHeight: 16),
+      AppSkeletonText(lines: 3, lineHeight: 16),
+      AppSkeletonText(lines: 3, lineHeight: 16),
+      AppSkeletonText(lines: 3, lineHeight: 16),
+      AppSkeletonText(lines: 2, lineHeight: 16),
     ],
   );
 }

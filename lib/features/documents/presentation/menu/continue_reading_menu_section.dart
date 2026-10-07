@@ -6,8 +6,6 @@ import 'package:reader_documents/features/documents/data/models/document_file.da
 import 'package:reader_documents/features/home/presentation/continue_reading/home_continue_reading_card.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import 'menu_section.dart';
-
 class ContinueReadingMenuSection extends ConsumerWidget {
   const ContinueReadingMenuSection({required this.onOpen, super.key});
 
@@ -18,7 +16,8 @@ class ContinueReadingMenuSection extends ConsumerWidget {
     final file = ref.watch(mostRecentDocumentProvider).value;
     if (file == null) return const SizedBox.shrink();
 
-    return MenuSection(
+    return AppSection(
+      variant: AppSectionVariant.compact,
       title: AppLocalizations.of(context)!.homeContinueReadingTitle,
       icon: AppIcons.bookOpen,
       child: HomeContinueReadingCard(file: file, onTap: () => onOpen(file)),

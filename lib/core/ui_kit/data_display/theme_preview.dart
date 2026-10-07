@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
@@ -43,8 +45,24 @@ class _Pane extends StatelessWidget {
 
   final Brightness brightness;
 
+  static const _minWidth = 64.0;
+
   @override
-  Widget build(BuildContext context) => FTheme(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final scale = math.min(1.0, constraints.maxWidth / _minWidth);
+      return FittedBox(
+        fit: BoxFit.fill,
+        child: SizedBox(
+          width: constraints.maxWidth / scale,
+          height: constraints.maxHeight / scale,
+          child: _content(context),
+        ),
+      );
+    },
+  );
+
+  Widget _content(BuildContext context) => FTheme(
     data: AppTheme.of(brightness),
     child: Builder(
       builder: (context) {

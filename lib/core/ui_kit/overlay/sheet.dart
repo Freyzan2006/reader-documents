@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import 'barrier.dart';
 import 'sheet_surface.dart';
 
 /// A modal bottom sheet that starts at a partial height and can be dragged
@@ -40,11 +41,17 @@ abstract final class AppSheet {
     double initialSize = 0.5,
     double minSize = 0.25,
     double maxSize = 1.0,
+    AppBarrierVariant? barrierVariant,
   }) {
     HapticFeedback.lightImpact();
     return showFSheet<T>(
       context: context,
       side: FLayout.btt,
+      style: FModalSheetStyleDelta.delta(
+        barrierFilter: AppBarrier.filter(
+          AppBarrier.resolve(context, barrierVariant),
+        ),
+      ),
       mainAxisMaxRatio: null,
       draggable: false,
       builder: (context) => _HapticDismissDrag(

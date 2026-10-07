@@ -1,8 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import '../primitives/frosted_surface.dart';
 import '../tokens/app_borders.dart';
 import '../tokens/app_radius.dart';
 
@@ -29,21 +28,11 @@ class AppCard extends StatelessWidget {
       return FCard(child: content);
     }
 
-    final colors = context.theme.colors;
-    final radius = AppRadius.of(context).lg;
-    return ClipRRect(
-      borderRadius: radius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.card.withValues(alpha: 0.7),
-            border: AppBorders.all(context),
-            borderRadius: radius,
-          ),
-          child: content,
-        ),
-      ),
+    return AppFrostedSurface(
+      color: context.theme.colors.card,
+      borderRadius: AppRadius.of(context).lg,
+      border: AppBorders.all(context),
+      child: content,
     );
   }
 }

@@ -6,6 +6,7 @@ import '../controls/input.dart';
 import '../data_display/text.dart';
 import '../layout/divider.dart';
 import '../tokens/app_spacing.dart';
+import 'barrier.dart';
 import 'rotation.dart';
 import 'sheet.dart';
 import 'side_panel.dart';
@@ -71,6 +72,7 @@ abstract final class AppCommandSidePanel {
     required List<AppCommandItem> items,
     AppEdge? side,
     double panelFraction = 0.6,
+    AppBarrierVariant? barrierVariant,
   }) {
     // Resolved from the caller's context, not the panel's own builder
     // context below — the panel renders into the app's root `Overlay`, which
@@ -82,6 +84,7 @@ abstract final class AppCommandSidePanel {
       context: context,
       side: resolvedSide,
       panelFraction: panelFraction,
+      barrierVariant: barrierVariant,
       builder: (context, controller) => RotatedBox(
         quarterTurns: quarterTurns,
         child: ScrollConfiguration(
@@ -121,8 +124,10 @@ abstract final class AppCommandPalette {
     String hint = 'Type a command…',
     String recentLabel = 'Recent',
     String noResultsLabel = 'No results',
+    AppBarrierVariant? barrierVariant,
   }) => AppSheet.show<void>(
     context: context,
+    barrierVariant: barrierVariant,
     initialSize: 0.75,
     minSize: 0.4,
     maxSize: 0.95,

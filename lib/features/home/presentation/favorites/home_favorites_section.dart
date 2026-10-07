@@ -5,7 +5,6 @@ import 'package:reader_documents/features/documents/application/documents_provid
 import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../home_section.dart';
 import '../home_section_error_banner.dart';
 import 'home_favorites_shelf.dart';
 import 'home_favorites_skeleton.dart';
@@ -24,7 +23,7 @@ class HomeFavoritesSection extends ConsumerWidget {
         .when(
           data: (favorites) => favorites.isEmpty
               ? const SizedBox.shrink()
-              : HomeSection(
+              : AppSection(
                   title: l10n.homeFavoritesTitle,
                   icon: AppIcons.star,
                   trailing: AppButton(
@@ -36,12 +35,12 @@ class HomeFavoritesSection extends ConsumerWidget {
                   ),
                   child: HomeFavoritesShelf(favorites: favorites),
                 ),
-          loading: () => HomeSection(
+          loading: () => AppSection(
             title: l10n.homeFavoritesTitle,
             icon: AppIcons.star,
             child: const HomeFavoritesSkeleton(),
           ),
-          error: (error, _) => HomeSection(
+          error: (error, _) => AppSection(
             title: l10n.homeFavoritesTitle,
             icon: AppIcons.star,
             child: HomeSectionErrorBanner(

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import 'barrier.dart';
 import 'rotation.dart';
 import 'sheet.dart';
 import 'side_panel.dart';
@@ -30,6 +31,7 @@ abstract final class AppRotatedSheet {
     double minSize = 0.25,
     double maxSize = 1.0,
     EdgeInsetsGeometry panelPadding = EdgeInsets.zero,
+    AppBarrierVariant? barrierVariant,
   }) {
     final quarterTurns = AppRotation.of(context);
 
@@ -39,6 +41,7 @@ abstract final class AppRotatedSheet {
         initialSize: initialSize,
         minSize: minSize,
         maxSize: maxSize,
+        barrierVariant: barrierVariant,
         builder: (context, scrollController) => builder(
           context,
           scrollController,
@@ -52,6 +55,7 @@ abstract final class AppRotatedSheet {
       context: context,
       side: AppRotation.bottomEdge(context),
       panelFraction: initialSize,
+      barrierVariant: barrierVariant,
       builder: (context, panel) => Padding(
         padding: panelPadding,
         child: RotatedBox(

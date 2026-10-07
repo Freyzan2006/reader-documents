@@ -16,12 +16,14 @@ class AppGrid extends StatelessWidget {
     required this.children,
     this.spacing = AppSpacing.md,
     this.runSpacing = AppSpacing.md,
+    this.columns,
     super.key,
   });
 
   final List<Widget> children;
   final double spacing;
   final double runSpacing;
+  final int? columns;
 
   static int _columnsFor(ScreenSize size) => switch (size) {
     ScreenSize.mobile => 1,
@@ -31,7 +33,7 @@ class AppGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final columns = _columnsFor(context.screenSize);
+    final columns = this.columns ?? _columnsFor(context.screenSize);
     return LayoutBuilder(
       builder: (context, constraints) {
         final itemWidth =

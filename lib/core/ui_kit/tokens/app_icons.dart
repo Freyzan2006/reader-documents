@@ -48,4 +48,7 @@ abstract final class AppIcons {
   static const trash2 = FLucideIcons.trash2;
   static const upload = FLucideIcons.upload;
   static const x = FLucideIcons.x;
+  static const zap = FLucideIcons.zap;
+  static const user = FLucideIcons.user;
+  static const info = FLucideIcons.info;
 }

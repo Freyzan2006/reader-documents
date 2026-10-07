@@ -4,7 +4,6 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../home_section.dart';
 import '../home_section_error_banner.dart';
 import 'home_continue_reading_card.dart';
 import 'home_continue_reading_skeleton.dart';
@@ -23,17 +22,17 @@ class HomeContinueReadingSection extends ConsumerWidget {
         .when(
           data: (file) => file == null
               ? const SizedBox.shrink()
-              : HomeSection(
+              : AppSection(
                   title: l10n.homeContinueReadingTitle,
                   icon: AppIcons.bookOpen,
                   child: HomeContinueReadingCard(file: file),
                 ),
-          loading: () => HomeSection(
+          loading: () => AppSection(
             title: l10n.homeContinueReadingTitle,
             icon: AppIcons.bookOpen,
             child: const HomeContinueReadingSkeleton(),
           ),
-          error: (error, _) => HomeSection(
+          error: (error, _) => AppSection(
             title: l10n.homeContinueReadingTitle,
             icon: AppIcons.bookOpen,
             child: HomeSectionErrorBanner(

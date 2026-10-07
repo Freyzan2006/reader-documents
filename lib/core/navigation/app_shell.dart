@@ -28,6 +28,9 @@ class AppShell extends ConsumerWidget {
         onActionTap: () => AppCommandLauncher.show(context, ref),
       ),
       footer: AppBottomNav(
+        variant: AppEffects.blurOf(context)
+            ? AppBottomNavVariant.blur
+            : AppBottomNavVariant.standard,
         currentIndex: index,
         onChanged: (next) =>
             ref.read(currentNavDestinationProvider.notifier).state =

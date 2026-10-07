@@ -18,5 +18,10 @@
     "placeholders": {
       "version": { "type": "String" }
     }
-  }
+  },
+  "effectsSectionTitle": "Vizual effektlar",
+  "effectsSectionHint": "Interfeys animatsiyalari va effektlari. «Unumdorlik» eski qurilmalarda ilovani tezroq va silliqroq qiladi.",
+  "effectsSystem": "Tizim",
+  "effectsQuality": "Sifat",
+  "effectsPerformance": "Unumdorlik"
 }

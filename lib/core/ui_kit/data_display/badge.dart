@@ -1,8 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import '../primitives/frosted_surface.dart';
 import '../tokens/app_colors.dart';
 import '../tokens/app_radius.dart';
 
@@ -111,28 +110,18 @@ class AppBadge extends StatelessWidget {
       );
     }
 
-    final colors = context.theme.colors;
     final baseStyle = context.theme.badgeStyles.secondary;
-    final radius = AppRadius.of(context).pill;
     return IntrinsicWidth(
       child: IntrinsicHeight(
-        child: ClipRRect(
-          borderRadius: radius,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.secondary.withValues(alpha: 0.7),
-                borderRadius: radius,
-              ),
-              child: Center(
-                child: Padding(
-                  padding: baseStyle.padding,
-                  child: DefaultTextStyle.merge(
-                    style: baseStyle.labelTextStyle,
-                    child: child,
-                  ),
-                ),
+        child: AppFrostedSurface(
+          color: context.theme.colors.secondary,
+          borderRadius: AppRadius.of(context).pill,
+          child: Center(
+            child: Padding(
+              padding: baseStyle.padding,
+              child: DefaultTextStyle.merge(
+                style: baseStyle.labelTextStyle,
+                child: child,
               ),
             ),
           ),

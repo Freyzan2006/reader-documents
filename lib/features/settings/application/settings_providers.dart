@@ -24,6 +24,9 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> setWarmReadingFilter(bool enabled) =>
       _update((settings) => settings.copyWith(warmReadingFilter: enabled));
 
+  Future<void> setEffectsMode(AppEffectsMode mode) =>
+      _update((settings) => settings.copyWith(effectsMode: mode));
+
   Future<void> _update(
     AppSettings Function(AppSettings current) transform,
   ) async {

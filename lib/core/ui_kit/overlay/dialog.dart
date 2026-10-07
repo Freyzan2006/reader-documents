@@ -1,10 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
 import '../tokens/app_shadows.dart';
 import '../tokens/app_spacing.dart';
+import 'barrier.dart';
 
 /// A centered modal dialog. Wraps Forui's [FDialog]/[showFDialog].
 ///
@@ -19,11 +18,13 @@ abstract final class AppDialog {
     bool barrierDismissible = true,
     bool actionsWrap = true,
     int quarterTurns = 0,
+    AppBarrierVariant? barrierVariant,
   }) => showFDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
     routeStyle: FDialogRouteStyleDelta.delta(
-      barrierFilter: () => _dimBarrierFilter,
+      barrierFilter: () =>
+          AppBarrier.filter(AppBarrier.resolve(context, barrierVariant)),
     ),
     style: FDialogStyleDelta.delta(
       insetPadding: EdgeInsetsGeometryDelta.value(
@@ -96,16 +97,4 @@ abstract final class AppDialog {
       ),
     );
   }
-
-  static ImageFilter _dimBarrierFilter(
-    BuildContext context,
-    double animation,
-  ) => ColorFilter.mode(
-    Color.lerp(
-      const Color(0x00000000),
-      context.theme.colors.barrier,
-      animation,
-    )!,
-    BlendMode.srcOver,
-  );
 }

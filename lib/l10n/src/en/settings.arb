@@ -18,5 +18,10 @@
     "placeholders": {
       "version": { "type": "String" }
     }
-  }
+  },
+  "effectsSectionTitle": "Visual effects",
+  "effectsSectionHint": "Interface animations and effects. Performance makes the app faster and smoother on older devices.",
+  "effectsSystem": "System",
+  "effectsQuality": "Quality",
+  "effectsPerformance": "Performance"
 }

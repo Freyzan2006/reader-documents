@@ -6,8 +6,6 @@ import 'package:reader_documents/features/documents/data/models/document_file.da
 import 'package:reader_documents/features/documents/presentation/list/document_icon.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import 'menu_section.dart';
-
 class RecentDocumentsMenuSection extends ConsumerWidget {
   const RecentDocumentsMenuSection({required this.onOpen, super.key});
 
@@ -19,7 +17,8 @@ class RecentDocumentsMenuSection extends ConsumerWidget {
     final older = recent.skip(1).toList();
     if (older.isEmpty) return const SizedBox.shrink();
 
-    return MenuSection(
+    return AppSection(
+      variant: AppSectionVariant.compact,
       title: AppLocalizations.of(context)!.menuRecentTitle,
       icon: AppIcons.history,
       child: Column(

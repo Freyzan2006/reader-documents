@@ -4,7 +4,6 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../home_section.dart';
 import '../home_section_error_banner.dart';
 import 'home_tags_chips.dart';
 import 'home_tags_skeleton.dart';
@@ -23,17 +22,17 @@ class HomeTagsSection extends ConsumerWidget {
         .when(
           data: (tags) => tags.isEmpty
               ? const SizedBox.shrink()
-              : HomeSection(
+              : AppSection(
                   title: l10n.homeTagsTitle,
                   icon: AppIcons.tags,
                   child: HomeTagsChips(tags: tags),
                 ),
-          loading: () => HomeSection(
+          loading: () => AppSection(
             title: l10n.homeTagsTitle,
             icon: AppIcons.tags,
             child: const HomeTagsSkeleton(),
           ),
-          error: (error, _) => HomeSection(
+          error: (error, _) => AppSection(
             title: l10n.homeTagsTitle,
             icon: AppIcons.tags,
             child: HomeSectionErrorBanner(

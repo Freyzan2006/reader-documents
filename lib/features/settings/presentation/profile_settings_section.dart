@@ -3,8 +3,8 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/settings/data/user_profile.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-class ProfileSettingsCard extends StatefulWidget {
-  const ProfileSettingsCard({
+class ProfileSettingsSection extends StatefulWidget {
+  const ProfileSettingsSection({
     required this.profile,
     required this.onSave,
     super.key,
@@ -14,10 +14,10 @@ class ProfileSettingsCard extends StatefulWidget {
   final ValueChanged<UserProfile> onSave;
 
   @override
-  State<ProfileSettingsCard> createState() => _ProfileSettingsCardState();
+  State<ProfileSettingsSection> createState() => _ProfileSettingsSectionState();
 }
 
-class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
+class _ProfileSettingsSectionState extends State<ProfileSettingsSection> {
   final _nameController = TextEditingController();
 
   @override
@@ -31,7 +31,7 @@ class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
   }
 
   @override
-  void didUpdateWidget(ProfileSettingsCard oldWidget) {
+  void didUpdateWidget(ProfileSettingsSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.profile.name != oldWidget.profile.name) {
       _nameController.text = widget.profile.name;
@@ -63,12 +63,13 @@ class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppCard(
+    return AppSection(
+      title: l10n.profileSectionTitle,
+      icon: AppIcons.user,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: AppSpacing.md,
         children: [
-          AppText(l10n.profileSectionTitle, variant: AppTextVariant.subtitle),
           AppRow(
             children: [
               AppAvatar(

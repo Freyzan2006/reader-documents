@@ -7,7 +7,6 @@ import 'package:reader_documents/features/documents/presentation/list/document_l
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../../application/providers/home_recent_documents_provider.dart';
-import '../home_section.dart';
 
 /// The rest of the recently-opened history (the single most-recent document
 /// already has its own "continue reading" card above). Hides itself when
@@ -25,7 +24,7 @@ class HomeRecentSection extends ConsumerWidget {
     }
 
     final l10n = AppLocalizations.of(context)!;
-    return HomeSection(
+    return AppSection(
       title: l10n.homeRecentTitle,
       icon: AppIcons.history,
       child: DocumentList(

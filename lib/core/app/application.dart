@@ -32,9 +32,14 @@ class Application extends ConsumerWidget {
       locale: settings.language.locale,
       localeResolutionCallback: (locale, supportedLocales) =>
           AppLocaleResolver.resolve(locale, supportedLocales),
-      builder: (context, child) => FTheme(
-        data: theme,
-        child: FToaster(child: child!),
+      builder: (context, child) => AppEffects(
+        blur: settings.resolveBlur(
+          platformReducesMotion: MediaQuery.disableAnimationsOf(context),
+        ),
+        child: FTheme(
+          data: theme,
+          child: FToaster(child: child!),
+        ),
       ),
       home: const AppBootstrap(),
     );

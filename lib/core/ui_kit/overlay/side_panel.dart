@@ -5,6 +5,7 @@ import '../controls/button.dart';
 import '../data_display/text.dart';
 import '../layout/divider.dart';
 import '../tokens/app_spacing.dart';
+import 'barrier.dart';
 import 'sheet_surface.dart';
 
 enum AppEdge { top, bottom, left, right }
@@ -55,8 +56,10 @@ abstract final class AppSidePanel {
     AppEdge side = AppEdge.right,
     double panelFraction = 0.8,
     bool barrierDismissible = true,
+    AppBarrierVariant? barrierVariant,
   }) {
     final overlay = Overlay.of(context);
+    final resolvedBarrier = AppBarrier.resolve(context, barrierVariant);
     final key = GlobalKey<_SidePanelOverlayState>();
     late final OverlayEntry entry;
     var closed = false;
@@ -76,6 +79,7 @@ abstract final class AppSidePanel {
         side: side._layout,
         panelFraction: panelFraction,
         barrierDismissible: barrierDismissible,
+        barrierVariant: resolvedBarrier,
         onBarrierTap: close,
         builder: (context) => builder(context, controller),
       ),
@@ -91,6 +95,7 @@ class _SidePanelOverlay extends StatefulWidget {
     required this.side,
     required this.panelFraction,
     required this.barrierDismissible,
+    required this.barrierVariant,
     required this.onBarrierTap,
     required this.builder,
     super.key,
@@ -99,6 +104,7 @@ class _SidePanelOverlay extends StatefulWidget {
   final FLayout side;
   final double panelFraction;
   final bool barrierDismissible;
+  final AppBarrierVariant barrierVariant;
   final VoidCallback onBarrierTap;
   final WidgetBuilder builder;
 
@@ -142,22 +148,15 @@ class _SidePanelOverlayState extends State<_SidePanelOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final barrierColor = context.theme.colors.barrier;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) => Stack(
         children: [
           Positioned.fill(
-            child: IgnorePointer(
-              ignoring: _controller.value == 0,
-              child: GestureDetector(
-                onTap: widget.barrierDismissible ? widget.onBarrierTap : null,
-                child: ColoredBox(
-                  color: barrierColor.withValues(
-                    alpha: barrierColor.a * _controller.value,
-                  ),
-                ),
-              ),
+            child: AppBarrierLayer(
+              variant: widget.barrierVariant,
+              animation: _controller.value,
+              onTap: widget.barrierDismissible ? widget.onBarrierTap : null,
             ),
           ),
           Align(

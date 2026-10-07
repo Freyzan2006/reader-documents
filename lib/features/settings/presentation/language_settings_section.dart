@@ -5,8 +5,8 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 /// Language picker built from the same selectable cards as the theme picker,
 /// so the two single-choice groups on this page read as one family.
-class LanguageSettingsCard extends StatelessWidget {
-  const LanguageSettingsCard({
+class LanguageSettingsSection extends StatelessWidget {
+  const LanguageSettingsSection({
     required this.language,
     required this.onChanged,
     super.key,
@@ -22,25 +22,23 @@ class LanguageSettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.md,
+    return AppSection(
+      title: l10n.languageSectionTitle,
+      icon: AppIcons.languages,
+      child: AppGrid(
+        columns: 2,
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
         children: [
-          AppText(l10n.languageSectionTitle, variant: AppTextVariant.subtitle),
-          AppGrid(
-            children: [
-              for (final option in AppLanguage.values)
-                _LanguageOption(
-                  label: _label(l10n, option),
-                  // "System" has no language code, so it gets an icon instead.
-                  icon: option.code.isEmpty ? AppIcons.languages : null,
-                  code: option.code,
-                  selected: option == language,
-                  onPressed: () => onChanged(option),
-                ),
-            ],
-          ),
+          for (final option in AppLanguage.values)
+            _LanguageOption(
+              label: _label(l10n, option),
+              // "System" has no language code, so it gets an icon instead.
+              icon: option.code.isEmpty ? AppIcons.languages : null,
+              code: option.code,
+              selected: option == language,
+              onPressed: () => onChanged(option),
+            ),
         ],
       ),
     );

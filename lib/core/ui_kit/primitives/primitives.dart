@@ -1,5 +1,6 @@
 export 'center.dart';
 export 'fade.dart';
+export 'frosted_surface.dart';
 export 'gap.dart';
 export 'grid.dart';
 export 'page_view.dart';
