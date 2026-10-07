@@ -27,6 +27,8 @@ class AppButton extends StatelessWidget {
     this.variant = AppButtonVariant.primary,
     this.size = AppButtonSize.md,
     this.mainAxisSize = MainAxisSize.max,
+    this.prefix,
+    this.flexibleChild = false,
     super.key,
   });
 
@@ -35,6 +37,8 @@ class AppButton extends StatelessWidget {
   final AppButtonVariant variant;
   final AppButtonSize size;
   final MainAxisSize mainAxisSize;
+  final Widget? prefix;
+  final bool flexibleChild;
 
   static FButtonVariant _variant(AppButtonVariant variant) => switch (variant) {
     AppButtonVariant.primary => FButtonVariant.primary,
@@ -106,6 +110,10 @@ class AppButton extends StatelessWidget {
           ? const FButtonStyleDelta.context()
           : _customStyle(context, size, custom.$1, custom.$2),
       mainAxisSize: mainAxisSize,
+      prefix: prefix,
+      builder: flexibleChild
+          ? (_, _, _, _, _, child) => Flexible(child: child!)
+          : FButton.defaultContentBuilder,
       child: child,
     );
   }

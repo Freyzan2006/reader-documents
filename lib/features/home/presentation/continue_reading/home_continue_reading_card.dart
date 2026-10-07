@@ -11,9 +11,10 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 /// icon, and the saved page if one exists (there's no persisted page count,
 /// so this can only show a page number, not a percentage).
 class HomeContinueReadingCard extends ConsumerWidget {
-  const HomeContinueReadingCard({required this.file, super.key});
+  const HomeContinueReadingCard({required this.file, this.onTap, super.key});
 
   final DocumentFile file;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +29,7 @@ class HomeContinueReadingCard extends ConsumerWidget {
     final progress = offset?.clamp(0.0, 1.0);
 
     return AppTappable(
-      onPressed: () => DocumentCommands.open(context, ref, file),
+      onPressed: onTap ?? () => DocumentCommands.open(context, ref, file),
       child: AppCard(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(

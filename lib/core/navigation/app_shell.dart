@@ -6,6 +6,7 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 import 'app_command_launcher.dart';
 import 'app_nav_tab.dart';
+import 'app_side_menu.dart';
 import 'navigation_providers.dart';
 
 class AppShell extends ConsumerWidget {
@@ -22,7 +23,7 @@ class AppShell extends ConsumerWidget {
       header: AppHeader(
         title: AppBrand.shortName,
         titleTooltip: AppBrand.name,
-        onMenuTap: () => _openMenu(context, ref, tabs, l10n),
+        onMenuTap: () => AppSideMenu.show(context, ref),
         actionIcon: AppIcons.command,
         onActionTap: () => AppCommandLauncher.show(context, ref),
       ),
@@ -39,38 +40,6 @@ class AppShell extends ConsumerWidget {
       child: IndexedStack(
         index: index,
         children: [for (final tab in tabs) tab.screen],
-      ),
-    );
-  }
-
-  void _openMenu(
-    BuildContext context,
-    WidgetRef ref,
-    List<AppNavTab> tabs,
-    AppLocalizations l10n,
-  ) {
-    AppSidePanel.show(
-      context: context,
-      builder: (context, controller) => Column(
-        children: [
-          AppSidePanelHeader(title: l10n.menuTitle, onClose: controller.close),
-          AppSidePanelContent(
-            child: AppList(
-              items: [
-                for (final tab in tabs)
-                  AppListItem(
-                    title: tab.label,
-                    leading: tab.icon,
-                    onTap: () {
-                      ref.read(currentNavDestinationProvider.notifier).state =
-                          tab.destination;
-                      controller.close();
-                    },
-                  ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
+import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../home_section.dart';
@@ -26,6 +27,13 @@ class HomeFavoritesSection extends ConsumerWidget {
               : HomeSection(
                   title: l10n.homeFavoritesTitle,
                   icon: AppIcons.star,
+                  trailing: AppButton(
+                    variant: AppButtonVariant.ghost,
+                    size: AppButtonSize.sm,
+                    mainAxisSize: MainAxisSize.min,
+                    onPressed: () => DocumentCommands.openFavorites(context),
+                    child: Text(l10n.seeAll),
+                  ),
                   child: HomeFavoritesShelf(favorites: favorites),
                 ),
           loading: () => HomeSection(

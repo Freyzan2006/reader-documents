@@ -43,7 +43,7 @@ dependencies:
   file_picker: ^13.1.0
   path_provider: ^2.1.6
   share_plus: ^13.3.0
-  forui: ^0.27.0
+  forui: ^0.27.4
   path: ^1.9.1
   shared_preferences: ^2.5.3
   receive_sharing_intent: ^1.8.1

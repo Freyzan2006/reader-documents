@@ -18,6 +18,7 @@ class AppHeader extends StatelessWidget {
     required this.title,
     this.titleTooltip,
     this.onMenuTap,
+    this.onBackTap,
     this.actionLabel,
     this.actionIcon,
     this.onActionTap,
@@ -31,6 +32,7 @@ class AppHeader extends StatelessWidget {
   final String? titleTooltip;
 
   final VoidCallback? onMenuTap;
+  final VoidCallback? onBackTap;
   final String? actionLabel;
   final IconData? actionIcon;
   final VoidCallback? onActionTap;
@@ -64,6 +66,8 @@ class AppHeader extends StatelessWidget {
             ? titleCard
             : AppTooltip(message: titleTooltip, child: titleCard),
         prefixes: [
+          if (onBackTap != null)
+            AppIconButton(icon: FLucideIcons.arrowLeft, onPressed: onBackTap!),
           if (onMenuTap != null)
             AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
         ],

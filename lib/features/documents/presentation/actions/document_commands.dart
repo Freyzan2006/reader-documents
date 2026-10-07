@@ -9,6 +9,7 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../../application/documents_providers.dart';
 import '../../data/models/document_file.dart';
+import '../favorites/favorites_screen.dart';
 import '../viewer/document_viewer_factory.dart';
 import '../viewer/document_viewer_screen.dart';
 
@@ -22,8 +23,17 @@ abstract final class DocumentCommands {
         icon: AppIcons.upload,
         onSelect: () => importDocument(ref),
       ),
+      AppCommandItem(
+        label: l10n.homeFavoritesTitle,
+        icon: AppIcons.star,
+        onSelect: () => openFavorites(context),
+      ),
     ];
   }
+
+  static Future<void> openFavorites(BuildContext context) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const FavoritesScreen()));
 
   static Future<void> importDocument(WidgetRef ref) async {
     final file = await FilePicker.pickFile(
