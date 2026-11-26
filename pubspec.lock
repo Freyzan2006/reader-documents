@@ -348,6 +348,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  globbing:
+    dependency: transitive
+    description:
+      name: globbing
+      sha256: "4f89cfaf6fa74c9c1740a96259da06bd45411ede56744e28017cc534a12b6e2d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   hooks:
     dependency: transitive
     description:
@@ -452,6 +460,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  lefthook_dart:
+    dependency: "direct dev"
+    description:
+      name: lefthook_dart
+      sha256: b0865bb8adbb78b9dcbefb1110fcad3ddf9031a854f23a3021505a45fa1ead6b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   lints:
     dependency: transitive
     description:
@@ -881,6 +897,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.2"
+  system_info3:
+    dependency: transitive
+    description:
+      name: system_info3
+      sha256: "82ba27fc0eb72e7affb0480fa9080eb1872f3f65f85dca59307d49f6992e3ce1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
   term_glyph:
     dependency: transitive
     description:

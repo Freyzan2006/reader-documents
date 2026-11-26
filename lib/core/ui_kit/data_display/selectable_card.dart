@@ -54,7 +54,11 @@ class AppSelectableCard extends StatelessWidget {
               children: [
                 // Behind the content rather than beside it, so the badge
                 // never steals width from a preview.
-                Positioned(top: 0, right: 0, child: _CheckBadge(selected: selected)),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: _CheckBadge(selected: selected),
+                ),
                 // Padded away from the badge so content stays legible where
                 // they overlap.
                 Padding(

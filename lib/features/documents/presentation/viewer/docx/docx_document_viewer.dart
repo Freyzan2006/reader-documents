@@ -117,7 +117,8 @@ class _DocxDocumentViewerState extends State<DocxDocumentViewer> {
         .toDouble();
     if ((position.pixels - offset).abs() > 1) position.jumpTo(offset);
 
-    final settled = _restoredExtent >= 0 && (extent - _restoredExtent).abs() <= 1;
+    final settled =
+        _restoredExtent >= 0 && (extent - _restoredExtent).abs() <= 1;
     if (settled && _settledOnce) return;
     _settledOnce = settled;
     _restoredExtent = extent;
