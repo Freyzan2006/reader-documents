@@ -17,10 +17,19 @@ import '../tokens/app_shadows.dart';
 /// edge touching the rest of the app instead — a handle bar reads as
 /// "draggable" in a way a docked side panel usually isn't.
 class SheetSurface extends StatelessWidget {
-  const SheetSurface({required this.side, required this.child, super.key});
+  const SheetSurface({
+    required this.side,
+    required this.child,
+    this.expand = true,
+    this.onHandleDismiss,
+    super.key,
+  });
 
   final FLayout side;
   final Widget child;
+
+  final bool expand;
+  final VoidCallback? onHandleDismiss;
 
   static BorderRadius _cornerRadius(FLayout side, BorderRadius r) =>
       switch (side) {
@@ -58,12 +67,12 @@ class SheetSurface extends StatelessWidget {
   };
 
   @override
-  Widget build(BuildContext context) => SizedBox.expand(
+  Widget build(BuildContext context) {
     // Forui's `FSheets` (backing both `showFSheet` and `showFPersistentSheet`)
     // stacks sheets via a plain `Stack`, which gives each sheet *loose* — not
-    // tight — constraints. Without this, a side panel sizes to its content
-    // instead of filling the available height.
-    child: DecoratedBox(
+    // tight — constraints. Without SizedBox.expand, a side panel sizes to its
+    // content instead of filling the available height.
+    Widget surface = DecoratedBox(
       decoration: BoxDecoration(
         color: context.theme.colors.card,
         borderRadius: side.vertical
@@ -77,31 +86,53 @@ class SheetSurface extends StatelessWidget {
       child: SafeArea(
         child: side.vertical
             ? Column(
+                mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: _Handle(),
-                  ),
-                  Expanded(child: child),
+                  _Handle(onDismiss: onHandleDismiss),
+                  if (expand)
+                    Expanded(child: child)
+                  else
+                    Flexible(child: child),
                 ],
               )
             : child,
       ),
-    ),
-  );
+    );
+
+    return expand ? SizedBox.expand(child: surface) : surface;
+  }
 }
 
 class _Handle extends StatelessWidget {
-  const _Handle();
+  const _Handle({this.onDismiss});
+
+  final VoidCallback? onDismiss;
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.colors.border,
-        borderRadius: BorderRadius.circular(999),
+  Widget build(BuildContext context) {
+    Widget handle = Center(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.theme.colors.border,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: const SizedBox(width: 36, height: 4),
       ),
-      child: const SizedBox(width: 36, height: 4),
-    ),
-  );
+    );
+
+    if (onDismiss != null) {
+      handle = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragEnd: (details) {
+          if ((details.primaryVelocity ?? 0) > 400) onDismiss!();
+        },
+        child: handle,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: handle,
+    );
+  }
 }

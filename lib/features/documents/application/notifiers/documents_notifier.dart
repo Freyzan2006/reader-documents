@@ -24,6 +24,14 @@ class DocumentsNotifier extends AsyncNotifier<List<DocumentFile>> {
     await ref.read(documentsRepositoryProvider).delete(path);
     await refresh();
   }
+
+  Future<void> deleteMany(Iterable<String> paths) async {
+    final repo = ref.read(documentsRepositoryProvider);
+    for (final path in paths) {
+      await repo.delete(path);
+    }
+    await refresh();
+  }
 }
 
 final documentsProvider =

@@ -8,6 +8,7 @@ abstract final class AppIcons {
   static const bookmarkCheck = FLucideIcons.bookmarkCheck;
   static const camera = FLucideIcons.camera;
   static const check = FLucideIcons.check;
+  static const checkCheck = FLucideIcons.checkCheck;
   static const chevronDown = FLucideIcons.chevronDown;
   static const chevronUp = FLucideIcons.chevronUp;
   static const command = FLucideIcons.command;
@@ -25,9 +26,11 @@ abstract final class AppIcons {
   static const lamp = FLucideIcons.lamp;
   static const languages = FLucideIcons.languages;
   static const layoutGrid = FLucideIcons.layoutGrid;
+  static const listChecks = FLucideIcons.listChecks;
   static const lock = FLucideIcons.lock;
   static const menu = FLucideIcons.menu;
   static const minus = FLucideIcons.minus;
+  static const mousePointerClick = FLucideIcons.mousePointerClick;
   static const monitor = FLucideIcons.monitor;
   static const moon = FLucideIcons.moon;
   static const palette = FLucideIcons.palette;

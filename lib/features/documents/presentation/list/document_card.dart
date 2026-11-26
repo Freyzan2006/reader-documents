@@ -6,18 +6,15 @@ import 'package:reader_documents/features/documents/data/models/tag_color.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../../application/documents_providers.dart';
-import '../actions/document_commands.dart';
-import '../actions/document_rename.dart';
-import '../actions/document_sharing.dart';
-import '../tags/tag_editor.dart';
 import 'document_icon.dart';
 
 class DocumentCard extends ConsumerWidget {
   const DocumentCard({
     required this.file,
     this.onTap,
-    this.confirmDelete,
-    this.onDelete,
+    this.onLongPress,
+    this.selectionMode = false,
+    this.selected = false,
     super.key,
   });
 
@@ -25,13 +22,9 @@ class DocumentCard extends ConsumerWidget {
 
   final DocumentFile file;
   final VoidCallback? onTap;
-  final Future<bool> Function(DocumentFile file)? confirmDelete;
-  final ValueChanged<DocumentFile>? onDelete;
-
-  Future<void> _delete() async {
-    if (confirmDelete == null || onDelete == null) return;
-    if (await confirmDelete!(file)) onDelete!(file);
-  }
+  final VoidCallback? onLongPress;
+  final bool selectionMode;
+  final bool selected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,106 +33,81 @@ class DocumentCard extends ConsumerWidget {
     final isFavorite = ref.watch(isFavoriteProvider(file.path));
     final l10n = AppLocalizations.of(context)!;
 
-    return AppTappable(
-      onPressed: onTap,
-      child: AppCard(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        child: Row(
-          spacing: AppSpacing.sm,
-          children: [
-            DocumentIcon(type: file.type),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.xs,
-                children: [
-                  AppText(
-                    title,
-                    variant: AppTextVariant.subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: AppSpacing.xs,
-                    children: [
-                      AppBadge(
-                        variant: AppBadgeVariant.secondary,
-                        child: Text(file.type.label),
-                      ),
-                      AppBadge(
-                        variant: AppBadgeVariant.outline,
-                        child: Text(file.formattedSize),
-                      ),
-                    ],
-                  ),
-                  if (tags.isNotEmpty)
-                    Wrap(
+    return Semantics(
+      selected: selectionMode ? selected : null,
+      child: AppTappable(
+        onPressed: onTap,
+        onLongPress: onLongPress,
+        selected: selectionMode && selected,
+        semanticsHint: l10n.documentCardHint,
+        child: AppCard(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(
+            spacing: AppSpacing.sm,
+            children: [
+              if (selectionMode)
+                AppSelectionBadge(selected: selected)
+              else
+                DocumentIcon(type: file.type),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.xs,
+                  children: [
+                    AppText(
+                      title,
+                      variant: AppTextVariant.subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
                       spacing: AppSpacing.xs,
-                      runSpacing: AppSpacing.xs,
                       children: [
-                        for (final tag in tags.take(_maxVisibleTags))
-                          AppBadge(
-                            color: ref.watch(tagColorProvider(tag)).value,
-                            child: Text(tag),
-                          ),
-                        if (tags.length > _maxVisibleTags)
-                          AppBadge(
-                            variant: AppBadgeVariant.outline,
-                            child: Text('+${tags.length - _maxVisibleTags}'),
-                          ),
+                        AppBadge(
+                          variant: AppBadgeVariant.secondary,
+                          child: Text(file.type.label),
+                        ),
+                        AppBadge(
+                          variant: AppBadgeVariant.outline,
+                          child: Text(file.formattedSize),
+                        ),
                       ],
                     ),
-                ],
+                    if (tags.isNotEmpty)
+                      Wrap(
+                        spacing: AppSpacing.xs,
+                        runSpacing: AppSpacing.xs,
+                        children: [
+                          for (final tag in tags.take(_maxVisibleTags))
+                            AppBadge(
+                              color: ref.watch(tagColorProvider(tag)).value,
+                              child: Text(tag),
+                            ),
+                          if (tags.length > _maxVisibleTags)
+                            AppBadge(
+                              variant: AppBadgeVariant.outline,
+                              child: Text('+${tags.length - _maxVisibleTags}'),
+                            ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),
-            AppIconButton(
-              icon: AppIcons.star,
-              onPressed: () =>
-                  DocumentCommands.toggleFavorite(context, ref, file),
-              color: isFavorite ? AppColors.warning(context) : null,
-            ),
-            AppPopoverMenu(
-              items: [
-                AppCommandItem(
-                  label: l10n.pdfMenuRename,
-                  icon: AppIcons.pencil,
-                  onSelect: () => DocumentRename.show(
-                    context: context,
-                    ref: ref,
-                    file: file,
+              if (isFavorite)
+                Semantics(
+                  label: l10n.addedToFavorites,
+                  child: Icon(
+                    AppIcons.star,
+                    size: 20,
+                    color: AppColors.warning(context),
                   ),
                 ),
-                AppCommandItem(
-                  label: l10n.tagsTitle,
-                  icon: AppIcons.tags,
-                  onSelect: () => TagEditorSheet.show(
-                    context: context,
-                    documentPath: file.path,
-                  ),
-                ),
-                AppCommandItem(
-                  label: l10n.pdfMenuShare,
-                  icon: AppIcons.share2,
-                  onSelect: () => DocumentSharing.share(file),
-                ),
-                if (confirmDelete != null && onDelete != null)
-                  AppCommandItem(
-                    label: l10n.delete,
-                    icon: AppIcons.trash,
-                    onSelect: _delete,
-                  ),
-              ],
-              child: const AppIconButton(
-                icon: AppIcons.ellipsisVertical,
-                onPressed: null,
-                enabled: true,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -148,10 +116,6 @@ class DocumentCard extends ConsumerWidget {
 
 class DocumentCardSkeleton extends StatelessWidget {
   const DocumentCardSkeleton({super.key});
-
-  /// Matches [AppIconButton]'s real footprint: a 20px icon plus
-  /// [AppSpacing.sm] padding on every side.
-  static const _iconButtonSize = 20.0 + AppSpacing.sm * 2;
 
   @override
   Widget build(BuildContext context) => AppCard(
@@ -167,12 +131,12 @@ class DocumentCardSkeleton extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.xs,
-            children: [
-              const AppSkeleton(width: 140, height: 16),
+            children: const [
+              AppSkeleton(width: 140, height: 16),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 spacing: AppSpacing.xs,
-                children: const [
+                children: [
                   AppSkeleton(width: 48, height: 22),
                   AppSkeleton(width: 68, height: 22),
                 ],
@@ -180,8 +144,6 @@ class DocumentCardSkeleton extends StatelessWidget {
             ],
           ),
         ),
-        const AppSkeleton.circle(size: _iconButtonSize),
-        const AppSkeleton.circle(size: _iconButtonSize),
       ],
     ),
   );

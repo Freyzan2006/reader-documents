@@ -16,5 +16,44 @@
   "renameDocumentTitle": "Rename document",
   "renameDocumentHint": "Document name",
   "addedToFavorites": "Added to favorites",
-  "removedFromFavorites": "Removed from favorites"
+  "removedFromFavorites": "Removed from favorites",
+  "documentActionsTitle": "Document actions",
+  "selectionDetails": "Details",
+  "addToFavoritesAction": "Add to favorites",
+  "removeFromFavoritesAction": "Remove from favorites",
+  "selectMultiple": "Select multiple",
+  "documentCardHint": "Long press for actions",
+  "selectionCount": "{count} selected",
+  "@selectionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "selectAll": "Select all",
+  "deselectAll": "Deselect all",
+  "favoriteSelected": "Add to favorites",
+  "unfavoriteSelected": "Remove from favorites",
+  "shareSelected": "Share",
+  "deleteSelected": "Delete",
+  "deleteSelectedTitle": "Delete {count} documents?",
+  "@deleteSelectedTitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "deleteSelectedBody": "Selected documents will be permanently deleted.",
+  "favoritesAddedCount": "Added {count} to favorites",
+  "@favoritesAddedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "gestureHintLongPress": "Press and hold a card for actions",
+  "gestureHintSwipe": "Swipe right to add to favorites",
+  "favoritesRemovedCount": "Removed {count} from favorites",
+  "@favoritesRemovedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

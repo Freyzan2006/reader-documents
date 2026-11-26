@@ -11,45 +11,67 @@ class AppDismissible extends StatelessWidget {
     this.confirmDismiss,
     this.direction = DismissDirection.endToStart,
     this.background,
+    this.secondaryBackground,
     super.key,
   });
 
   final Key itemKey;
   final Widget child;
   final VoidCallback onDismissed;
-  final Future<bool> Function()? confirmDismiss;
+
+  final Future<bool> Function(DismissDirection direction)? confirmDismiss;
   final DismissDirection direction;
   final Widget? background;
+  final Widget? secondaryBackground;
 
   @override
   Widget build(BuildContext context) => Dismissible(
     key: itemKey,
     direction: direction,
-    confirmDismiss: confirmDismiss == null ? null : (_) => confirmDismiss!(),
+    confirmDismiss: confirmDismiss,
     onDismissed: (_) => onDismissed(),
-    background: background ?? _DefaultBackground(direction: direction),
+    background:
+        background ??
+        AppDismissibleAction(
+          icon: FLucideIcons.trash,
+          color: context.theme.colors.destructive,
+          foregroundColor: context.theme.colors.destructiveForeground,
+          alignment: Alignment.centerLeft,
+        ),
+    secondaryBackground:
+        secondaryBackground ??
+        AppDismissibleAction(
+          icon: FLucideIcons.trash,
+          color: context.theme.colors.destructive,
+          foregroundColor: context.theme.colors.destructiveForeground,
+          alignment: Alignment.centerRight,
+        ),
     child: child,
   );
 }
 
-class _DefaultBackground extends StatelessWidget {
-  const _DefaultBackground({required this.direction});
+class AppDismissibleAction extends StatelessWidget {
+  const AppDismissibleAction({
+    required this.icon,
+    required this.color,
+    required this.foregroundColor,
+    required this.alignment,
+    super.key,
+  });
 
-  final DismissDirection direction;
+  final IconData icon;
+  final Color color;
+  final Color foregroundColor;
+  final AlignmentGeometry alignment;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(color: context.theme.colors.destructive),
+    decoration: BoxDecoration(color: color),
     child: Align(
-      alignment: direction == DismissDirection.startToEnd
-          ? Alignment.centerLeft
-          : Alignment.centerRight,
+      alignment: alignment,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Icon(
-          FLucideIcons.trash,
-          color: context.theme.colors.destructiveForeground,
-        ),
+        child: Icon(icon, color: foregroundColor),
       ),
     ),
   );

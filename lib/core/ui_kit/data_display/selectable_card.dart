@@ -57,7 +57,7 @@ class AppSelectableCard extends StatelessWidget {
                 Positioned(
                   top: 0,
                   right: 0,
-                  child: _CheckBadge(selected: selected),
+                  child: AppSelectionBadge(selected: selected),
                 ),
                 // Padded away from the badge so content stays legible where
                 // they overlap.
@@ -77,8 +77,8 @@ class AppSelectableCard extends StatelessWidget {
   }
 }
 
-class _CheckBadge extends StatelessWidget {
-  const _CheckBadge({required this.selected});
+class AppSelectionBadge extends StatelessWidget {
+  const AppSelectionBadge({required this.selected, super.key});
 
   final bool selected;
 

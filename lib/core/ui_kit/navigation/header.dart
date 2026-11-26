@@ -10,6 +10,10 @@ import '../tokens/app_typography.dart';
 
 class AppHeader extends StatelessWidget {
   static const double height = 64;
+  static const constraints = BoxConstraints(
+    minHeight: height,
+    maxHeight: height,
+  );
 
   static double topInset(BuildContext context) =>
       MediaQuery.paddingOf(context).top + height;
@@ -47,21 +51,9 @@ class AppHeader extends StatelessWidget {
       child: AppText(title, variant: AppTextVariant.title),
     );
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            context.theme.colors.foreground.withValues(alpha: 0.2),
-            context.theme.colors.foreground.withValues(alpha: 0.0),
-          ],
-        ),
-      ),
+    return AppHeaderSurface(
       child: FHeader.nested(
-        style: const FHeaderStyleDelta.delta(
-          constraints: BoxConstraints(minHeight: height, maxHeight: height),
-        ),
+        style: const FHeaderStyleDelta.delta(constraints: constraints),
         title: titleTooltip == null
             ? titleCard
             : AppTooltip(message: titleTooltip, child: titleCard),
@@ -80,6 +72,27 @@ class AppHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+class AppHeaderSurface extends StatelessWidget {
+  const AppHeaderSurface({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          context.theme.colors.foreground.withValues(alpha: 0.2),
+          context.theme.colors.foreground.withValues(alpha: 0.0),
+        ],
+      ),
+    ),
+    child: child,
+  );
 }
 
 class _PillButton extends StatelessWidget {

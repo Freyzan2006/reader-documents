@@ -5,5 +5,7 @@ export 'notifiers/recently_opened_notifier.dart';
 export 'notifiers/tag_definitions_notifier.dart';
 export 'notifiers/tags_notifier.dart';
 export 'providers/document_filter.dart';
+export 'providers/document_selection.dart';
 export 'providers/document_stats.dart';
+export 'providers/gesture_hint.dart';
 export 'providers/documents_providers.dart';

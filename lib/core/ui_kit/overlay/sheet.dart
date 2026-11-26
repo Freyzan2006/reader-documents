@@ -62,6 +62,69 @@ abstract final class AppSheet {
       ),
     );
   }
+
+  static Future<T?> showContent<T>({
+    required BuildContext context,
+    required Widget Function(
+      BuildContext context,
+      ScrollController scrollController,
+    )
+    builder,
+    AppBarrierVariant? barrierVariant,
+  }) {
+    HapticFeedback.lightImpact();
+    return showFSheet<T>(
+      context: context,
+      side: FLayout.btt,
+      style: FModalSheetStyleDelta.delta(
+        barrierFilter: AppBarrier.filter(
+          AppBarrier.resolve(context, barrierVariant),
+        ),
+      ),
+      mainAxisMaxRatio: null,
+      draggable: false,
+      builder: (context) => _ContentSheet(builder: builder),
+    );
+  }
+}
+
+class _ContentSheet extends StatefulWidget {
+  const _ContentSheet({required this.builder});
+
+  final Widget Function(BuildContext context, ScrollController scrollController)
+  builder;
+
+  @override
+  State<_ContentSheet> createState() => _ContentSheetState();
+}
+
+class _ContentSheetState extends State<_ContentSheet> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return SheetSurface(
+      side: FLayout.btt,
+      expand: false,
+      onHandleDismiss: () => Navigator.of(context).pop(),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight:
+              media.size.height -
+              media.padding.vertical -
+              media.viewInsets.bottom,
+        ),
+        child: widget.builder(context, _controller),
+      ),
+    );
+  }
 }
 
 /// Fires a haptic the moment a drag first reaches the dismiss threshold —

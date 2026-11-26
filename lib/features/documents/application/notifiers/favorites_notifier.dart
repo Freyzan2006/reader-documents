@@ -24,6 +24,21 @@ class FavoritesNotifier extends AsyncNotifier<Set<String>> {
     }
     return favorite;
   }
+
+  Future<void> setMany(Iterable<String> paths, bool favorite) async {
+    final repo = ref.read(favoritesRepositoryProvider);
+    final next = {...state.value ?? const <String>{}};
+    for (final path in paths) {
+      if (favorite) {
+        await repo.save(path, true);
+        next.add(path);
+      } else {
+        await repo.clear(path);
+        next.remove(path);
+      }
+    }
+    state = AsyncData(next);
+  }
 }
 
 final favoritesProvider = AsyncNotifierProvider<FavoritesNotifier, Set<String>>(

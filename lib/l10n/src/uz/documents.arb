@@ -11,5 +11,44 @@
   "renameDocumentTitle": "Hujjatni qayta nomlash",
   "renameDocumentHint": "Hujjat nomi",
   "addedToFavorites": "Sevimlilarga qoʻshildi",
-  "removedFromFavorites": "Sevimlilardan olib tashlandi"
+  "removedFromFavorites": "Sevimlilardan olib tashlandi",
+  "documentActionsTitle": "Hujjat harakatlari",
+  "selectionDetails": "Tafsilotlar",
+  "addToFavoritesAction": "Sevimlilarga qoʻshish",
+  "removeFromFavoritesAction": "Sevimlilardan olib tashlash",
+  "selectMultiple": "Bir nechtasini tanlash",
+  "documentCardHint": "Harakatlar uchun uzoq bosing",
+  "selectionCount": "Tanlangan: {count}",
+  "@selectionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "selectAll": "Hammasini tanlash",
+  "deselectAll": "Tanlovni bekor qilish",
+  "favoriteSelected": "Sevimlilarga qoʻshish",
+  "unfavoriteSelected": "Sevimlilardan olib tashlash",
+  "shareSelected": "Ulashish",
+  "deleteSelected": "Oʻchirish",
+  "deleteSelectedTitle": "{count} ta hujjat oʻchirilsinmi?",
+  "@deleteSelectedTitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "deleteSelectedBody": "Tanlangan hujjatlar butunlay oʻchiriladi.",
+  "favoritesAddedCount": "Sevimlilarga {count} ta qoʻshildi",
+  "@favoritesAddedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "gestureHintLongPress": "Harakatlar uchun kartochkani uzoq bosing",
+  "gestureHintSwipe": "Sevimlilarga qo'shish uchun o'ngga suring",
+  "favoritesRemovedCount": "Sevimlilardan {count} ta olib tashlandi",
+  "@favoritesRemovedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

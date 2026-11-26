@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/config/app_brand.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
+import 'package:reader_documents/features/documents/application/documents_providers.dart';
+import 'package:reader_documents/features/documents/presentation/list/document_selection_aware_header.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import 'app_command_launcher.dart';
@@ -19,13 +21,20 @@ class AppShell extends ConsumerWidget {
     final destination = ref.watch(currentNavDestinationProvider);
     final index = tabs.indexWhere((tab) => tab.destination == destination);
 
+    ref.listen(
+      currentNavDestinationProvider,
+      (_, _) => ref.read(documentSelectionProvider.notifier).clear(),
+    );
+
     return AppScaffold(
-      header: AppHeader(
-        title: AppBrand.shortName,
-        titleTooltip: AppBrand.name,
-        onMenuTap: () => AppSideMenu.show(context, ref),
-        actionIcon: AppIcons.search,
-        onActionTap: () => AppCommandLauncher.show(context, ref),
+      header: DocumentSelectionAwareHeader(
+        normal: AppHeader(
+          title: AppBrand.shortName,
+          titleTooltip: AppBrand.name,
+          onMenuTap: () => AppSideMenu.show(context, ref),
+          actionIcon: AppIcons.search,
+          onActionTap: () => AppCommandLauncher.show(context, ref),
+        ),
       ),
       footer: AppBottomNav(
         variant: AppEffects.blurOf(context)

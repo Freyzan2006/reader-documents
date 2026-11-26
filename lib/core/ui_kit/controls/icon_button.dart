@@ -9,11 +9,13 @@ class AppIconButton extends StatelessWidget {
     required this.onPressed,
     this.color,
     this.enabled,
+    this.semanticsLabel,
     super.key,
   });
 
   final IconData icon;
   final VoidCallback? onPressed;
+  final String? semanticsLabel;
 
   /// Overrides the icon's own color (e.g. to show an active/toggled state).
   /// The circular background color is unaffected.
@@ -29,6 +31,7 @@ class AppIconButton extends StatelessWidget {
 
     return FTappable(
       onPress: onPressed,
+      semanticsLabel: semanticsLabel,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: disabled

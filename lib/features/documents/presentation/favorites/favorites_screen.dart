@@ -6,18 +6,34 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 import '../../application/documents_providers.dart';
 import '../actions/document_commands.dart';
 import '../list/document_list.dart';
+import '../list/document_selection_aware_header.dart';
 
-class FavoritesScreen extends ConsumerWidget {
+class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FavoritesScreen> createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(documentSelectionProvider.notifier).clear();
+    });
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
-      header: AppHeader(
-        title: l10n.homeFavoritesTitle,
-        onBackTap: () => Navigator.of(context).maybePop(),
+      header: DocumentSelectionAwareHeader(
+        normal: AppHeader(
+          title: l10n.homeFavoritesTitle,
+          onBackTap: () => Navigator.of(context).maybePop(),
+        ),
       ),
       child: AppPullToRefresh(
         onRefresh: () => ref.read(documentsProvider.notifier).refresh(),

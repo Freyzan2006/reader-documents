@@ -140,4 +140,66 @@ abstract final class DocumentCommands {
     );
     return confirmed ?? false;
   }
+
+  static Future<void> toggleFavoriteMany(
+    BuildContext context,
+    WidgetRef ref,
+    Iterable<String> paths,
+  ) async {
+    final list = paths.toList();
+    if (list.isEmpty) return;
+
+    final favorites = ref.read(favoritesProvider).value ?? const <String>{};
+    final favorite = !list.every(favorites.contains);
+    await ref.read(favoritesProvider.notifier).setMany(list, favorite);
+    if (!context.mounted) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    AppToast.show(
+      context: context,
+      title: Text(
+        favorite
+            ? l10n.favoritesAddedCount(list.length)
+            : l10n.favoritesRemovedCount(list.length),
+      ),
+    );
+  }
+
+  static Future<bool> confirmDeleteMany(BuildContext context, int count) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await AppDialog.show<bool>(
+      context: context,
+      title: Text(l10n.deleteSelectedTitle(count)),
+      body: Text(l10n.deleteSelectedBody),
+      actions: [
+        AppButton(
+          variant: AppButtonVariant.outline,
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        AppButton(
+          variant: AppButtonVariant.destructive,
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.delete),
+        ),
+      ],
+    );
+    return confirmed ?? false;
+  }
+
+  static Future<void> deleteSelection(
+    BuildContext context,
+    WidgetRef ref,
+    Iterable<DocumentFile> files, {
+    required VoidCallback onDone,
+  }) async {
+    final list = files.toList();
+    if (list.isEmpty) return;
+    if (!await confirmDeleteMany(context, list.length)) return;
+
+    await ref
+        .read(documentsProvider.notifier)
+        .deleteMany(list.map((file) => file.path));
+    onDone();
+  }
 }

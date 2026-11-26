@@ -11,5 +11,44 @@
   "renameDocumentTitle": "Переименовать документ",
   "renameDocumentHint": "Название документа",
   "addedToFavorites": "Добавлено в избранное",
-  "removedFromFavorites": "Удалено из избранного"
+  "removedFromFavorites": "Удалено из избранного",
+  "documentActionsTitle": "Действия с документом",
+  "selectionDetails": "Подробнее",
+  "addToFavoritesAction": "Добавить в избранное",
+  "removeFromFavoritesAction": "Убрать из избранного",
+  "selectMultiple": "Выбрать несколько",
+  "documentCardHint": "Удерживайте для действий",
+  "selectionCount": "Выбрано: {count}",
+  "@selectionCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "selectAll": "Выбрать все",
+  "deselectAll": "Снять выделение",
+  "favoriteSelected": "В избранное",
+  "unfavoriteSelected": "Убрать из избранного",
+  "shareSelected": "Поделиться",
+  "deleteSelected": "Удалить",
+  "deleteSelectedTitle": "Удалить документов: {count}?",
+  "@deleteSelectedTitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "deleteSelectedBody": "Выбранные документы будут удалены без возможности восстановления.",
+  "favoritesAddedCount": "Добавлено в избранное: {count}",
+  "@favoritesAddedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "gestureHintLongPress": "Удерживайте карточку, чтобы открыть действия",
+  "gestureHintSwipe": "Смахните вправо — в избранное",
+  "favoritesRemovedCount": "Удалено из избранного: {count}",
+  "@favoritesRemovedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
