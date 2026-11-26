@@ -21,8 +21,13 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> updateProfile(UserProfile profile) =>
       _update((settings) => settings.copyWith(profile: profile));
 
-  Future<void> setWarmReadingFilter(bool enabled) =>
-      _update((settings) => settings.copyWith(warmReadingFilter: enabled));
+  /// Returns the resulting filter state, so callers don't have to duplicate
+  /// the inversion or re-read [settingsProvider] to build a toast.
+  Future<bool> toggleWarmReadingFilter() async {
+    final enabled = !(state.value ?? AppSettings.defaults).warmReadingFilter;
+    await _update((settings) => settings.copyWith(warmReadingFilter: enabled));
+    return enabled;
+  }
 
   Future<void> setEffectsMode(AppEffectsMode mode) =>
       _update((settings) => settings.copyWith(effectsMode: mode));

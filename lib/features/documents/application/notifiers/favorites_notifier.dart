@@ -9,16 +9,20 @@ class FavoritesNotifier extends AsyncNotifier<Set<String>> {
     return all.keys.toSet();
   }
 
-  Future<void> toggle(String documentPath) async {
+  /// Returns the resulting favorite state, so callers can give feedback
+  /// without reading [isFavoriteProvider] a second time.
+  Future<bool> toggle(String documentPath) async {
     final current = state.value ?? const {};
+    final favorite = !current.contains(documentPath);
     final repo = ref.read(favoritesRepositoryProvider);
-    if (current.contains(documentPath)) {
-      await repo.clear(documentPath);
-      state = AsyncData({...current}..remove(documentPath));
-    } else {
+    if (favorite) {
       await repo.save(documentPath, true);
       state = AsyncData({...current, documentPath});
+    } else {
+      await repo.clear(documentPath);
+      state = AsyncData({...current}..remove(documentPath));
     }
+    return favorite;
   }
 }
 

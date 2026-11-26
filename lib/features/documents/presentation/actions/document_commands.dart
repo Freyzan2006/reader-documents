@@ -37,20 +37,20 @@ abstract final class DocumentCommands {
 
   /// Shared favorite toggle — used by document cards and the viewer toolbar,
   /// so both confirm the change with the same toast.
-  static void toggleFavorite(
+  static Future<void> toggleFavorite(
     BuildContext context,
     WidgetRef ref,
     DocumentFile file,
-  ) {
-    final wasFavorite = ref.read(isFavoriteProvider(file.path));
-    ref.read(favoritesProvider.notifier).toggle(file.path);
+  ) async {
+    final favorite = await ref
+        .read(favoritesProvider.notifier)
+        .toggle(file.path);
+    if (!context.mounted) return;
 
     final l10n = AppLocalizations.of(context)!;
     AppToast.show(
       context: context,
-      title: Text(
-        wasFavorite ? l10n.removedFromFavorites : l10n.addedToFavorites,
-      ),
+      title: Text(favorite ? l10n.addedToFavorites : l10n.removedFromFavorites),
     );
   }
 

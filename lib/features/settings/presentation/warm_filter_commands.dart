@@ -6,10 +6,11 @@ import 'package:reader_documents/l10n/app_localizations.dart';
 
 /// Shared warm-filter toggle so every entry point gives the same feedback.
 abstract final class WarmFilterCommands {
-  static void toggle(BuildContext context, WidgetRef ref) {
-    final enabled =
-        !(ref.read(settingsProvider).value?.warmReadingFilter ?? false);
-    ref.read(settingsProvider.notifier).setWarmReadingFilter(enabled);
+  static Future<void> toggle(BuildContext context, WidgetRef ref) async {
+    final enabled = await ref
+        .read(settingsProvider.notifier)
+        .toggleWarmReadingFilter();
+    if (!context.mounted) return;
 
     final l10n = AppLocalizations.of(context)!;
     AppToast.show(
