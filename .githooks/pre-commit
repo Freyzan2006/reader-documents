@@ -1,0 +1,8 @@
+#!/bin/sh
+# Delegates to lefthook via the project's Dart dev dependency, so no global
+# `lefthook` binary is required. Install with `make hooks-install`.
+if [ "${LEFTHOOK-}" = "0" ]; then
+  exit 0
+fi
+
+exec dart run lefthook_dart run pre-commit "$@"

@@ -19,9 +19,11 @@ samples, guidance on mobile development, and a full API reference.
 ## Development checks
 
 Git hooks are managed by [lefthook](https://lefthook.dev/) through the
-`lefthook_dart` dev dependency. The `pre-commit` hook formats staged Dart
-files (excluding the vendored `packages/` fork), regenerates localizations
-when ARB sources change, then runs `flutter analyze` and `flutter test`.
+`lefthook_dart` dev dependency. The tracked `.githooks/pre-commit` script
+delegates to lefthook, so no global `lefthook` binary is needed. It formats
+staged Dart files (excluding the vendored `packages/` fork), regenerates
+localizations when ARB sources change, then runs `flutter analyze` and
+`flutter test`.
 
 Install the hooks once after cloning:
 

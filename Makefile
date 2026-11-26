@@ -42,8 +42,9 @@ translations: ## Merge lib/l10n/src/*/*.arb fragments and regenerate localizatio
 	dart run tool/merge_arb.dart
 	flutter gen-l10n
 
-hooks-install: ## Install lefthook git hooks into .git/hooks
-	dart run lefthook_dart install
+hooks-install: ## Point git at the tracked .githooks scripts (no global lefthook needed)
+	git config core.hooksPath .githooks
+	dart run lefthook_dart validate
 
 hooks-run: ## Run pre-commit checks manually (same as `git commit` would)
 	dart run lefthook_dart run pre-commit
