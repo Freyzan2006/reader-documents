@@ -76,6 +76,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
                 ),
                 child: AppText(
                   title,
+                  variant: AppTextVariant.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
