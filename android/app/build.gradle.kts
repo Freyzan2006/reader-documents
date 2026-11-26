@@ -47,6 +47,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Allow debug and release builds to coexist on the same device.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             signingConfig = signingConfigs.getByName("release")
         }
