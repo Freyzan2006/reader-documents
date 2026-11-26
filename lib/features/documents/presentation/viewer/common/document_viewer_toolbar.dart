@@ -5,6 +5,7 @@ import 'package:reader_documents/features/documents/application/documents_provid
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import '../../actions/document_commands.dart';
 import '../../actions/document_rename.dart';
 import '../../actions/document_sharing.dart';
 import '../contract/document_viewer_controller.dart';
@@ -86,8 +87,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
         ),
         AppIconButton(
           icon: AppIcons.star,
-          onPressed: () =>
-              ref.read(favoritesProvider.notifier).toggle(file.path),
+          onPressed: () => DocumentCommands.toggleFavorite(context, ref, file),
           color: ref.watch(isFavoriteProvider(file.path))
               ? AppColors.warning(context)
               : null,

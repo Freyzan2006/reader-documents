@@ -9,5 +9,7 @@
   "deleteDocumentTitle": "Hujjatni o'chirish?",
   "deleteDocumentBody": "\"{name}\" butunlay o'chiriladi.",
   "renameDocumentTitle": "Hujjatni qayta nomlash",
-  "renameDocumentHint": "Hujjat nomi"
+  "renameDocumentHint": "Hujjat nomi",
+  "addedToFavorites": "Sevimlilarga qoʻshildi",
+  "removedFromFavorites": "Sevimlilardan olib tashlandi"
 }

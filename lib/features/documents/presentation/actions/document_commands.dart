@@ -35,6 +35,25 @@ abstract final class DocumentCommands {
     context,
   ).push(MaterialPageRoute<void>(builder: (_) => const FavoritesScreen()));
 
+  /// Shared favorite toggle — used by document cards and the viewer toolbar,
+  /// so both confirm the change with the same toast.
+  static void toggleFavorite(
+    BuildContext context,
+    WidgetRef ref,
+    DocumentFile file,
+  ) {
+    final wasFavorite = ref.read(isFavoriteProvider(file.path));
+    ref.read(favoritesProvider.notifier).toggle(file.path);
+
+    final l10n = AppLocalizations.of(context)!;
+    AppToast.show(
+      context: context,
+      title: Text(
+        wasFavorite ? l10n.removedFromFavorites : l10n.addedToFavorites,
+      ),
+    );
+  }
+
   static Future<void> importDocument(WidgetRef ref) async {
     final file = await FilePicker.pickFile(
       type: FileType.custom,

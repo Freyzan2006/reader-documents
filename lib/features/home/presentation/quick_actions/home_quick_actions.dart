@@ -4,6 +4,7 @@ import 'package:reader_documents/core/navigation/app_command_launcher.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 import 'package:reader_documents/features/settings/application/settings_providers.dart';
+import 'package:reader_documents/features/settings/presentation/warm_filter_commands.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import 'home_quick_action_button.dart';
@@ -41,9 +42,7 @@ class HomeQuickActions extends ConsumerWidget {
             label: warmFilterEnabled
                 ? l10n.pdfMenuWarmFilterOff
                 : l10n.pdfMenuWarmFilterOn,
-            onTap: () => ref
-                .read(settingsProvider.notifier)
-                .setWarmReadingFilter(!warmFilterEnabled),
+            onTap: () => WarmFilterCommands.toggle(context, ref),
           ),
         ),
       ],

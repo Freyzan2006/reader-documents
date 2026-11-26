@@ -23,5 +23,7 @@
   "effectsSectionHint": "Interface animations and effects. Performance makes the app faster and smoother on older devices.",
   "effectsSystem": "System",
   "effectsQuality": "Quality",
-  "effectsPerformance": "Performance"
+  "effectsPerformance": "Performance",
+  "warmFilterEnabledToast": "Warm filter enabled",
+  "warmFilterDisabledToast": "Warm filter disabled"
 }

@@ -23,5 +23,7 @@
   "effectsSectionHint": "Анимации и эффекты интерфейса. «Производительность» делает приложение быстрее и плавнее на старых устройствах.",
   "effectsSystem": "Системные",
   "effectsQuality": "Качество",
-  "effectsPerformance": "Производительность"
+  "effectsPerformance": "Производительность",
+  "warmFilterEnabledToast": "Тёплый фильтр включён",
+  "warmFilterDisabledToast": "Тёплый фильтр выключен"
 }

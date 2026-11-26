@@ -6,6 +6,7 @@ import 'package:reader_documents/features/documents/data/models/tag_color.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../../application/documents_providers.dart';
+import '../actions/document_commands.dart';
 import '../actions/document_rename.dart';
 import '../actions/document_sharing.dart';
 import '../tags/tag_editor.dart';
@@ -98,7 +99,7 @@ class DocumentCard extends ConsumerWidget {
             AppIconButton(
               icon: AppIcons.star,
               onPressed: () =>
-                  ref.read(favoritesProvider.notifier).toggle(file.path),
+                  DocumentCommands.toggleFavorite(context, ref, file),
               color: isFavorite ? AppColors.warning(context) : null,
             ),
             AppPopoverMenu(

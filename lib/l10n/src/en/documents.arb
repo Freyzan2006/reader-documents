@@ -14,5 +14,7 @@
     }
   },
   "renameDocumentTitle": "Rename document",
-  "renameDocumentHint": "Document name"
+  "renameDocumentHint": "Document name",
+  "addedToFavorites": "Added to favorites",
+  "removedFromFavorites": "Removed from favorites"
 }

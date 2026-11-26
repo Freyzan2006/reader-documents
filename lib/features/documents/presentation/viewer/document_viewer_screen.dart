@@ -7,6 +7,7 @@ import 'package:reader_documents/features/documents/application/documents_provid
 import 'package:reader_documents/features/documents/application/controllers/reading_progress_controller.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/features/settings/application/settings_providers.dart';
+import 'package:reader_documents/features/settings/presentation/warm_filter_commands.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../actions/document_bookmark_prompt.dart';
@@ -142,11 +143,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   void _rotate() => setState(() => _quarterTurns = _quarterTurns == 0 ? 1 : 0);
 
-  void _toggleWarmFilter() {
-    final current =
-        ref.read(settingsProvider).value?.warmReadingFilter ?? false;
-    ref.read(settingsProvider.notifier).setWarmReadingFilter(!current);
-  }
+  void _toggleWarmFilter() => WarmFilterCommands.toggle(context, ref);
 
   Future<void> _captureScreenshot() =>
       DocumentPageCapture.capture(context, _captureKey, widget.file.name);

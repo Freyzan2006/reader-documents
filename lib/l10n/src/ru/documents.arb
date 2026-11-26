@@ -9,5 +9,7 @@
   "deleteDocumentTitle": "Удалить документ?",
   "deleteDocumentBody": "Файл \"{name}\" будет удалён без возможности восстановления.",
   "renameDocumentTitle": "Переименовать документ",
-  "renameDocumentHint": "Название документа"
+  "renameDocumentHint": "Название документа",
+  "addedToFavorites": "Добавлено в избранное",
+  "removedFromFavorites": "Удалено из избранного"
 }
