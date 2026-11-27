@@ -96,7 +96,7 @@ class PdfDocumentViewerController extends DocumentViewerController {
     document: _document,
     pageNumber: pageNumber,
     maximumDpi: _thumbnailDpi,
-    backgroundColor: AppColors.of(context).background,
+    backgroundColor: context.tokens.palette.paper,
     decorationBuilder: (context, pageSize, page, pageImage) => AspectRatio(
       aspectRatio: pageSize.width / pageSize.height,
       child:

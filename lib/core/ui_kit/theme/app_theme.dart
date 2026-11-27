@@ -1,44 +1,46 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../../config/app_brand.dart';
-import '../tokens/app_colors.dart';
+import '../tokens/app_palette.dart';
 import '../tokens/app_typography.dart';
+import 'app_tokens.dart';
+import 'graphics_mode.dart';
 
-/// The app's own theming layer on top of Forui.
-///
-/// Forui ships a "neutral" base palette (`FColors.neutralLight`/`neutralDark`).
-/// Instead of consuming it as-is, we derive our brand palette (see
-/// [AppColors]) from it here, in one place. Re-skinning the app (or swapping
-/// Forui for something else later) means touching this file, not every
-/// screen that uses [FButton]/[FCard]/etc.
-abstract final class AppTheme {
-  static final FThemeData light = _build(
-    debugLabel: '${AppBrand.name} Light',
-    colors: FColors.neutralLight.copyWith(
-      primary: AppColors.primaryLight,
-      primaryForeground: const Color(0xFFFFFFFF),
+class AppTheme extends StatelessWidget {
+  const AppTheme({required this.tokens, required this.child, super.key});
+
+  static const _iconSize = 20.0;
+
+  final AppTokens tokens;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<AppPalette>(
+    tween: _AppPaletteTween(end: tokens.palette),
+    duration: tokens.graphics == GraphicsMode.quality
+        ? tokens.motion.sheet
+        : Duration.zero,
+    curve: AppMotion.curve,
+    child: child,
+    builder: (context, palette, child) => AppThemeScope(
+      tokens: tokens.copyWith(palette: palette),
+      child: DefaultTextStyle(
+        style: AppTextStyles.body.copyWith(color: palette.ink),
+        child: IconTheme(
+          data: IconThemeData(color: palette.ink, size: _iconSize),
+          child: DefaultSelectionStyle(
+            cursorColor: palette.ink,
+            selectionColor: palette.ink.withValues(alpha: 0.2),
+            child: child!,
+          ),
+        ),
+      ),
     ),
   );
+}
 
-  static final FThemeData dark = _build(
-    debugLabel: '${AppBrand.name} Dark',
-    colors: FColors.neutralDark.copyWith(
-      primary: AppColors.primaryDark,
-      primaryForeground: const Color(0xFF0A0A0A),
-    ),
-  );
+class _AppPaletteTween extends Tween<AppPalette> {
+  _AppPaletteTween({super.end});
 
-  static FThemeData _build({
-    required String debugLabel,
-    required FColors colors,
-  }) => FThemeData(
-    touch: true,
-    debugLabel: debugLabel,
-    colors: colors,
-    typography: AppTypography.build(colors: colors, touch: true),
-  );
-
-  static FThemeData of(Brightness brightness) =>
-      brightness == Brightness.dark ? dark : light;
+  @override
+  AppPalette lerp(double t) => AppPalette.lerp(begin ?? end!, end!, t);
 }

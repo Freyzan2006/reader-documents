@@ -4,5 +4,11 @@
   "saved": "Сохранено",
   "retry": "Повторить",
   "delete": "Удалить",
-  "menuTitle": "Меню"
+  "menuTitle": "Меню",
+  "copiedToClipboard": "Скопировано в буфер обмена",
+  "clear": "Очистить",
+  "undo": "Отменить",
+  "splashFailedTitle": "Не удалось запустить приложение",
+  "splashFailedStorage": "Не открылось хранилище документов",
+  "splashFailedTimeout": "Запуск занимает слишком много времени"
 }

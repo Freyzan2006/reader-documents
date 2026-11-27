@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/features/settings/data/app_language.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/features/settings/data/settings_repository.dart';
-import 'package:reader_documents/features/settings/data/user_profile.dart';
 
 final settingsRepositoryProvider = Provider<SettingsRepository>(
   (ref) => const SettingsRepository(),
@@ -18,9 +17,6 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> setLanguage(AppLanguage language) =>
       _update((settings) => settings.copyWith(language: language));
 
-  Future<void> updateProfile(UserProfile profile) =>
-      _update((settings) => settings.copyWith(profile: profile));
-
   /// Returns the resulting filter state, so callers don't have to duplicate
   /// the inversion or re-read [settingsProvider] to build a toast.
   Future<bool> toggleWarmReadingFilter() async {
@@ -31,6 +27,9 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> setEffectsMode(AppEffectsMode mode) =>
       _update((settings) => settings.copyWith(effectsMode: mode));
+
+  Future<void> setDocumentsLayout(DocumentsLayout layout) =>
+      _update((settings) => settings.copyWith(documentsLayout: layout));
 
   Future<void> _update(
     AppSettings Function(AppSettings current) transform,

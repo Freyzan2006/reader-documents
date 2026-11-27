@@ -13,53 +13,69 @@ class EffectsSettingsSection extends StatelessWidget {
   final AppEffectsMode effectsMode;
   final ValueChanged<AppEffectsMode> onChanged;
 
-  static IconData _icon(AppEffectsMode mode) => switch (mode) {
-    AppEffectsMode.system => AppIcons.monitor,
-    AppEffectsMode.quality => AppIcons.sparkles,
-    AppEffectsMode.performance => AppIcons.zap,
-  };
-
   static String _label(AppLocalizations l10n, AppEffectsMode mode) =>
       switch (mode) {
-        AppEffectsMode.system => l10n.effectsSystem,
+        AppEffectsMode.system => l10n.graphicsAuto,
         AppEffectsMode.quality => l10n.effectsQuality,
-        AppEffectsMode.performance => l10n.effectsPerformance,
+        AppEffectsMode.performance => l10n.graphicsPerformanceShort,
       };
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = AppColors.of(context);
+    final palette = context.tokens.palette;
+    final resolved = context.tokens.graphics == GraphicsMode.quality
+        ? l10n.effectsQuality
+        : l10n.effectsPerformance;
 
-    return AppSection(
-      title: l10n.effectsSectionTitle,
-      icon: AppIcons.sparkles,
-      hint: l10n.effectsSectionHint,
-      child: AppGrid(
-        spacing: AppSpacing.sm,
-        runSpacing: AppSpacing.sm,
-        children: [
-          for (final mode in AppEffectsMode.values)
-            AppSelectableCard(
-              selected: mode == effectsMode,
-              onPressed: () => onChanged(mode),
-              child: Row(
-                spacing: AppSpacing.sm,
+    return AppListGroup(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            14,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.md,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(_icon(mode), size: 20, color: colors.mutedForeground),
-                  Expanded(
-                    child: AppText(
-                      _label(l10n, mode),
-                      variant: AppTextVariant.body,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  Text(
+                    l10n.graphicsModeTitle,
+                    style: AppTextStyles.body.copyWith(color: palette.ink),
                   ),
+                  if (effectsMode == AppEffectsMode.system)
+                    Text(
+                      l10n.graphicsAutoNow(resolved),
+                      style: AppTextStyles.caption.copyWith(
+                        color: palette.ink3,
+                      ),
+                    ),
                 ],
               ),
-            ),
-        ],
-      ),
+              AppSegmented<AppEffectsMode>(
+                expand: true,
+                value: effectsMode,
+                onChanged: onChanged,
+                segments: [
+                  for (final mode in AppEffectsMode.values)
+                    AppSegment(
+                      value: mode,
+                      label: _label(l10n, mode),
+                      semanticsLabel: mode == AppEffectsMode.performance
+                          ? l10n.effectsPerformance
+                          : null,
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

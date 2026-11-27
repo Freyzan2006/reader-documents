@@ -1,21 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../tokens/app_borders.dart';
+import '../theme/app_tokens.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_shadows.dart';
+import 'edge.dart';
 
-/// Shared visual chrome for [AppSheet] and [AppSidePanel].
-///
-/// Forui's [FSheetStyle] (the base style for both the modal and persistent
-/// sheet styles) has no decoration token at all — no background, no rounded
-/// corners. Both sheet types need the same surface, so it's built once here
-/// instead of duplicated per type.
-///
-/// Vertical sides (a bottom/top sheet) get rounded corners on the free edge
-/// and a drag handle. Horizontal sides (a side panel) get a border on the
-/// edge touching the rest of the app instead — a handle bar reads as
-/// "draggable" in a way a docked side panel usually isn't.
 class SheetSurface extends StatelessWidget {
   const SheetSurface({
     required this.side,
@@ -25,63 +14,39 @@ class SheetSurface extends StatelessWidget {
     super.key,
   });
 
-  final FLayout side;
+  final AppEdge side;
   final Widget child;
-
   final bool expand;
   final VoidCallback? onHandleDismiss;
 
-  static BorderRadius _cornerRadius(FLayout side, BorderRadius r) =>
-      switch (side) {
-        FLayout.btt => BorderRadius.only(
-          topLeft: r.topLeft,
-          topRight: r.topRight,
-        ),
-        FLayout.ttb => BorderRadius.only(
-          bottomLeft: r.bottomLeft,
-          bottomRight: r.bottomRight,
-        ),
-        FLayout.ltr => BorderRadius.only(
-          topRight: r.topRight,
-          bottomRight: r.bottomRight,
-        ),
-        FLayout.rtl => BorderRadius.only(
-          topLeft: r.topLeft,
-          bottomLeft: r.bottomLeft,
-        ),
-      };
-
-  static Border _edgeBorder(FLayout side, Color color) => switch (side) {
-    FLayout.ltr => Border(right: BorderSide(color: color)),
-    FLayout.rtl => Border(left: BorderSide(color: color)),
-    FLayout.ttb || FLayout.btt => const Border(),
-  };
-
-  /// The free edge's direction, for [AppShadows.towards] — the side facing
-  /// the dimmed barrier, not the rest of the app.
-  static Offset _freeEdgeDirection(FLayout side) => switch (side) {
-    FLayout.btt => const Offset(0, -1),
-    FLayout.ttb => const Offset(0, 1),
-    FLayout.ltr => const Offset(1, 0),
-    FLayout.rtl => const Offset(-1, 0),
+  BorderRadius? get _radius => switch (side) {
+    AppEdge.bottom => BorderRadius.only(
+      topLeft: AppRadii.lg.topLeft,
+      topRight: AppRadii.lg.topRight,
+    ),
+    AppEdge.top => BorderRadius.only(
+      bottomLeft: AppRadii.lg.bottomLeft,
+      bottomRight: AppRadii.lg.bottomRight,
+    ),
+    AppEdge.left || AppEdge.right => null,
   };
 
   @override
   Widget build(BuildContext context) {
-    // Forui's `FSheets` (backing both `showFSheet` and `showFPersistentSheet`)
-    // stacks sheets via a plain `Stack`, which gives each sheet *loose* — not
-    // tight — constraints. Without SizedBox.expand, a side panel sizes to its
-    // content instead of filling the available height.
-    Widget surface = DecoratedBox(
+    final tokens = context.tokens;
+    final palette = tokens.palette;
+    final surface = DecoratedBox(
       decoration: BoxDecoration(
-        color: context.theme.colors.card,
-        borderRadius: side.vertical
-            ? _cornerRadius(side, AppRadius.of(context).lg)
-            : null,
-        border: side.vertical
-            ? null
-            : _edgeBorder(side, AppBorders.color(context)),
-        boxShadow: AppShadows.towards(_freeEdgeDirection(side)),
+        color: palette.sheet,
+        borderRadius: _radius,
+        border: switch (side) {
+          AppEdge.left => Border(right: BorderSide(color: palette.rule)),
+          AppEdge.right => Border(left: BorderSide(color: palette.rule)),
+          AppEdge.top || AppEdge.bottom => null,
+        },
+        boxShadow: side == AppEdge.bottom
+            ? tokens.elevation.sheet
+            : AppShadows.towards(side.freeEdgeDirection),
       ),
       child: SafeArea(
         child: side.vertical
@@ -106,33 +71,36 @@ class SheetSurface extends StatelessWidget {
 class _Handle extends StatelessWidget {
   const _Handle({this.onDismiss});
 
+  static const _dismissVelocity = 400.0;
+
   final VoidCallback? onDismiss;
 
   @override
   Widget build(BuildContext context) {
-    Widget handle = Center(
+    final onDismiss = this.onDismiss;
+    final handle = Center(
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.theme.colors.border,
-          borderRadius: BorderRadius.circular(999),
+          color: context.tokens.palette.ruleStrong,
+          borderRadius: AppRadii.pill,
         ),
         child: const SizedBox(width: 36, height: 4),
       ),
     );
 
-    if (onDismiss != null) {
-      handle = GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onVerticalDragEnd: (details) {
-          if ((details.primaryVelocity ?? 0) > 400) onDismiss!();
-        },
-        child: handle,
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: handle,
+      child: onDismiss == null
+          ? handle
+          : GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onVerticalDragEnd: (details) {
+                if ((details.primaryVelocity ?? 0) > _dismissVelocity) {
+                  onDismiss();
+                }
+              },
+              child: handle,
+            ),
     );
   }
 }

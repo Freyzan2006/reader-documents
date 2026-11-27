@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
+import '../controls/checkbox.dart';
 import '../primitives/tappable.dart';
 import '../tokens/app_borders.dart';
-import '../tokens/app_icons.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
+import '../theme/app_tokens.dart';
 
 /// A tappable card that represents one option in a single-choice group.
 ///
@@ -32,7 +32,7 @@ class AppSelectableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.theme.colors;
+    final palette = context.tokens.palette;
 
     return Semantics(
       button: true,
@@ -41,10 +41,10 @@ class AppSelectableCard extends StatelessWidget {
         onPressed: onPressed,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: colors.card,
-            borderRadius: AppRadius.of(context).md,
+            color: palette.sheet,
+            borderRadius: AppRadii.md,
             border: Border.all(
-              color: selected ? colors.primary : colors.border,
+              color: selected ? palette.ink : palette.rule,
               width: selected ? AppBorderWidth.thick : AppBorderWidth.thin,
             ),
           ),
@@ -82,29 +82,7 @@ class AppSelectionBadge extends StatelessWidget {
 
   final bool selected;
 
-  static const _size = 18.0;
-
   @override
-  Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-
-    return SizedBox(
-      width: _size,
-      height: _size,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: selected ? colors.primary : colors.card,
-          border: selected ? null : AppBorders.all(context),
-        ),
-        child: selected
-            ? Icon(
-                AppIcons.check,
-                size: _size * 0.6,
-                color: colors.primaryForeground,
-              )
-            : null,
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      AppCheckMark(checked: selected, round: true, size: 20);
 }

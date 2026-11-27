@@ -19,11 +19,7 @@ class DocumentViewerToolbar extends ConsumerWidget {
     required this.onSearch,
     required this.onRotate,
     required this.onScreenshot,
-    required this.isBookmarked,
-    required this.onToggleBookmark,
     required this.onShowNotes,
-    required this.warmReadingFilterEnabled,
-    required this.onToggleWarmFilter,
     this.onExportNotes,
     super.key,
   });
@@ -34,95 +30,83 @@ class DocumentViewerToolbar extends ConsumerWidget {
   final VoidCallback onSearch;
   final VoidCallback onRotate;
   final VoidCallback onScreenshot;
-  final bool isBookmarked;
-  final VoidCallback onToggleBookmark;
   final VoidCallback onShowNotes;
-  final bool warmReadingFilterEnabled;
-  final VoidCallback onToggleWarmFilter;
-
-  /// Null when there's nothing (no bookmarks, no highlights) to export yet.
   final VoidCallback? onExportNotes;
+
+  String _meta(AppLocalizations l10n) {
+    final controller = viewerController;
+    return controller != null && controller.supportsPagination
+        ? '${file.type.label} · ${l10n.pageCountShort(controller.pageCount)}'
+        : file.type.label;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final controller = viewerController;
+    final isFavorite = ref.watch(isFavoriteProvider(file.path));
+    final onExportNotes = this.onExportNotes;
 
     return Row(
-      spacing: AppSpacing.md,
+      spacing: AppSpacing.xs,
       children: [
         AppIconButton(
           icon: AppIcons.arrowLeft,
+          semanticsLabel: l10n.goBack,
           onPressed: () => Navigator.of(context).pop(),
         ),
         Expanded(
-          child: Center(
-            child: AppTooltip(
-              tip: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title),
-                  AppCopyText(
-                    file.path,
-                    variant: AppTextVariant.caption,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              child: AppCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.xs,
+          child: AppTooltip(
+            tip: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title),
+                AppCopyText(
+                  file.path,
+                  copiedMessage: l10n.copiedToClipboard,
+                  variant: AppTextVariant.caption,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                child: AppText(
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
                   title,
-                  variant: AppTextVariant.title,
+                  variant: AppTextVariant.item,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
+                AppText(_meta(l10n), variant: AppTextVariant.meta, maxLines: 1),
+              ],
             ),
           ),
         ),
-        AppIconButton(
-          icon: AppIcons.star,
-          onPressed: () => DocumentCommands.toggleFavorite(context, ref, file),
-          color: ref.watch(isFavoriteProvider(file.path))
-              ? AppColors.warning(context)
-              : null,
-        ),
-        if (controller != null && controller.supportsPagination)
+        if (controller?.search != null)
           AppIconButton(
-            icon: isBookmarked ? AppIcons.bookmarkCheck : AppIcons.bookmark,
-            onPressed: onToggleBookmark,
-            color: isBookmarked ? AppColors.accent(context) : null,
+            icon: AppIcons.search,
+            semanticsLabel: l10n.pdfMenuSearch,
+            onPressed: onSearch,
+          ),
+        if (controller != null)
+          AppIconButton(
+            icon: AppIcons.tableOfContents,
+            semanticsLabel: l10n.pdfMenuNotes,
+            onPressed: onShowNotes,
           ),
         _OverflowMenu(
           items: [
             AppCommandItem(
-              label: l10n.pdfMenuRotate,
-              icon: AppIcons.rotateCw,
-              onSelect: onRotate,
-            ),
-            AppCommandItem(
-              label: l10n.pdfMenuRename,
-              icon: AppIcons.pencil,
+              label: isFavorite
+                  ? l10n.removeFromFavoritesAction
+                  : l10n.addToFavoritesAction,
+              icon: AppIcons.star,
               onSelect: () =>
-                  DocumentRename.show(context: context, ref: ref, file: file),
+                  DocumentCommands.toggleFavorite(context, ref, file),
             ),
-            if (controller?.search != null)
-              AppCommandItem(
-                label: l10n.pdfMenuSearch,
-                icon: AppIcons.search,
-                onSelect: onSearch,
-              ),
-            if (controller != null)
-              AppCommandItem(
-                label: l10n.pdfMenuNotes,
-                icon: AppIcons.tableOfContents,
-                onSelect: onShowNotes,
-              ),
             if (controller != null && controller.supportsPagination)
               AppCommandItem(
                 label: l10n.pdfMenuPages,
@@ -134,6 +118,17 @@ class DocumentViewerToolbar extends ConsumerWidget {
                 ),
               ),
             AppCommandItem(
+              label: l10n.pdfMenuRotate,
+              icon: AppIcons.rotateCw,
+              onSelect: onRotate,
+            ),
+            AppCommandItem(
+              label: l10n.pdfMenuRename,
+              icon: AppIcons.pencil,
+              onSelect: () =>
+                  DocumentRename.show(context: context, ref: ref, file: file),
+            ),
+            AppCommandItem(
               label: l10n.pdfMenuShare,
               icon: AppIcons.share2,
               onSelect: () => DocumentSharing.share(file),
@@ -143,18 +138,11 @@ class DocumentViewerToolbar extends ConsumerWidget {
               icon: AppIcons.camera,
               onSelect: onScreenshot,
             ),
-            AppCommandItem(
-              label: warmReadingFilterEnabled
-                  ? l10n.pdfMenuWarmFilterOff
-                  : l10n.pdfMenuWarmFilterOn,
-              icon: AppIcons.lamp,
-              onSelect: onToggleWarmFilter,
-            ),
             if (onExportNotes != null)
               AppCommandItem(
                 label: l10n.pdfMenuExportNotes,
                 icon: AppIcons.download,
-                onSelect: onExportNotes!,
+                onSelect: onExportNotes,
               ),
           ],
         ),

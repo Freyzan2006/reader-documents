@@ -1,160 +1,230 @@
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../theme/app_theme.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_palette.dart';
 import '../tokens/app_radius.dart';
-import '../tokens/app_spacing.dart';
 
-/// A miniature rendering of the app's own chrome, used to let the user judge
-/// a theme by looking at it instead of reading its name.
-///
-/// [brightnesses] decides the shape: one entry renders a single preview,
-/// two render them side by side (which is how "System" shows that it means
-/// *both* light and dark). Each pane is wrapped in its own [FTheme], so every
-/// colour below comes from the real [AppTheme] palette for that brightness.
-///
-/// Deliberately built from fixed-size bars and no text: a preview has to stay
-/// legible when shrunk to a card, and text would also reflow unpredictably
-/// under large accessibility text scales.
 class AppThemePreview extends StatelessWidget {
   const AppThemePreview({required this.brightnesses, super.key});
 
-  /// One pane per entry, laid out left to right.
   final List<Brightness> brightnesses;
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: AppRadius.of(context).sm,
-    child: switch (brightnesses) {
-      [final single] => _Pane(brightness: single),
-      _ => Row(
-        children: [
-          for (final brightness in brightnesses)
-            Expanded(child: _Pane(brightness: brightness)),
-        ],
+    borderRadius: AppRadii.sm,
+    child: DecoratedBox(
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        borderRadius: AppRadii.sm,
+        border: Border.all(color: context.tokens.palette.rule),
       ),
-    },
-  );
-}
-
-/// A single preview pane, themed independently of its siblings.
-class _Pane extends StatelessWidget {
-  const _Pane({required this.brightness});
-
-  final Brightness brightness;
-
-  static const _minWidth = 64.0;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final scale = math.min(1.0, constraints.maxWidth / _minWidth);
-      return FittedBox(
-        fit: BoxFit.fill,
-        child: SizedBox(
-          width: constraints.maxWidth / scale,
-          height: constraints.maxHeight / scale,
-          child: _content(context),
+      child: switch (brightnesses) {
+        [final single] => _Pane(brightness: single),
+        [final first, final second, ...] => Stack(
+          fit: StackFit.expand,
+          children: [
+            _Pane(brightness: first),
+            ClipPath(
+              clipper: const _LowerTriangle(),
+              child: _Pane(brightness: second),
+            ),
+            CustomPaint(
+              painter: _Diagonal(color: context.tokens.palette.ruleStrong),
+            ),
+          ],
         ),
-      );
-    },
-  );
-
-  Widget _content(BuildContext context) => FTheme(
-    data: AppTheme.of(brightness),
-    child: Builder(
-      builder: (context) {
-        final colors = context.theme.colors;
-
-        return DecoratedBox(
-          decoration: BoxDecoration(color: colors.background),
-          child: Column(
-            spacing: AppSpacing.xs,
-            children: [
-              // Header bar.
-              _Bar(
-                color: colors.muted,
-                height: 7,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Row(
-                    spacing: 2,
-                    children: [
-                      // Menu glyph.
-                      _Bar(color: colors.mutedForeground, width: 3, height: 3),
-                      _Bar(color: colors.mutedForeground, width: 14, height: 3),
-                      const Spacer(),
-                      // The app's primary accent — the single most important
-                      // colour to show, since the brand is monochrome and this
-                      // is the one thing that differs most between themes.
-                      _Bar(color: colors.primary, width: 12, height: 5),
-                    ],
-                  ),
-                ),
-              ),
-              // Sidebar + content.
-              Expanded(
-                child: Row(
-                  spacing: AppSpacing.xs,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2),
-                      child: Column(
-                        spacing: AppSpacing.xs,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _Bar(color: colors.primary, width: 10, height: 3),
-                          _Bar(color: colors.border, width: 14, height: 3),
-                          _Bar(color: colors.border, width: 14, height: 3),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        spacing: AppSpacing.xs,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _Bar(color: colors.foreground, width: 22, height: 4),
-                          _Bar(color: colors.border, width: 40, height: 3),
-                          _Bar(color: colors.border, width: 32, height: 3),
-                          const Spacer(),
-                          Row(
-                            spacing: 2,
-                            children: [
-                              _Bar(
-                                color: colors.destructive,
-                                width: 4,
-                                height: 4,
-                              ),
-                              _Bar(color: colors.border, width: 18, height: 3),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+        _ => const SizedBox.shrink(),
       },
     ),
   );
 }
 
-/// A fixed-size rounded bar — the only drawing primitive this preview needs.
-class _Bar extends StatelessWidget {
-  const _Bar({required this.color, this.width, this.height = 3, this.child});
+class _LowerTriangle extends CustomClipper<Path> {
+  const _LowerTriangle();
+
+  @override
+  Path getClip(Size size) => Path()
+    ..moveTo(size.width, 0)
+    ..lineTo(size.width, size.height)
+    ..lineTo(0, size.height)
+    ..close();
+
+  @override
+  bool shouldReclip(_LowerTriangle oldClipper) => false;
+}
+
+class _Diagonal extends CustomPainter {
+  const _Diagonal({required this.color});
 
   final Color color;
 
-  /// Omitted bars stretch to fill their parent's cross axis.
+  @override
+  void paint(Canvas canvas, Size size) => canvas.drawLine(
+    Offset(size.width, 0),
+    Offset(0, size.height),
+    Paint()
+      ..color = color
+      ..strokeWidth = 1,
+  );
+
+  @override
+  bool shouldRepaint(_Diagonal oldDelegate) => oldDelegate.color != color;
+}
+
+class _Pane extends StatelessWidget {
+  const _Pane({required this.brightness});
+
+  final Brightness brightness;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = AppPalette.of(brightness);
+    return ColoredBox(
+      color: palette.paper,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final unit = constraints.maxWidth / 24;
+          return Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  unit * 2.2,
+                  unit * 2.4,
+                  unit * 2.2,
+                  0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: unit * 1.2,
+                  children: [
+                    _Bar(
+                      width: unit * 10,
+                      height: unit * 1.8,
+                      color: palette.ink,
+                    ),
+                    _Bar(
+                      width: unit * 6,
+                      height: unit * 0.8,
+                      color: palette.ink3,
+                    ),
+                    _Bar(height: unit * 2.4, color: palette.shade, round: true),
+                    Row(
+                      spacing: unit * 1.2,
+                      children: [
+                        Expanded(
+                          child: _Sheet(
+                            palette: palette,
+                            unit: unit,
+                            read: true,
+                          ),
+                        ),
+                        Expanded(
+                          child: _Sheet(palette: palette, unit: unit),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: unit * 4.4,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: palette.sheet,
+                    border: Border(top: BorderSide(color: palette.rule)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _Bar(
+                        width: unit * 4,
+                        height: unit * 1.9,
+                        color: palette.ink,
+                        round: true,
+                      ),
+                      _Bar(
+                        width: unit * 1.6,
+                        height: unit * 1.6,
+                        color: palette.ink3,
+                      ),
+                      _Bar(
+                        width: unit * 1.6,
+                        height: unit * 1.6,
+                        color: palette.ink3,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _Sheet extends StatelessWidget {
+  const _Sheet({required this.palette, required this.unit, this.read = false});
+
+  final AppPalette palette;
+  final double unit;
+  final bool read;
+
+  @override
+  Widget build(BuildContext context) => AspectRatio(
+    aspectRatio: 1 / 1.414,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: palette.sheet,
+        borderRadius: BorderRadius.circular(unit * 0.5),
+        border: Border.all(color: palette.rule),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(unit * 1.2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: unit * 0.6,
+              children: [
+                for (final factor in const [0.6, 1.0, 1.0, 0.5])
+                  FractionallySizedBox(
+                    widthFactor: factor,
+                    child: _Bar(height: unit * 0.5, color: palette.shadeStrong),
+                  ),
+              ],
+            ),
+          ),
+          if (read)
+            Positioned(
+              left: 0,
+              bottom: 0,
+              width: unit * 4,
+              height: unit * 0.5,
+              child: ColoredBox(color: palette.ink),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _Bar extends StatelessWidget {
+  const _Bar({
+    required this.height,
+    required this.color,
+    this.width,
+    this.round = false,
+  });
+
   final double? width;
   final double height;
-  final Widget? child;
+  final Color color;
+  final bool round;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -163,9 +233,8 @@ class _Bar extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(height / 2),
+        borderRadius: BorderRadius.circular(round ? height / 2 : height / 4),
       ),
-      child: child,
     ),
   );
 }

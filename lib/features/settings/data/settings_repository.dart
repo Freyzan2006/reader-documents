@@ -1,7 +1,6 @@
 import 'package:reader_documents/core/storage/flat_global_store.dart';
 import 'package:reader_documents/features/settings/data/app_language.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
-import 'package:reader_documents/features/settings/data/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository extends FlatGlobalStore<AppSettings> {
@@ -9,9 +8,9 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
 
   static const _themeModeKey = 'settings.themeMode';
   static const _languageKey = 'settings.language';
-  static const _profileNameKey = 'settings.profile.name';
   static const _warmReadingFilterKey = 'settings.warmReadingFilter';
   static const _effectsModeKey = 'settings.effectsMode';
+  static const _documentsLayoutKey = 'settings.documentsLayout';
 
   @override
   Future<AppSettings> readFields(SharedPreferences prefs) async {
@@ -28,12 +27,17 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
       orElse: () => AppEffectsMode.system,
     );
 
+    final documentsLayout = DocumentsLayout.values.firstWhere(
+      (layout) => layout.name == prefs.getString(_documentsLayoutKey),
+      orElse: () => DocumentsLayout.list,
+    );
+
     return AppSettings(
       themeMode: themeMode,
       language: language,
-      profile: UserProfile(name: prefs.getString(_profileNameKey) ?? ''),
       warmReadingFilter: prefs.getBool(_warmReadingFilterKey) ?? false,
       effectsMode: effectsMode,
+      documentsLayout: documentsLayout,
     );
   }
 
@@ -44,8 +48,8 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
   ) async {
     await prefs.setString(_themeModeKey, settings.themeMode.name);
     await prefs.setString(_languageKey, settings.language.name);
-    await prefs.setString(_profileNameKey, settings.profile.name);
     await prefs.setBool(_warmReadingFilterKey, settings.warmReadingFilter);
     await prefs.setString(_effectsModeKey, settings.effectsMode.name);
+    await prefs.setString(_documentsLayoutKey, settings.documentsLayout.name);
   }
 }

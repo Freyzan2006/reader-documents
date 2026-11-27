@@ -5,7 +5,10 @@
   "menuRecentTitle": "Yaqindagilar",
   "menuDocumentsCount": "{count, plural, =0{Hujjatlar yo'q} other{{count} ta hujjat}}",
   "searchHint": "Hujjat va amallarni qidirish…",
-  "searchRecentCommands": "Oxirgi amallar",
   "searchNoResults": "Hech narsa topilmadi",
-  "searchActionsTitle": "Amallar"
+  "searchActionsTitle": "Amallar",
+  "pageOfCount": "{count} dan {page}-bet",
+  "switchOn": "yoq",
+  "switchOff": "o'chiq",
+  "searchGoToTitle": "O'tish"
 }

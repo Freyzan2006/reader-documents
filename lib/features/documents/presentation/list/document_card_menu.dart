@@ -88,6 +88,7 @@ class _DocumentCardMenuView extends ConsumerWidget {
             shrinkWrap: true,
             children: [
               AppList(
+                framed: false,
                 items: [
                   AppListItem(
                     title: isFavorite
@@ -138,6 +139,7 @@ class _DocumentCardMenuView extends ConsumerWidget {
                   AppListItem(
                     title: l10n.delete,
                     leading: AppIcons.trash,
+                    destructive: true,
                     onTap: () => closeAnd(() async {
                       if (await confirmDelete()) onDelete();
                     }),

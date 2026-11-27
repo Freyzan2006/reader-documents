@@ -9,7 +9,6 @@ class ImportDocumentMenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppButton(
-    variant: AppButtonVariant.outline,
     onPressed: onPressed,
     prefix: const Icon(AppIcons.upload),
     flexibleChild: true,

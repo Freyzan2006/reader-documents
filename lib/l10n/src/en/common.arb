@@ -4,5 +4,11 @@
   "saved": "Saved",
   "retry": "Retry",
   "delete": "Delete",
-  "menuTitle": "Menu"
+  "menuTitle": "Menu",
+  "copiedToClipboard": "Copied to clipboard",
+  "clear": "Clear",
+  "undo": "Undo",
+  "splashFailedTitle": "The app couldn't start",
+  "splashFailedStorage": "Couldn't open the document storage",
+  "splashFailedTimeout": "Startup is taking too long"
 }

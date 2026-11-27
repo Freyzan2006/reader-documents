@@ -41,14 +41,14 @@ class DocumentMagnifier extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = AppRadius.of(context).lg;
+    final radius = AppRadii.lg;
     final scale = _targetSize / math.min(contentSize.width, contentSize.height);
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _frameColor,
         borderRadius: radius,
-        border: Border.all(color: AppColors.accent(context), width: 2),
+        border: Border.all(color: context.tokens.palette.ink, width: 2),
         boxShadow: const [
           BoxShadow(
             color: Color(0x33000000),
@@ -60,7 +60,7 @@ class DocumentMagnifier extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xs),
         child: ClipRRect(
-          borderRadius: AppRadius.of(context).md,
+          borderRadius: AppRadii.md,
           child: SizedBox(
             width: contentSize.width * scale,
             height: contentSize.height * scale,

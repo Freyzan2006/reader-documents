@@ -179,7 +179,7 @@ class _DocxDocumentViewerState extends State<DocxDocumentViewer> {
       child: Stack(
         children: [
           AppTextSelectionTheme(
-            color: AppColors.accent(context).withValues(alpha: 0.35),
+            color: context.tokens.palette.mark,
             child: SelectionArea(
               onSelectionChanged: (content) => _selection = content,
               contextMenuBuilder: (context, state) {

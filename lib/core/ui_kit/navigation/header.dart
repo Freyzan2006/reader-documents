@@ -1,98 +1,162 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../controls/icon_button.dart';
-import '../data_display/card.dart';
 import '../data_display/text.dart';
+import '../layout/scaffold.dart';
 import '../overlay/tooltip.dart';
+import '../primitives/bar_surface.dart';
+import '../primitives/tappable.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_icons.dart';
+import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
 
 class AppHeader extends StatelessWidget {
-  static const double height = 64;
-  static const constraints = BoxConstraints(
-    minHeight: height,
-    maxHeight: height,
-  );
+  const AppHeader({
+    required this.title,
+    this.titleTooltip,
+    this.collapsible = false,
+    this.onMenuTap,
+    this.onBackTap,
+    this.backLabel,
+    this.menuLabel,
+    this.actionLabel,
+    this.actionIcon,
+    this.onActionTap,
+    this.actions = const [],
+    super.key,
+  });
+
+  static const double height = 56;
 
   static double topInset(BuildContext context) =>
       MediaQuery.paddingOf(context).top + height;
 
-  const AppHeader({
-    required this.title,
-    this.titleTooltip,
-    this.onMenuTap,
-    this.onBackTap,
-    this.actionLabel,
-    this.actionIcon,
-    this.onActionTap,
-    super.key,
-  });
-
   final String title;
-
-  /// Shown on hover/long-press of the title (e.g. the full brand name
-  /// behind a shortened logo/title).
   final String? titleTooltip;
-
+  final bool collapsible;
   final VoidCallback? onMenuTap;
   final VoidCallback? onBackTap;
+  final String? backLabel;
+  final String? menuLabel;
   final String? actionLabel;
   final IconData? actionIcon;
   final VoidCallback? onActionTap;
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
-    final titleCard = AppCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
+    final tokens = context.tokens;
+    final scrolled = AppScrollScope.of(context);
+    final showTitle = !collapsible || scrolled;
+    final onBackTap = this.onBackTap;
+    final onMenuTap = this.onMenuTap;
+    final onActionTap = this.onActionTap;
+    final actionIcon = this.actionIcon;
+    final actionLabel = this.actionLabel;
+
+    final titleText = AnimatedOpacity(
+      opacity: showTitle ? 1 : 0,
+      duration: tokens.motion.quick,
+      child: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTextStyles.title.copyWith(color: tokens.palette.ink),
       ),
-      child: AppText(title, variant: AppTextVariant.title),
     );
 
-    return AppHeaderSurface(
-      child: FHeader.nested(
-        style: const FHeaderStyleDelta.delta(constraints: constraints),
-        title: titleTooltip == null
-            ? titleCard
-            : AppTooltip(message: titleTooltip, child: titleCard),
-        prefixes: [
-          if (onBackTap != null)
-            AppIconButton(icon: FLucideIcons.arrowLeft, onPressed: onBackTap!),
-          if (onMenuTap != null)
-            AppIconButton(icon: FLucideIcons.menu, onPressed: onMenuTap!),
-        ],
-        suffixes: [
-          if (actionIcon != null && onActionTap != null)
-            AppIconButton(icon: actionIcon!, onPressed: onActionTap!)
-          else if (actionLabel != null && onActionTap != null)
-            _PillButton(label: actionLabel!, onPressed: onActionTap!),
-        ],
+    return AppBarSurface(
+      solid: tokens.palette.paper,
+      divider: AppBarEdge.bottom,
+      showDivider: scrolled,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: height,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            child: Row(
+              spacing: AppSpacing.xs,
+              children: [
+                if (onBackTap != null)
+                  AppIconButton(
+                    icon: AppIcons.arrowLeft,
+                    onPressed: onBackTap,
+                    semanticsLabel: backLabel,
+                  ),
+                if (onMenuTap != null)
+                  AppIconButton(
+                    icon: AppIcons.menu,
+                    onPressed: onMenuTap,
+                    semanticsLabel: menuLabel,
+                  ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: onBackTap == null && onMenuTap == null
+                          ? AppSpacing.sm
+                          : 0,
+                    ),
+                    child: titleTooltip == null
+                        ? titleText
+                        : Align(
+                            alignment: Alignment.centerLeft,
+                            child: AppTooltip(
+                              message: titleTooltip,
+                              child: titleText,
+                            ),
+                          ),
+                  ),
+                ),
+                ...actions,
+                if (actionIcon != null && onActionTap != null)
+                  AppIconButton(
+                    icon: actionIcon,
+                    onPressed: onActionTap,
+                    semanticsLabel: actionLabel,
+                  )
+                else if (actionLabel != null && onActionTap != null)
+                  _PillButton(label: actionLabel, onPressed: onActionTap),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
-class AppHeaderSurface extends StatelessWidget {
-  const AppHeaderSurface({required this.child, super.key});
+class AppLargeTitle extends StatelessWidget {
+  const AppLargeTitle({required this.title, this.summary, super.key});
 
-  final Widget child;
+  final String title;
+  final String? summary;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          context.theme.colors.foreground.withValues(alpha: 0.2),
-          context.theme.colors.foreground.withValues(alpha: 0.0),
+  Widget build(BuildContext context) {
+    final summary = this.summary;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.md,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 2,
+        children: [
+          Semantics(
+            header: true,
+            child: AppText(title, variant: AppTextVariant.display),
+          ),
+          if (summary != null) AppText(summary, variant: AppTextVariant.meta),
         ],
       ),
-    ),
-    child: child,
-  );
+    );
+  }
 }
 
 class _PillButton extends StatelessWidget {
@@ -102,26 +166,27 @@ class _PillButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => FTappable(
-    onPress: onPressed,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.colors.primary,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Padding(
+  Widget build(BuildContext context) {
+    final palette = context.tokens.palette;
+    return AppTappable(
+      onPressed: onPressed,
+      child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.sm,
         ),
+        decoration: BoxDecoration(
+          color: palette.ink,
+          borderRadius: AppRadii.pill,
+        ),
         child: Text(
           label,
-          style: AppTypography.of(context).body.sm.copyWith(
-            color: context.theme.colors.primaryForeground,
+          style: AppTextStyles.label.copyWith(
+            color: palette.onInk,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

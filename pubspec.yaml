@@ -43,7 +43,6 @@ dependencies:
   file_picker: ^13.1.0
   path_provider: ^2.1.6
   share_plus: ^13.3.0
-  forui: ^0.27.4
   path: ^1.9.1
   shared_preferences: ^2.5.3
   receive_sharing_intent: ^1.8.1
@@ -55,6 +54,7 @@ dependencies:
   # origin source: https://pub.dev/packages/docx_file_viewer
   docx_file_viewer:
     path: packages/docx_file_viewer
+  lucide_icons_flutter: ^4.0.5
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +66,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  forui_cli: ^0.27.0
   flutter_launcher_icons: ^0.14.4
   lefthook_dart: ^1.0.8
 

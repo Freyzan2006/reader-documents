@@ -26,14 +26,12 @@ class HomeStatsContent extends StatelessWidget {
           children: [
             Expanded(
               child: HomeStatTile(
-                icon: AppIcons.fileText,
                 label: l10n.navDocuments,
                 value: '${stats.count}',
               ),
             ),
             Expanded(
               child: HomeStatTile(
-                icon: AppIcons.hardDrive,
                 label: l10n.homeStatsTotalSize,
                 value: DocumentFile.formatBytes(stats.totalBytes),
               ),

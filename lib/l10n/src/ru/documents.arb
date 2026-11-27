@@ -21,7 +21,9 @@
   "selectionCount": "Выбрано: {count}",
   "@selectionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectAll": "Выбрать все",
@@ -33,14 +35,18 @@
   "deleteSelectedTitle": "Удалить документов: {count}?",
   "@deleteSelectedTitle": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "deleteSelectedBody": "Выбранные документы будут удалены без возможности восстановления.",
   "favoritesAddedCount": "Добавлено в избранное: {count}",
   "@favoritesAddedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "gestureHintLongPress": "Удерживайте карточку, чтобы открыть действия",
@@ -48,7 +54,17 @@
   "favoritesRemovedCount": "Удалено из избранного: {count}",
   "@favoritesRemovedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "viewAsGrid": "Показать сеткой",
+  "viewAsList": "Показать списком",
+  "openingFile": "Открываю «{name}»…",
+  "favoritesEmptyHint": "Смахните документ вправо в списке или нажмите звёздочку в читалке — он появится здесь.",
+  "openDocuments": "Открыть документы",
+  "openedToday": "сегодня",
+  "openedYesterday": "вчера",
+  "openedDaysAgo": "{count, plural, one{{count} день назад} few{{count} дня назад} many{{count} дней назад} other{{count} дня назад}}"
 }

@@ -5,13 +5,20 @@ import 'package:reader_documents/features/settings/application/settings_provider
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import 'warm_filter_commands.dart';
+
 abstract final class ThemeCommands {
-  /// Mirrors the order of the theme cards on the Settings page, so the same
-  /// option isn't in a different place depending on how you got there.
   static List<AppCommandItem> items(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final settings = ref.read(settingsProvider).value ?? AppSettings.defaults;
 
     return [
+      AppCommandItem(
+        label: l10n.warmFilterTitle,
+        icon: AppIcons.lamp,
+        value: settings.warmReadingFilter ? l10n.switchOn : l10n.switchOff,
+        onSelect: () => WarmFilterCommands.toggle(context, ref),
+      ),
       AppCommandItem(
         label: l10n.systemTheme,
         icon: AppIcons.monitor,

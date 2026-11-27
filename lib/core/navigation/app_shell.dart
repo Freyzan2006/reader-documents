@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:reader_documents/core/config/app_brand.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/presentation/list/document_selection_aware_header.dart';
+import 'package:reader_documents/features/documents/presentation/list/document_selection_header.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import 'app_command_launcher.dart';
@@ -27,27 +27,29 @@ class AppShell extends ConsumerWidget {
     );
 
     return AppScaffold(
+      contentKey: destination,
       header: DocumentSelectionAwareHeader(
         normal: AppHeader(
-          title: AppBrand.shortName,
-          titleTooltip: AppBrand.name,
+          title: tabs[index].label,
+          collapsible: destination != AppNavDestination.home,
           onMenuTap: () => AppSideMenu.show(context, ref),
+          menuLabel: l10n.menuTitle,
           actionIcon: AppIcons.search,
+          actionLabel: l10n.homeQuickActionSearch,
           onActionTap: () => AppCommandLauncher.show(context, ref),
         ),
       ),
-      footer: AppBottomNav(
-        variant: AppEffects.blurOf(context)
-            ? AppBottomNavVariant.blur
-            : AppBottomNavVariant.standard,
-        currentIndex: index,
-        onChanged: (next) =>
-            ref.read(currentNavDestinationProvider.notifier).state =
-                tabs[next].destination,
-        items: [
-          for (final tab in tabs)
-            AppBottomNavItem(icon: tab.icon, label: tab.label),
-        ],
+      footer: DocumentSelectionAwareFooter(
+        normal: AppBottomNav(
+          currentIndex: index,
+          onChanged: (next) =>
+              ref.read(currentNavDestinationProvider.notifier).state =
+                  tabs[next].destination,
+          items: [
+            for (final tab in tabs)
+              AppBottomNavItem(icon: tab.icon, label: tab.label),
+          ],
+        ),
       ),
       child: IndexedStack(
         index: index,

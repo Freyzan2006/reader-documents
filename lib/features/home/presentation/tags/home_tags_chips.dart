@@ -5,8 +5,6 @@ import 'package:reader_documents/features/documents/data/models/tag_color.dart';
 import 'package:reader_documents/features/documents/data/models/tag_definition.dart';
 import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 
-/// The loaded-data rendering for [HomeTagsSection] — every known tag as a
-/// chip; tapping one jumps to the Documents tab filtered to it.
 class HomeTagsChips extends ConsumerWidget {
   const HomeTagsChips({required this.tags, super.key});
 
@@ -18,10 +16,11 @@ class HomeTagsChips extends ConsumerWidget {
     runSpacing: AppSpacing.sm,
     children: [
       for (final tag in tags)
-        AppTag(
-          label: Text(tag.name),
-          color: tag.color.value,
-          onRemove: () => DocumentCommands.browseByTag(ref, tag.name),
+        AppTappable(
+          onPressed: () => DocumentCommands.browseByTag(ref, tag.name),
+          semanticsLabel: '#${tag.name}',
+          excludeChildSemantics: true,
+          child: AppTag(label: Text('#${tag.name}'), color: tag.color.value),
         ),
     ],
   );

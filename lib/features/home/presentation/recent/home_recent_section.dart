@@ -1,17 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reader_documents/core/navigation/app_nav_tab.dart';
+import 'package:reader_documents/core/navigation/navigation_providers.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
-import 'package:reader_documents/features/documents/presentation/list/document_list.dart';
+import 'package:reader_documents/features/documents/presentation/list/document_compact_card.dart';
+import 'package:reader_documents/features/home/application/providers/home_recent_documents_provider.dart';
+import 'package:reader_documents/features/home/presentation/home_shelf_skeleton.dart';
+import 'package:reader_documents/features/home/presentation/home_section_error_banner.dart';
+import 'package:reader_documents/features/home/presentation/home_shelf_section.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
-import '../../application/providers/home_recent_documents_provider.dart';
-
-/// The rest of the recently-opened history (the single most-recent document
-/// already has its own "continue reading" card above). Hides itself when
-/// there's nothing beyond what that card already shows — but still shows its
-/// usual empty state when nothing has ever been opened at all.
 class HomeRecentSection extends ConsumerWidget {
   const HomeRecentSection({super.key});
 
@@ -24,17 +24,37 @@ class HomeRecentSection extends ConsumerWidget {
     }
 
     final l10n = AppLocalizations.of(context)!;
-    return AppSection(
+    return HomeShelfSection(
       title: l10n.homeRecentTitle,
-      icon: AppIcons.history,
-      child: DocumentList(
-        documents: older,
-        emptyMessage: l10n.homeRecentEmpty,
-        skeletonCount: 5,
-        onOpen: (file) => DocumentCommands.open(context, ref, file),
-        confirmDelete: (file) => DocumentCommands.confirmDelete(context, file),
-        onDelete: (file) =>
-            ref.read(documentsProvider.notifier).delete(file.path),
+      linkLabel: l10n.seeAll,
+      onLink: () => ref.read(currentNavDestinationProvider.notifier).state =
+          AppNavDestination.documents,
+      child: older.when(
+        data: (files) => files.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: AppText(
+                  l10n.homeRecentEmpty,
+                  variant: AppTextVariant.caption,
+                ),
+              )
+            : HomeDocumentShelf(
+                children: [
+                  for (final file in files)
+                    DocumentCompactCard(
+                      file: file,
+                      onTap: () => DocumentCommands.open(context, ref, file),
+                    ),
+                ],
+              ),
+        loading: () => const HomeShelfSkeleton(),
+        error: (error, _) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: HomeSectionErrorBanner(
+            message: l10n.documentsLoadError,
+            error: error,
+          ),
+        ),
       ),
     );
   }

@@ -1,19 +1,40 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../primitives/frosted_surface.dart';
-import '../tokens/app_colors.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_palette.dart';
 import '../tokens/app_radius.dart';
+import '../tokens/app_typography.dart';
 
 enum AppBadgeVariant {
   primary,
   secondary,
   outline,
-  destructive,
-  blur,
-  success,
-  accent,
-  warning,
+  danger,
+  blur;
+
+  Color fill(AppPalette palette) => switch (this) {
+    primary => palette.ink,
+    secondary || blur => palette.shade,
+    outline => palette.sheet,
+    danger => palette.danger,
+  };
+
+  Color foreground(AppPalette palette) => switch (this) {
+    primary => palette.onInk,
+    secondary || outline || blur => palette.ink,
+    danger => palette.onDanger,
+  };
+}
+
+final class AppContrast {
+  const AppContrast._();
+
+  static const _dark = Color(0xFF111111);
+  static const _light = Color(0xFFFFFFFF);
+
+  static Color on(Color background) =>
+      background.computeLuminance() > 0.5 ? _dark : _light;
 }
 
 class AppBadge extends StatelessWidget {
@@ -24,109 +45,52 @@ class AppBadge extends StatelessWidget {
     super.key,
   });
 
+  static const _padding = EdgeInsets.symmetric(horizontal: 6, vertical: 1);
+
   final Widget child;
   final AppBadgeVariant variant;
-
-  /// An arbitrary background color, overriding [variant] entirely. The
-  /// label color is picked automatically for contrast. Use this for
-  /// user-chosen colors (e.g. tag colors) that don't fit a fixed semantic
-  /// variant.
   final Color? color;
-
-  static (Color, Color)? _customColors(
-    BuildContext context,
-    AppBadgeVariant variant,
-  ) => switch (variant) {
-    AppBadgeVariant.success => (
-      AppColors.success(context),
-      AppColors.successForeground(context),
-    ),
-    AppBadgeVariant.accent => (
-      AppColors.accent(context),
-      AppColors.accentForeground(context),
-    ),
-    AppBadgeVariant.warning => (
-      AppColors.warning(context),
-      AppColors.warningForeground(context),
-    ),
-    _ => null,
-  };
 
   @override
   Widget build(BuildContext context) {
-    final customColor = color;
-    if (customColor != null) {
-      final foreground = customColor.computeLuminance() > 0.5
-          ? const Color(0xFF0A0A0A)
-          : const Color(0xFFFFFFFF);
-      final base = context.theme.badgeStyles.secondary;
-      return FBadge(
-        style: FBadgeStyle(
-          decoration: ShapeDecoration(
-            shape: RoundedSuperellipseBorder(
-              borderRadius: AppRadius.of(context).pill,
-            ),
-            color: customColor,
-          ),
-          labelTextStyle: base.labelTextStyle.copyWith(color: foreground),
-          padding: base.padding,
-        ),
-        child: child,
-      );
-    }
-
-    final custom = _customColors(context, variant);
-    if (custom != null) {
-      final (variantColor, foreground) = custom;
-      final base = context.theme.badgeStyles.secondary;
-      return FBadge(
-        style: FBadgeStyle(
-          decoration: ShapeDecoration(
-            shape: RoundedSuperellipseBorder(
-              borderRadius: AppRadius.of(context).pill,
-            ),
-            color: variantColor,
-          ),
-          labelTextStyle: base.labelTextStyle.copyWith(color: foreground),
-          padding: base.padding,
-        ),
-        child: child,
-      );
-    }
-
-    if (variant != AppBadgeVariant.blur) {
-      return FBadge(
-        variant: switch (variant) {
-          AppBadgeVariant.primary => FBadgeVariant.primary,
-          AppBadgeVariant.secondary => FBadgeVariant.secondary,
-          AppBadgeVariant.outline => FBadgeVariant.outline,
-          AppBadgeVariant.destructive => FBadgeVariant.destructive,
-          AppBadgeVariant.blur ||
-          AppBadgeVariant.success ||
-          AppBadgeVariant.accent ||
-          AppBadgeVariant.warning => throw StateError('unreachable'),
-        },
-        child: child,
-      );
-    }
-
-    final baseStyle = context.theme.badgeStyles.secondary;
-    return IntrinsicWidth(
-      child: IntrinsicHeight(
-        child: AppFrostedSurface(
-          color: context.theme.colors.secondary,
-          borderRadius: AppRadius.of(context).pill,
-          child: Center(
-            child: Padding(
-              padding: baseStyle.padding,
-              child: DefaultTextStyle.merge(
-                style: baseStyle.labelTextStyle,
-                child: child,
-              ),
-            ),
-          ),
+    final palette = context.tokens.palette;
+    final custom = color;
+    final fill = custom ?? variant.fill(palette);
+    final foreground = custom == null
+        ? variant.foreground(palette)
+        : AppContrast.on(custom);
+    final label = Padding(
+      padding: _padding,
+      child: DefaultTextStyle.merge(
+        style: AppTextStyles.meta.copyWith(color: foreground),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        child: IconTheme.merge(
+          data: IconThemeData(color: foreground, size: 12),
+          child: child,
         ),
       ),
+    );
+
+    if (variant == AppBadgeVariant.blur && custom == null) {
+      return IntrinsicWidth(
+        child: AppFrostedSurface(
+          color: fill,
+          borderRadius: AppRadii.xs,
+          child: label,
+        ),
+      );
+    }
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: fill,
+        borderRadius: AppRadii.xs,
+        border: variant == AppBadgeVariant.outline && custom == null
+            ? Border.all(color: palette.ruleStrong)
+            : null,
+      ),
+      child: label,
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../data_display/text.dart';
-import '../tokens/app_colors.dart';
+import '../theme/app_tokens.dart';
 import '../tokens/app_spacing.dart';
 
 enum AppSectionVariant { standard, compact }
@@ -28,7 +28,7 @@ class AppSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final muted = AppColors.of(context).mutedForeground;
+    final muted = context.tokens.palette.ink3;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -47,7 +47,7 @@ class AppSection extends StatelessWidget {
                   child: AppText(
                     title,
                     variant: _compact
-                        ? AppTextVariant.caption
+                        ? AppTextVariant.overline
                         : AppTextVariant.subtitle,
                   ),
                 ),

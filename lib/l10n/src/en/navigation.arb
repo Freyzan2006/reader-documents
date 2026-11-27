@@ -12,7 +12,20 @@
     }
   },
   "searchHint": "Search documents and actions…",
-  "searchRecentCommands": "Recent actions",
   "searchNoResults": "Nothing found",
-  "searchActionsTitle": "Actions"
+  "searchActionsTitle": "Actions",
+  "pageOfCount": "p. {page} of {count}",
+  "switchOn": "on",
+  "switchOff": "off",
+  "searchGoToTitle": "Go to",
+  "@pageOfCount": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

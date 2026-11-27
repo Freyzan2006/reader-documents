@@ -23,11 +23,6 @@ abstract final class DocumentCommands {
         icon: AppIcons.upload,
         onSelect: () => importDocument(ref),
       ),
-      AppCommandItem(
-        label: l10n.homeFavoritesTitle,
-        icon: AppIcons.star,
-        onSelect: () => openFavorites(context),
-      ),
     ];
   }
 
@@ -42,15 +37,19 @@ abstract final class DocumentCommands {
     WidgetRef ref,
     DocumentFile file,
   ) async {
-    final favorite = await ref
-        .read(favoritesProvider.notifier)
-        .toggle(file.path);
+    final favorites = ref.read(favoritesProvider.notifier);
+    final favorite = await favorites.toggle(file.path);
     if (!context.mounted) return;
 
     final l10n = AppLocalizations.of(context)!;
     AppToast.show(
       context: context,
+      icon: AppIcons.star,
       title: Text(favorite ? l10n.addedToFavorites : l10n.removedFromFavorites),
+      action: AppToastAction(
+        label: l10n.undo,
+        onPressed: () => favorites.toggle(file.path),
+      ),
     );
   }
 
@@ -132,7 +131,7 @@ abstract final class DocumentCommands {
           child: Text(l10n.cancel),
         ),
         AppButton(
-          variant: AppButtonVariant.destructive,
+          variant: AppButtonVariant.danger,
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(l10n.delete),
         ),
@@ -150,17 +149,30 @@ abstract final class DocumentCommands {
     if (list.isEmpty) return;
 
     final favorites = ref.read(favoritesProvider).value ?? const <String>{};
-    final favorite = !list.every(favorites.contains);
-    await ref.read(favoritesProvider.notifier).setMany(list, favorite);
+    final notifier = ref.read(favoritesProvider.notifier);
+    final before = {...list.where(favorites.contains)};
+    final favorite = before.length != list.length;
+    await notifier.setMany(list, favorite);
     if (!context.mounted) return;
 
     final l10n = AppLocalizations.of(context)!;
     AppToast.show(
       context: context,
+      icon: AppIcons.star,
       title: Text(
         favorite
             ? l10n.favoritesAddedCount(list.length)
             : l10n.favoritesRemovedCount(list.length),
+      ),
+      action: AppToastAction(
+        label: l10n.undo,
+        onPressed: () async {
+          await notifier.setMany(before, true);
+          await notifier.setMany(
+            list.where((path) => !before.contains(path)),
+            false,
+          );
+        },
       ),
     );
   }
@@ -178,7 +190,7 @@ abstract final class DocumentCommands {
           child: Text(l10n.cancel),
         ),
         AppButton(
-          variant: AppButtonVariant.destructive,
+          variant: AppButtonVariant.danger,
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(l10n.delete),
         ),

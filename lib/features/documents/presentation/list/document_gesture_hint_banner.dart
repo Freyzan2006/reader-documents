@@ -57,7 +57,7 @@ class _DocumentGestureHintBannerState
           Icon(
             AppIcons.mousePointerClick,
             size: 20,
-            color: AppColors.of(context).primary,
+            color: context.tokens.palette.ink,
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(

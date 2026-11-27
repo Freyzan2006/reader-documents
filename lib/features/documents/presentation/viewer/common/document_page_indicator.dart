@@ -39,7 +39,7 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
         mainAxisSize: MainAxisSize.min,
         spacing: AppSpacing.sm,
         children: [
-          Icon(AppIcons.fileText, size: 20, color: AppColors.accent(context)),
+          Icon(AppIcons.fileText, size: 20, color: context.tokens.palette.ink2),
           Text(l10n.minimapJumpToPageHint),
         ],
       ),
@@ -104,7 +104,7 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
       if (currentPage == null) return const SizedBox.shrink();
       return AppTappable(
         onPressed: _showGoToPageDialog,
-        child: _chip('$currentPage/${controller.pageCount}'),
+        child: _chip('$currentPage / ${controller.pageCount}'),
       );
     }
 
@@ -114,11 +114,16 @@ class _DocumentPageIndicatorState extends State<DocumentPageIndicator> {
     return _chip('$percent%');
   }
 
-  Widget _chip(String label) => AppCard(
-    padding: const EdgeInsets.symmetric(
-      horizontal: AppSpacing.md,
-      vertical: AppSpacing.xs,
+  Widget _chip(String label) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 6),
+    decoration: BoxDecoration(
+      color: context.tokens.palette.shade,
+      borderRadius: AppRadii.pill,
     ),
-    child: AppText(label),
+    child: AppText(
+      label,
+      variant: AppTextVariant.meta,
+      color: context.tokens.palette.ink,
+    ),
   );
 }

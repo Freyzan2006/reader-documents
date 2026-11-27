@@ -5,6 +5,7 @@ export 'popover_menu.dart';
 export 'rotated_sheet.dart';
 export 'rotation.dart';
 export 'sheet.dart';
+export 'choice_sheet.dart';
 export 'side_panel.dart';
 export 'toast.dart';
 export 'tooltip.dart';

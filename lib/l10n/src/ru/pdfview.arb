@@ -31,5 +31,8 @@
   "pdfMenuNotes": "Заметки",
   "highlightsEmpty": "Пока нет выделений",
   "pdfMenuWarmFilterOn": "Включить тёплый фильтр",
-  "pdfMenuWarmFilterOff": "Выключить тёплый фильтр"
+  "pdfMenuWarmFilterOff": "Выключить тёплый фильтр",
+  "pageCountShort": "{count} стр",
+  "zoomIn": "Увеличить",
+  "zoomOut": "Уменьшить"
 }

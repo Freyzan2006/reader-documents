@@ -21,7 +21,9 @@
   "selectionCount": "Tanlangan: {count}",
   "@selectionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectAll": "Hammasini tanlash",
@@ -33,14 +35,18 @@
   "deleteSelectedTitle": "{count} ta hujjat oʻchirilsinmi?",
   "@deleteSelectedTitle": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "deleteSelectedBody": "Tanlangan hujjatlar butunlay oʻchiriladi.",
   "favoritesAddedCount": "Sevimlilarga {count} ta qoʻshildi",
   "@favoritesAddedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "gestureHintLongPress": "Harakatlar uchun kartochkani uzoq bosing",
@@ -48,7 +54,17 @@
   "favoritesRemovedCount": "Sevimlilardan {count} ta olib tashlandi",
   "@favoritesRemovedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "viewAsGrid": "To'r ko'rinishida",
+  "viewAsList": "Ro'yxat ko'rinishida",
+  "openingFile": "«{name}» ochilmoqda…",
+  "favoritesEmptyHint": "Ro'yxatda hujjatni o'ngga suring yoki o'qish rejimida yulduzchani bosing — u shu yerda paydo bo'ladi.",
+  "openDocuments": "Hujjatlarni ochish",
+  "openedToday": "bugun",
+  "openedYesterday": "kecha",
+  "openedDaysAgo": "{count, plural, other{{count} kun oldin}}"
 }

@@ -5,6 +5,7 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/presentation/list/document_card.dart';
 import 'package:reader_documents/features/documents/presentation/list/document_selection_aware_header.dart';
+import 'package:reader_documents/features/documents/presentation/list/document_selection_header.dart';
 import 'package:reader_documents/features/documents/presentation/list/paginated_document_list.dart';
 
 import '../helpers/fakes.dart';
@@ -18,6 +19,7 @@ class _DocumentListScreen extends ConsumerWidget {
     header: const DocumentSelectionAwareHeader(
       normal: AppHeader(title: 'Documents'),
     ),
+    footer: const DocumentSelectionAwareFooter(normal: SizedBox.shrink()),
     child: Padding(
       padding: EdgeInsets.only(top: AppHeader.topInset(context)),
       child: PaginatedDocumentList(
@@ -57,7 +59,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Document actions'), findsNothing);
-      expect(find.text('1'), findsOneWidget);
+      expect(find.text('1 selected'), findsOneWidget);
       expect(find.bySemanticsLabel('Details'), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel('Details'));
@@ -72,7 +74,7 @@ void main() {
       await tester.tap(find.byType(DocumentCard).last);
       await tester.pumpAndSettle();
 
-      expect(find.text('2'), findsOneWidget);
+      expect(find.text('2 selected'), findsOneWidget);
       expect(find.bySemanticsLabel('Details'), findsNothing);
     },
   );
@@ -88,7 +90,7 @@ void main() {
     await tester.longPress(find.byType(DocumentCard).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('1 selected'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -122,7 +124,7 @@ void main() {
       await tester.tap(find.bySemanticsLabel('Select all'));
       await tester.pumpAndSettle();
 
-      expect(find.text('2'), findsOneWidget);
+      expect(find.text('2 selected'), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel('Add to favorites'));
       await tester.pumpAndSettle();

@@ -1,17 +1,17 @@
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../overlay/toast.dart';
+import '../primitives/tappable.dart';
+import '../theme/app_tokens.dart';
 import '../tokens/app_icons.dart';
 import '../tokens/app_spacing.dart';
 import 'text.dart';
 
-/// Text with a tap-to-copy affordance. Copies [text] to the clipboard on
-/// tap and confirms with a toast.
 class AppCopyText extends StatelessWidget {
   const AppCopyText(
     this.text, {
+    required this.copiedMessage,
     this.variant = AppTextVariant.body,
     this.color,
     this.iconColor,
@@ -21,6 +21,7 @@ class AppCopyText extends StatelessWidget {
   });
 
   final String text;
+  final String copiedMessage;
   final AppTextVariant variant;
   final Color? color;
   final Color? iconColor;
@@ -30,12 +31,12 @@ class AppCopyText extends StatelessWidget {
   Future<void> _copy(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!context.mounted) return;
-    AppToast.show(context: context, title: const Text('Copied to clipboard'));
+    AppToast.show(context: context, title: Text(copiedMessage));
   }
 
   @override
-  Widget build(BuildContext context) => FTappable(
-    onPress: () => _copy(context),
+  Widget build(BuildContext context) => AppTappable(
+    onPressed: () => _copy(context),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       spacing: AppSpacing.xs,
@@ -52,7 +53,7 @@ class AppCopyText extends StatelessWidget {
         Icon(
           AppIcons.copy,
           size: 14,
-          color: iconColor ?? context.theme.colors.mutedForeground,
+          color: iconColor ?? context.tokens.palette.ink3,
         ),
       ],
     ),

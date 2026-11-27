@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:forui/forui.dart';
 import 'package:reader_documents/core/config/app_brand.dart';
+import 'package:reader_documents/core/device/device_profile.dart';
+import 'package:reader_documents/core/device/device_providers.dart';
+import 'package:reader_documents/core/device/graphics_mode_resolver.dart';
 import 'package:reader_documents/core/localization/app_locale_resolver.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/settings/application/settings_providers.dart';
@@ -13,33 +15,35 @@ import 'app_bootstrap.dart';
 class Application extends ConsumerWidget {
   const Application({super.key});
 
+  static const _graphics = GraphicsModeResolver();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider).value ?? AppSettings.defaults;
+    final device =
+        ref.watch(deviceProfileProvider).value ?? DeviceProfile.unknown;
     final brightness = settings.resolveBrightness(
       MediaQuery.platformBrightnessOf(context),
     );
-    final theme = AppTheme.of(brightness);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppBrand.name,
-      localizationsDelegates: [
-        ...AppLocalizations.localizationsDelegates,
-        ...FLocalizations.localizationsDelegates,
-      ],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: settings.language.locale,
       localeResolutionCallback: (locale, supportedLocales) =>
           AppLocaleResolver.resolve(locale, supportedLocales),
-      builder: (context, child) => AppEffects(
-        blur: settings.resolveBlur(
-          platformReducesMotion: MediaQuery.disableAnimationsOf(context),
+      builder: (context, child) => AppTheme(
+        tokens: AppTokens(
+          palette: AppPalette.of(brightness),
+          graphics: _graphics.resolve(
+            preference: settings.effectsMode,
+            device: device,
+            platformReducesMotion: MediaQuery.disableAnimationsOf(context),
+          ),
         ),
-        child: FTheme(
-          data: theme,
-          child: FToaster(child: child!),
-        ),
+        child: AppToaster(child: child!),
       ),
       home: const AppBootstrap(),
     );

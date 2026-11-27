@@ -10,7 +10,9 @@
   "deleteDocumentBody": "This will permanently delete \"{name}\".",
   "@deleteDocumentBody": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "renameDocumentTitle": "Rename document",
@@ -26,7 +28,9 @@
   "selectionCount": "{count} selected",
   "@selectionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectAll": "Select all",
@@ -38,14 +42,18 @@
   "deleteSelectedTitle": "Delete {count} documents?",
   "@deleteSelectedTitle": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "deleteSelectedBody": "Selected documents will be permanently deleted.",
   "favoritesAddedCount": "Added {count} to favorites",
   "@favoritesAddedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "gestureHintLongPress": "Press and hold a card for actions",
@@ -53,7 +61,31 @@
   "favoritesRemovedCount": "Removed {count} from favorites",
   "@favoritesRemovedCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAsGrid": "Show as grid",
+  "viewAsList": "Show as list",
+  "openingFile": "Opening «{name}»…",
+  "@openingFile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "favoritesEmptyHint": "Swipe a document right in the list or tap the star in the reader — it will show up here.",
+  "openDocuments": "Open documents",
+  "openedToday": "today",
+  "openedYesterday": "yesterday",
+  "openedDaysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@openedDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
     }
   }
 }

@@ -103,14 +103,14 @@ class _DocumentMinimapState extends State<DocumentMinimap> {
                       Icon(
                         AppIcons.fileText,
                         size: 14,
-                        color: AppColors.of(context).secondaryForeground,
+                        color: context.tokens.palette.ink,
                       ),
                       Text('$currentPage/$totalPages'),
                     ],
                   ),
                 ),
                 AppBadge(
-                  variant: AppBadgeVariant.accent,
+                  variant: AppBadgeVariant.primary,
                   child: Text(widget.fileFormatLabel),
                 ),
                 Expanded(
@@ -183,7 +183,7 @@ class _DocumentMinimapTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = AppRadius.of(context).md;
+    final radius = AppRadii.md;
 
     return AppTappable(
       onPressed: onTap,
@@ -192,7 +192,7 @@ class _DocumentMinimapTile extends StatelessWidget {
           borderRadius: radius,
           border: Border.all(
             color: isCurrent
-                ? AppColors.accent(context)
+                ? context.tokens.palette.ink
                 : AppBorders.color(context),
             width: isCurrent ? AppBorderWidth.thick : AppBorderWidth.thin,
           ),

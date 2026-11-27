@@ -1,10 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../controls/input.dart';
-import '../data_display/text.dart';
-import '../layout/divider.dart';
+import '../controls/button.dart';
+import '../controls/search_field.dart';
+import '../data_display/empty_state.dart';
+import '../data_display/list.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_icons.dart';
+import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
 import 'barrier.dart';
 import 'rotation.dart';
@@ -18,6 +21,7 @@ class AppCommandItem {
     this.icon,
     this.leading,
     this.subtitle,
+    this.value,
     this.keywords = const [],
   });
 
@@ -25,6 +29,7 @@ class AppCommandItem {
   final IconData? icon;
   final Widget? leading;
   final String? subtitle;
+  final String? value;
   final List<String> keywords;
   final VoidCallback onSelect;
 
@@ -32,7 +37,7 @@ class AppCommandItem {
       label.toLowerCase().contains(lowerQuery) ||
       keywords.any((keyword) => keyword.toLowerCase().contains(lowerQuery));
 
-  Widget? get prefix => leading ?? (icon == null ? null : Icon(icon));
+  Widget? get prefix => leading ?? (icon == null ? null : Icon(icon, size: 20));
 }
 
 enum AppCommandGroupMode { always, idle, search }
@@ -74,9 +79,6 @@ abstract final class AppCommandSidePanel {
     double panelFraction = 0.6,
     AppBarrierVariant? barrierVariant,
   }) {
-    // Resolved from the caller's context, not the panel's own builder
-    // context below — the panel renders into the app's root `Overlay`, which
-    // sits outside whatever ancestor `AppRotation` the caller is under.
     final quarterTurns = AppRotation.of(context);
     final resolvedSide = side ?? AppRotation.bottomEdge(context);
 
@@ -92,13 +94,13 @@ abstract final class AppCommandSidePanel {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              FTileGroup(
+              AppListGroup(
                 children: [
                   for (final item in items)
-                    FTile(
-                      title: Text(item.label),
+                    AppListRow(
+                      title: item.label,
                       prefix: item.prefix,
-                      onPress: () {
+                      onTap: () {
                         controller.close();
                         item.onSelect();
                       },
@@ -124,18 +126,22 @@ abstract final class AppCommandPalette {
     String hint = 'Type a command…',
     String recentLabel = 'Recent',
     String noResultsLabel = 'No results',
+    String? clearLabel,
+    AppCommandItem? noResultsAction,
     AppBarrierVariant? barrierVariant,
   }) => AppSheet.show<void>(
     context: context,
     barrierVariant: barrierVariant,
-    initialSize: 0.75,
-    minSize: 0.4,
-    maxSize: 0.95,
+    initialSize: 0.92,
+    minSize: 0.5,
+    maxSize: 0.92,
     builder: (context, scrollController) => _CommandPaletteContent(
       groups: groups,
       hint: hint,
       recentLabel: recentLabel,
       noResultsLabel: noResultsLabel,
+      clearLabel: clearLabel,
+      noResultsAction: noResultsAction,
       scrollController: scrollController,
     ),
   );
@@ -150,6 +156,13 @@ abstract final class AppCommandPalette {
   }
 }
 
+class _CommandSection {
+  const _CommandSection(this.label, this.items);
+
+  final String label;
+  final List<AppCommandItem> items;
+}
+
 class _CommandPaletteContent extends StatefulWidget {
   const _CommandPaletteContent({
     required this.groups,
@@ -157,12 +170,16 @@ class _CommandPaletteContent extends StatefulWidget {
     required this.recentLabel,
     required this.noResultsLabel,
     required this.scrollController,
+    this.clearLabel,
+    this.noResultsAction,
   });
 
   final List<AppCommandGroup> groups;
   final String hint;
   final String recentLabel;
   final String noResultsLabel;
+  final String? clearLabel;
+  final AppCommandItem? noResultsAction;
   final ScrollController scrollController;
 
   @override
@@ -173,23 +190,20 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
   final _controller = TextEditingController();
   int _highlighted = 0;
   String _query = '';
-  Set<int> _expandedGroups = {};
-  late List<AppCommandItem> _recent;
-  late List<AppCommandGroup> _searchGroups;
-
-  late final List<AppCommandGroup> _idleGroups = widget.groups
-      .where((group) => group.showsWhenIdle && group.items.isNotEmpty)
-      .toList();
+  List<_CommandSection> _sections = const [];
 
   List<AppCommandItem> get _trackedItems => [
     for (final group in widget.groups)
       if (group.tracksRecent) ...group.items,
   ];
 
+  List<AppCommandItem> get _visible => [
+    for (final section in _sections) ...section.items,
+  ];
+
   @override
   void initState() {
     super.initState();
-    _expandedGroups = {for (var i = 0; i < _idleGroups.length; i++) i};
     _applyQuery('');
   }
 
@@ -201,40 +215,37 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
 
   void _applyQuery(String query) {
     _query = query.trim();
-    if (_query.isEmpty) {
-      final byLabel = {for (final item in _trackedItems) item.label: item};
-      _recent = [
-        for (final label in AppCommandPalette._recentLabels) ?byLabel[label],
-      ];
-      _searchGroups = const [];
-    } else {
-      _recent = const [];
-      final lower = _query.toLowerCase();
-      _searchGroups = [
-        for (final group in widget.groups)
-          if (group.showsInSearch) group.filtered(lower),
-      ].where((group) => group.items.isNotEmpty).toList();
-    }
+    _sections = _query.isEmpty ? _idleSections() : _searchSections();
   }
 
-  List<AppCommandItem> _idleGroupItems(int groupIndex) {
-    final group = _idleGroups[groupIndex];
-    if (!group.tracksRecent) return group.items;
-    final recentLabels = _recent.map((item) => item.label).toSet();
-    return group.items
-        .where((item) => !recentLabels.contains(item.label))
-        .toList();
+  List<_CommandSection> _idleSections() {
+    final byLabel = {for (final item in _trackedItems) item.label: item};
+    final recent = [
+      for (final label in AppCommandPalette._recentLabels) ?byLabel[label],
+    ];
+    final recentLabels = recent.map((item) => item.label).toSet();
+    return [
+      _CommandSection(widget.recentLabel, recent),
+      for (final group in widget.groups)
+        if (group.showsWhenIdle)
+          _CommandSection(group.label, [
+            for (final item in group.items)
+              if (!group.tracksRecent || !recentLabels.contains(item.label))
+                item,
+          ]),
+    ].where((section) => section.items.isNotEmpty).toList();
   }
 
-  List<AppCommandItem> get _visible {
-    if (_query.isNotEmpty) {
-      return [for (final group in _searchGroups) ...group.items];
-    }
-    final visible = [..._recent];
-    for (var i = 0; i < _idleGroups.length; i++) {
-      if (_expandedGroups.contains(i)) visible.addAll(_idleGroupItems(i));
-    }
-    return visible;
+  List<_CommandSection> _searchSections() {
+    final lower = _query.toLowerCase();
+    return [
+      for (final group in widget.groups)
+        if (group.showsInSearch)
+          () {
+            final items = group.filtered(lower).items;
+            return _CommandSection('${group.label} · ${items.length}', items);
+          }(),
+    ].where((section) => section.items.isNotEmpty).toList();
   }
 
   void _onQueryChanged(String query) => setState(() {
@@ -265,94 +276,34 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
     item.onSelect();
   }
 
-  FTile _tile(AppCommandItem item, int index) => FTile(
-    style: FItemStyleDelta.delta(
-      padding: EdgeInsetsGeometryDelta.add(
-        const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      ),
-    ),
-    selected: index == _highlighted,
-    title: Text(item.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-    subtitle: item.subtitle == null ? null : Text(item.subtitle!),
-    prefix: item.prefix,
-    onPress: () => _select(item),
-  );
-
-  Widget _sectionLabel(String label) => Padding(
-    padding: const EdgeInsets.fromLTRB(0, AppSpacing.sm, 0, AppSpacing.xs),
-    child: AppText(label, variant: AppTextVariant.caption),
-  );
-
-  List<Widget> _buildSearchContent() {
+  List<Widget> _buildSections() {
     var cursor = 0;
+    final searching = _query.isNotEmpty;
 
     return [
-      for (final group in _searchGroups) ...[
-        _sectionLabel(group.label),
+      for (final section in _sections)
         () {
-          final startIndex = cursor;
-          cursor += group.items.length;
-          return FTileGroup(
+          final start = cursor;
+          cursor += section.items.length;
+          return AppListGroup(
+            label: section.label,
             children: [
-              for (final (i, item) in group.items.indexed)
-                _tile(item, startIndex + i),
+              for (final (i, item) in section.items.indexed)
+                _CommandRow(
+                  item: item,
+                  match: searching ? _query : null,
+                  highlighted: searching && start + i == _highlighted,
+                  onTap: () => _select(item),
+                ),
             ],
           );
         }(),
-      ],
-    ];
-  }
-
-  List<Widget> _buildGroupedContent() {
-    var cursor = _recent.length;
-
-    return [
-      if (_recent.isNotEmpty) ...[
-        _sectionLabel(widget.recentLabel),
-        FTileGroup(
-          children: [
-            for (final (index, item) in _recent.indexed) _tile(item, index),
-          ],
-        ),
-      ],
-      FAccordion(
-        control: FAccordionControl.lifted(
-          expanded: (index) => _expandedGroups.contains(index),
-          onChange: (index, expanded) => setState(() {
-            if (expanded) {
-              _expandedGroups.add(index);
-            } else {
-              _expandedGroups.remove(index);
-            }
-          }),
-        ),
-        children: [
-          for (final (groupIndex, group) in _idleGroups.indexed)
-            () {
-              final items = _idleGroupItems(groupIndex);
-              final expanded = _expandedGroups.contains(groupIndex);
-              final startIndex = cursor;
-              if (expanded) cursor += items.length;
-              return FAccordionItem(
-                title: Text(group.label),
-                child: FTileGroup(
-                  children: [
-                    for (final (i, item) in items.indexed)
-                      _tile(item, expanded ? startIndex + i : -1),
-                  ],
-                ),
-              );
-            }(),
-        ],
-      ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final hasContent = _query.isNotEmpty
-        ? _searchGroups.isNotEmpty
-        : _recent.isNotEmpty || _idleGroups.isNotEmpty;
+    final noResultsAction = widget.noResultsAction;
 
     return CallbackShortcuts(
       bindings: {
@@ -362,44 +313,107 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
         const SingleActivator(LogicalKeyboardKey.escape): () =>
             Navigator.of(context).pop(),
       },
-      child: Focus(
-        autofocus: true,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: AppInput(
-                controller: _controller,
-                hint: widget.hint,
-                autofocus: true,
-                onChanged: _onQueryChanged,
-              ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              0,
+              AppSpacing.lg,
+              AppSpacing.md,
             ),
-            const AppDivider(),
-            Expanded(
-              child: ListView(
-                controller: widget.scrollController,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                children: !hasContent
-                    ? [
-                        Padding(
-                          padding: const EdgeInsets.all(AppSpacing.lg),
-                          child: AppText(
-                            widget.noResultsLabel,
-                            variant: AppTextVariant.caption,
-                          ),
-                        ),
-                      ]
-                    : _query.isNotEmpty
-                    ? _buildSearchContent()
-                    : _buildGroupedContent(),
-              ),
+            child: AppSearchField(
+              controller: _controller,
+              hint: widget.hint,
+              clearLabel: widget.clearLabel,
+              autofocus: true,
+              onChanged: _onQueryChanged,
+              onSubmitted: (_) => _selectHighlighted(),
             ),
-          ],
+          ),
+          Expanded(
+            child: _sections.isEmpty
+                ? ListView(
+                    controller: widget.scrollController,
+                    children: [
+                      AppEmptyState(
+                        icon: AppIcons.search,
+                        message: widget.noResultsLabel,
+                        action: noResultsAction == null
+                            ? null
+                            : AppButton(
+                                variant: AppButtonVariant.outline,
+                                mainAxisSize: MainAxisSize.min,
+                                prefix: noResultsAction.prefix,
+                                onPressed: () => _select(noResultsAction),
+                                child: Text(noResultsAction.label),
+                              ),
+                      ),
+                    ],
+                  )
+                : ListView(
+                    controller: widget.scrollController,
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      0,
+                      AppSpacing.lg,
+                      MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
+                    ),
+                    children: [
+                      for (final section in _buildSections()) ...[
+                        section,
+                        const SizedBox(height: AppSpacing.lg),
+                      ],
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommandRow extends StatelessWidget {
+  const _CommandRow({
+    required this.item,
+    required this.highlighted,
+    required this.onTap,
+    this.match,
+  });
+
+  final AppCommandItem item;
+  final bool highlighted;
+  final String? match;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => AppListRow(
+    title: item.label,
+    subtitle: item.subtitle,
+    value: highlighted ? null : item.value,
+    prefix: item.prefix,
+    match: match,
+    highlighted: highlighted,
+    trailing: highlighted ? const _EnterHint() : null,
+    onTap: onTap,
+  );
+}
+
+class _EnterHint extends StatelessWidget {
+  const _EnterHint();
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.tokens.palette;
+    return ExcludeSemantics(
+      child: Container(
+        height: 20,
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          borderRadius: AppRadii.xs,
+          border: Border.all(color: palette.ruleStrong),
         ),
+        child: Icon(AppIcons.cornerDownLeft, size: 12, color: palette.ink3),
       ),
     );
   }

@@ -8,7 +8,9 @@
   "aiTextCopiedDescription": "Paste it into {provider}",
   "@aiTextCopiedDescription": {
     "placeholders": {
-      "provider": { "type": "String" }
+      "provider": {
+        "type": "String"
+      }
     }
   },
   "minimapJumpToPageHint": "Go to page",
@@ -33,7 +35,9 @@
   "bookmarkPageLabel": "Page {page}",
   "@bookmarkPageLabel": {
     "placeholders": {
-      "page": { "type": "int" }
+      "page": {
+        "type": "int"
+      }
     }
   },
   "pdfMenuExportNotes": "Export notes",
@@ -41,5 +45,15 @@
   "pdfMenuNotes": "Notes",
   "highlightsEmpty": "No highlights yet",
   "pdfMenuWarmFilterOn": "Turn on warm filter",
-  "pdfMenuWarmFilterOff": "Turn off warm filter"
+  "pdfMenuWarmFilterOff": "Turn off warm filter",
+  "pageCountShort": "{count} pp",
+  "zoomIn": "Zoom in",
+  "zoomOut": "Zoom out",
+  "@pageCountShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,14 +1,15 @@
+import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reader_documents/core/config/app_brand.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import '../application/settings_providers.dart';
-import 'about_settings_section.dart';
-import 'effects_settings_section.dart';
-import 'language_settings_section.dart';
-import 'profile_settings_section.dart';
-import 'theme_settings_section.dart';
+import '../data/app_settings.dart';
+import 'appearance_screen.dart';
+import 'language_picker.dart';
+import 'theme_mode_picker.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -19,56 +20,26 @@ class SettingsScreen extends ConsumerWidget {
 
     return AppScrollArea(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppHeader.topInset(context) + AppSpacing.lg,
-          AppSpacing.lg,
-          AppBottomNav.bottomInset(context) + AppSpacing.lg,
+        padding: EdgeInsets.only(
+          top: AppHeader.topInset(context),
+          bottom: AppBottomNav.bottomInset(context) + AppSpacing.lg,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.xl,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppText(l10n.settingsTitle, variant: AppTextVariant.title),
-            ref
-                .watch(settingsProvider)
-                .when(
-                  data: (value) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.xl,
-                    children: [
-                      ProfileSettingsSection(
-                        profile: value.profile,
-                        onSave: (profile) => ref
-                            .read(settingsProvider.notifier)
-                            .updateProfile(profile),
-                      ),
-                      ThemeSettingsSection(
-                        themeMode: value.themeMode,
-                        onChanged: (mode) => ref
-                            .read(settingsProvider.notifier)
-                            .setThemeMode(mode),
-                      ),
-                      EffectsSettingsSection(
-                        effectsMode: value.effectsMode,
-                        onChanged: (mode) => ref
-                            .read(settingsProvider.notifier)
-                            .setEffectsMode(mode),
-                      ),
-                      LanguageSettingsSection(
-                        language: value.language,
-                        onChanged: (language) => ref
-                            .read(settingsProvider.notifier)
-                            .setLanguage(language),
-                      ),
-                      const AboutSettingsSection(),
-                    ],
+            AppLargeTitle(title: l10n.settingsTitle),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: ref
+                  .watch(settingsProvider)
+                  .when(
+                    data: (settings) => _SettingsGroups(settings: settings),
+                    loading: () => const _SettingsSkeleton(),
+                    error: (error, _) => _SettingsError(
+                      onRetry: () => ref.invalidate(settingsProvider),
+                    ),
                   ),
-                  loading: () => const _SettingsSkeleton(),
-                  error: (error, _) => _SettingsError(
-                    onRetry: () => ref.invalidate(settingsProvider),
-                  ),
-                ),
+            ),
           ],
         ),
       ),
@@ -76,8 +47,95 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-/// Mirrors the real cards' heights so the layout doesn't jump when the
-/// settings finish loading.
+class _SettingsGroups extends ConsumerWidget {
+  const _SettingsGroups({required this.settings});
+
+  final AppSettings settings;
+
+  Future<void> _pickThemeMode(BuildContext context, WidgetRef ref) async {
+    final mode = await ThemeModePicker.show(
+      context,
+      selected: settings.themeMode,
+    );
+    if (mode != null) {
+      await ref.read(settingsProvider.notifier).setThemeMode(mode);
+    }
+  }
+
+  Future<void> _pickLanguage(BuildContext context, WidgetRef ref) async {
+    final language = await LanguagePicker.show(
+      context,
+      selected: settings.language,
+    );
+    if (language != null) {
+      await ref.read(settingsProvider.notifier).setLanguage(language);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final notifier = ref.read(settingsProvider.notifier);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.xl,
+      children: [
+        AppListGroup(
+          label: l10n.appearanceTitle,
+          children: [
+            AppListRow(
+              title: l10n.themeTitle,
+              leading: AppIcons.palette,
+              value: l10n.paletteMonochrome,
+              chevron: true,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const AppearanceScreen(),
+                ),
+              ),
+            ),
+            AppListRow(
+              title: l10n.darkModeTitle,
+              subtitle: ThemeModePicker(l10n).label(settings.themeMode),
+              leading: AppIcons.moon,
+              chevron: true,
+              onTap: () => _pickThemeMode(context, ref),
+            ),
+            AppListRow(
+              title: l10n.warmFilterTitle,
+              subtitle: l10n.warmFilterHint,
+              leading: AppIcons.lamp,
+              onTap: notifier.toggleWarmReadingFilter,
+              trailing: AppSwitch(
+                value: settings.warmReadingFilter,
+                onChanged: (_) => notifier.toggleWarmReadingFilter(),
+              ),
+            ),
+            AppListRow(
+              title: l10n.languageSectionTitle,
+              leading: AppIcons.languages,
+              value: LanguagePicker(l10n).label(settings.language),
+              chevron: true,
+              onTap: () => _pickLanguage(context, ref),
+            ),
+          ],
+        ),
+        AppListGroup(
+          label: l10n.aboutSectionTitle,
+          children: [
+            AppListRow(
+              title: AppBrand.name,
+              leading: AppIcons.info,
+              value: '${AppBrand.version} (${AppBrand.buildNumber})',
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _SettingsSkeleton extends StatelessWidget {
   const _SettingsSkeleton();
 
@@ -108,8 +166,6 @@ class _SettingsError extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: AppSpacing.md,
       children: [
-        // The underlying exception is deliberately not shown: it is either
-        // noise to the reader or, for a corrupt settings file, a file path.
         AppAlert(
           title: Text(l10n.settingsLoadError),
           variant: AppAlertVariant.destructive,

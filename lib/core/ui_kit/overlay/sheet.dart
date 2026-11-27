@@ -1,98 +1,85 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
+import '../theme/app_tokens.dart';
 import 'barrier.dart';
+import 'edge.dart';
+import 'modal_route.dart';
 import 'sheet_surface.dart';
 
-/// A modal bottom sheet that starts at a partial height and can be dragged
-/// up to fill the screen (or down to dismiss). Wraps Forui's [showFSheet]
-/// together with Flutter's own [DraggableScrollableSheet].
-///
-/// Two things Forui's `showFSheet` does *not* do on its own, despite first
-/// appearances:
-///
-/// * **Sizing/dragging.** `FSheetStyle` has no size-related fields at all,
-///   and its drag handling (`Sheet`'s `_ShiftedSheet`) gives the content a
-///   *fixed* max height (`mainAxisMaxRatio` of the screen) and only slides
-///   that fixed box in and out — it does not grow the content as you drag.
-///   Forui's own docs point at [DraggableScrollableSheet] for that; this
-///   nests one inside the sheet (with `mainAxisMaxRatio: null` and
-///   `draggable: false` on the outer sheet, so only the inner one handles
-///   drag — Forui's `Sheet` already listens for
-///   [DraggableScrollableNotification] and closes the route when dragged
-///   down to [minSize], so dismiss-by-drag keeps working).
-/// * **Background/chrome.** See [SheetSurface].
-///
-/// Dimming *is* automatic — Forui applies it via the theme's `colors.barrier`
-/// token. In dark mode that tint sits over an already near-black background,
-/// so it reads fainter than in light mode; a backdrop blur would fix that but
-/// costs a full-screen re-sample every frame, so [SheetSurface] instead gets
-/// a drop shadow — cheap (rasterized only near its own edge) and enough to
-/// read as "above" the barrier regardless of how dark the barrier is.
+typedef AppSheetBuilder = Widget Function(
+  BuildContext context,
+  ScrollController scrollController,
+);
+
 abstract final class AppSheet {
   static Future<T?> show<T>({
     required BuildContext context,
-    required Widget Function(
-      BuildContext context,
-      ScrollController scrollController,
-    )
-    builder,
+    required AppSheetBuilder builder,
     double initialSize = 0.5,
     double minSize = 0.25,
     double maxSize = 1.0,
     AppBarrierVariant? barrierVariant,
-  }) {
-    HapticFeedback.lightImpact();
-    return showFSheet<T>(
-      context: context,
-      side: FLayout.btt,
-      style: FModalSheetStyleDelta.delta(
-        barrierFilter: AppBarrier.filter(
-          AppBarrier.resolve(context, barrierVariant),
-        ),
-      ),
-      mainAxisMaxRatio: null,
-      draggable: false,
-      builder: (context) => _HapticDismissDrag(
-        initialSize: initialSize,
-        minSize: minSize,
-        maxSize: maxSize,
-        builder: builder,
-      ),
-    );
-  }
+    String? dismissLabel,
+  }) => _push(
+    context,
+    barrierVariant: barrierVariant,
+    dismissLabel: dismissLabel,
+    builder: (context) => _DraggableSheet(
+      initialSize: initialSize,
+      minSize: minSize,
+      maxSize: maxSize,
+      builder: builder,
+    ),
+  );
 
   static Future<T?> showContent<T>({
     required BuildContext context,
-    required Widget Function(
-      BuildContext context,
-      ScrollController scrollController,
-    )
-    builder,
+    required AppSheetBuilder builder,
     AppBarrierVariant? barrierVariant,
+    String? dismissLabel,
+  }) => _push(
+    context,
+    barrierVariant: barrierVariant,
+    dismissLabel: dismissLabel,
+    builder: (context) => _ContentSheet(builder: builder),
+  );
+
+  static Future<T?> _push<T>(
+    BuildContext context, {
+    required WidgetBuilder builder,
+    AppBarrierVariant? barrierVariant,
+    String? dismissLabel,
   }) {
     HapticFeedback.lightImpact();
-    return showFSheet<T>(
-      context: context,
-      side: FLayout.btt,
-      style: FModalSheetStyleDelta.delta(
-        barrierFilter: AppBarrier.filter(
-          AppBarrier.resolve(context, barrierVariant),
-        ),
+    return Navigator.of(context).push(
+      AppModalRoute<T>(
+        placement: AppModalPlacement.bottom,
+        tokens: context.tokens,
+        barrier: AppBarrier.resolve(context, barrierVariant),
+        dismissLabel: dismissLabel,
+        builder: (context) => _KeyboardAware(child: builder(context)),
       ),
-      mainAxisMaxRatio: null,
-      draggable: false,
-      builder: (context) => _ContentSheet(builder: builder),
     );
   }
+}
+
+class _KeyboardAware extends StatelessWidget {
+  const _KeyboardAware({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+    child: child,
+  );
 }
 
 class _ContentSheet extends StatefulWidget {
   const _ContentSheet({required this.builder});
 
-  final Widget Function(BuildContext context, ScrollController scrollController)
-  builder;
+  final AppSheetBuilder builder;
 
   @override
   State<_ContentSheet> createState() => _ContentSheetState();
@@ -110,30 +97,28 @@ class _ContentSheetState extends State<_ContentSheet> {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
-    return SheetSurface(
-      side: FLayout.btt,
-      expand: false,
-      onHandleDismiss: () => Navigator.of(context).pop(),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight:
-              media.size.height -
-              media.padding.vertical -
-              media.viewInsets.bottom,
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: SheetSurface(
+        side: AppEdge.bottom,
+        expand: false,
+        onHandleDismiss: () => Navigator.of(context).maybePop(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight:
+                media.size.height -
+                media.padding.vertical -
+                media.viewInsets.bottom,
+          ),
+          child: widget.builder(context, _controller),
         ),
-        child: widget.builder(context, _controller),
       ),
     );
   }
 }
 
-/// Fires a haptic the moment a drag first reaches the dismiss threshold —
-/// edge-triggered on [_armed] so it fires once per approach, not on every
-/// notification while held there. Forui's own `Sheet` listens for the same
-/// [DraggableScrollableNotification] to actually close the route; returning
-/// `false` here lets that notification keep bubbling up to it.
-class _HapticDismissDrag extends StatefulWidget {
-  const _HapticDismissDrag({
+class _DraggableSheet extends StatefulWidget {
+  const _DraggableSheet({
     required this.initialSize,
     required this.minSize,
     required this.maxSize,
@@ -143,14 +128,13 @@ class _HapticDismissDrag extends StatefulWidget {
   final double initialSize;
   final double minSize;
   final double maxSize;
-  final Widget Function(BuildContext context, ScrollController scrollController)
-  builder;
+  final AppSheetBuilder builder;
 
   @override
-  State<_HapticDismissDrag> createState() => _HapticDismissDragState();
+  State<_DraggableSheet> createState() => _DraggableSheetState();
 }
 
-class _HapticDismissDragState extends State<_HapticDismissDrag> {
+class _DraggableSheetState extends State<_DraggableSheet> {
   bool _armed = true;
 
   bool _onNotification(DraggableScrollableNotification notification) {
@@ -173,7 +157,8 @@ class _HapticDismissDragState extends State<_HapticDismissDrag> {
           minChildSize: widget.minSize,
           maxChildSize: widget.maxSize,
           builder: (context, scrollController) => SheetSurface(
-            side: FLayout.btt,
+            side: AppEdge.bottom,
+            onHandleDismiss: () => Navigator.of(context).maybePop(),
             child: widget.builder(context, scrollController),
           ),
         ),

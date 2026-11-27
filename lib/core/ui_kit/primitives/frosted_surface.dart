@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 
-import '../theme/app_effects.dart';
+import '../theme/app_tokens.dart';
 
 class AppFrostedSurface extends StatelessWidget {
   const AppFrostedSurface({
@@ -14,7 +14,6 @@ class AppFrostedSurface extends StatelessWidget {
     super.key,
   });
 
-  static const _sigma = 20.0;
   static const _translucency = 0.7;
 
   final Color color;
@@ -25,7 +24,9 @@ class AppFrostedSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blur = frosted && AppEffects.blurOf(context);
+    final tokens = context.tokens;
+    final blur = frosted && tokens.graphics.blur;
+    final sigma = tokens.blur.glass;
     final surface = DecoratedBox(
       decoration: BoxDecoration(
         color: blur ? color.withValues(alpha: _translucency) : color,
@@ -39,7 +40,7 @@ class AppFrostedSurface extends StatelessWidget {
       borderRadius: borderRadius,
       child: blur
           ? BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: _sigma, sigmaY: _sigma),
+              filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
               child: surface,
             )
           : surface,

@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../feedback/spinner.dart';
 import '../tokens/app_borders.dart';
-import '../tokens/app_colors.dart';
 import '../tokens/app_spacing.dart';
+import '../theme/app_tokens.dart';
 
 class AppPullToRefresh extends StatefulWidget {
   const AppPullToRefresh({
@@ -87,30 +86,22 @@ class _AppPullToRefreshState extends State<AppPullToRefresh> {
               left: 0,
               right: 0,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+                duration: context.tokens.motion.quick,
                 height: _pull,
                 alignment: Alignment.center,
                 child: _pull > 0 || _refreshing
                     ? DecoratedBox(
                         decoration: BoxDecoration(
-                          color: context.theme.colors.card,
+                          color: context.tokens.palette.sheet,
                           shape: BoxShape.circle,
                           border: AppBorders.all(context),
-                          boxShadow: [
-                            BoxShadow(
-                              color: context.theme.colors.foreground.withValues(
-                                alpha: 0.15,
-                              ),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                          boxShadow: context.tokens.elevation.pop,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(AppSpacing.md),
                           child: AppSpinner(
-                            size: AppSpinnerSize.xl,
-                            color: AppColors.accent(context),
+                            size: AppSpinnerSize.md,
+                            color: context.tokens.palette.ink,
                           ),
                         ),
                       )

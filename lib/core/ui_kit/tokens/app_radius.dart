@@ -1,14 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-/// Corner-radius tokens.
-///
-/// Forui already ships a full radius scale ([FBorderRadius], reachable via
-/// `context.theme.style.borderRadius`). [AppRadius.of] just gives our own
-/// widgets a stable name to depend on instead of reaching into Forui's theme
-/// directly — if the underlying UI kit is ever swapped, only this file
-/// changes.
-abstract final class AppRadius {
-  static FBorderRadius of(BuildContext context) =>
-      context.theme.style.borderRadius;
+abstract final class AppRadii {
+  static const xs = BorderRadius.all(Radius.circular(4));
+  static const sm = BorderRadius.all(Radius.circular(8));
+  static const md = BorderRadius.all(Radius.circular(12));
+  static const lg = BorderRadius.all(Radius.circular(20));
+  static const pill = BorderRadius.all(Radius.circular(999));
 }

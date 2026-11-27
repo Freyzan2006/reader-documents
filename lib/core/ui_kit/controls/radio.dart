@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../data_display/text.dart';
+import '../primitives/tappable.dart';
 import '../tokens/app_borders.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
+import '../theme/app_tokens.dart';
 
 enum AppRadioVariant { classic, card }
 
@@ -63,11 +64,65 @@ class _ClassicOption<T> extends StatelessWidget {
   final VoidCallback onSelect;
 
   @override
-  Widget build(BuildContext context) => FRadio(
-    value: selected,
-    onChange: (_) => onSelect(),
-    label: Text(option.label),
+  Widget build(BuildContext context) => Semantics(
+    inMutuallyExclusiveGroup: true,
+    checked: selected,
+    child: AppTappable(
+      onPressed: onSelect,
+      selected: selected,
+      semanticsLabel: option.label,
+      excludeChildSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: AppSpacing.md,
+          children: [
+            AppRadioDot(selected: selected),
+            Flexible(child: AppText(option.label)),
+          ],
+        ),
+      ),
+    ),
   );
+}
+
+class AppRadioDot extends StatelessWidget {
+  const AppRadioDot({required this.selected, super.key});
+
+  static const _size = 22.0;
+  static const _dot = 10.0;
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    final palette = tokens.palette;
+    return AnimatedContainer(
+      duration: tokens.motion.quick,
+      width: _size,
+      height: _size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: palette.sheet,
+        border: Border.all(
+          color: selected ? palette.ink : palette.ruleStrong,
+          width: selected ? 2 : 1.5,
+        ),
+      ),
+      child: AnimatedScale(
+        duration: tokens.motion.quick,
+        scale: selected ? 1 : 0,
+        child: Container(
+          width: _dot,
+          height: _dot,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: palette.ink),
+        ),
+      ),
+    );
+  }
 }
 
 class _CardOption<T> extends StatelessWidget {
@@ -83,25 +138,32 @@ class _CardOption<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-    return FTappable(
-      onPress: onSelect,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.card,
-          borderRadius: AppRadius.of(context).md,
-          border: Border.all(
-            color: selected ? colors.primary : colors.border,
-            width: selected ? AppBorderWidth.thick : AppBorderWidth.thin,
+    final palette = context.tokens.palette;
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      child: AppTappable(
+        onPressed: onSelect,
+        selected: selected,
+        semanticsLabel: option.label,
+        excludeChildSemantics: true,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: palette.sheet,
+            borderRadius: AppRadii.md,
+            border: Border.all(
+              color: selected ? palette.ink : palette.rule,
+              width: selected ? AppBorderWidth.thick : AppBorderWidth.thin,
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              Expanded(child: AppText(option.label)),
-              FRadio(value: selected),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                Expanded(child: AppText(option.label)),
+                AppRadioDot(selected: selected),
+              ],
+            ),
           ),
         ),
       ),

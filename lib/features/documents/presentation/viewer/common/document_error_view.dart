@@ -15,10 +15,10 @@ class DocumentErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = AppColors.of(context);
+    final palette = context.tokens.palette;
 
     return ColoredBox(
-      color: colors.background,
+      color: palette.paper,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
@@ -29,14 +29,14 @@ class DocumentErrorView extends StatelessWidget {
               Icon(
                 isPasswordProtected ? AppIcons.lock : AppIcons.fileWarning,
                 size: 40,
-                color: colors.mutedForeground,
+                color: palette.ink3,
               ),
               AppText(
                 isPasswordProtected
                     ? l10n.pdfErrorPasswordProtected
                     : l10n.pdfErrorGeneric,
                 textAlign: TextAlign.center,
-                color: colors.mutedForeground,
+                color: palette.ink3,
               ),
               AppButton(
                 onPressed: onBack,

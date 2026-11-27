@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../tokens/app_icons.dart';
 import '../tokens/app_spacing.dart';
 import 'icon_button.dart';
+import 'input.dart';
 
 /// A single-line numeric text input with decrement/increment stepper
 /// buttons. Wraps Forui's [FTextField] with a digits-only keyboard and
@@ -140,20 +140,22 @@ class _AppNumberInputState extends State<AppNumberInput> {
           onPressed: widget.enabled && !atMin ? () => _step(-1) : null,
         ),
         Expanded(
-          child: FTextField(
-            control: FTextFieldControl.managed(
-              controller: _controller,
-              onChange: widget.onChanged == null
-                  ? null
-                  : (value) => _handleTyped(value.text),
-            ),
-            label: widget.label == null ? null : Text(widget.label!),
+          child: AppInput(
+            controller: _controller,
+            onChanged: widget.onChanged == null
+                ? null
+                : (value) {
+                    setState(() {});
+                    _handleTyped(value);
+                  },
+            label: widget.label,
             hint: widget.hint,
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.go,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onEditingComplete: _clampAndUpdate,
-            onSubmit: widget.onSubmitted == null
+            onSubmitted: widget.onSubmitted == null
                 ? null
                 : (text) {
                     _debounceTimer?.cancel();

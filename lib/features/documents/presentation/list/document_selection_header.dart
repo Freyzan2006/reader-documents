@@ -16,17 +16,13 @@ class DocumentSelectionHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final selection = ref.watch(documentSelectionProvider);
-    final favorites = ref.watch(favoritesProvider).value ?? const <String>{};
     final files = selection.files;
     final allSelected =
         selection.available.isNotEmpty &&
         files.length == selection.available.length;
-    final allFavorite =
-        files.isNotEmpty &&
-        files.every((file) => favorites.contains(file.path));
 
     return AppSelectionHeader(
-      title: '${files.length}',
+      title: l10n.selectionCount(files.length),
       closeLabel: l10n.cancel,
       onClose: () => _clear(ref),
       actions: [
@@ -42,6 +38,40 @@ class DocumentSelectionHeader extends ConsumerWidget {
           onPressed: () =>
               ref.read(documentSelectionProvider.notifier).selectAll(),
         ),
+      ],
+    );
+  }
+
+  void _clear(WidgetRef ref) =>
+      ref.read(documentSelectionProvider.notifier).clear();
+
+  void _openDetails(BuildContext context, WidgetRef ref, DocumentFile file) =>
+      DocumentCardMenu.show(
+        context: context,
+        ref: ref,
+        file: file,
+        confirmDelete: () => DocumentCommands.confirmDelete(context, file),
+        onDelete: () async {
+          await ref.read(documentsProvider.notifier).delete(file.path);
+          _clear(ref);
+        },
+      );
+}
+
+class DocumentSelectionActionBar extends ConsumerWidget {
+  const DocumentSelectionActionBar({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final files = ref.watch(documentSelectionProvider).files;
+    final favorites = ref.watch(favoritesProvider).value ?? const <String>{};
+    final allFavorite =
+        files.isNotEmpty &&
+        files.every((file) => favorites.contains(file.path));
+
+    return AppSelectionActionBar(
+      actions: [
         AppSelectionAction(
           label: allFavorite ? l10n.unfavoriteSelected : l10n.favoriteSelected,
           icon: AppIcons.star,
@@ -73,16 +103,21 @@ class DocumentSelectionHeader extends ConsumerWidget {
 
   void _clear(WidgetRef ref) =>
       ref.read(documentSelectionProvider.notifier).clear();
+}
 
-  void _openDetails(BuildContext context, WidgetRef ref, DocumentFile file) =>
-      DocumentCardMenu.show(
-        context: context,
-        ref: ref,
-        file: file,
-        confirmDelete: () => DocumentCommands.confirmDelete(context, file),
-        onDelete: () async {
-          await ref.read(documentsProvider.notifier).delete(file.path);
-          _clear(ref);
-        },
-      );
+class DocumentSelectionAwareFooter extends ConsumerWidget {
+  const DocumentSelectionAwareFooter({required this.normal, super.key});
+
+  final Widget normal;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selecting = ref.watch(documentSelectionProvider).isNotEmpty;
+    return AnimatedSwitcher(
+      duration: context.tokens.motion.quick,
+      child: selecting
+          ? const DocumentSelectionActionBar(key: ValueKey('selection'))
+          : KeyedSubtree(key: const ValueKey('normal'), child: normal),
+    );
+  }
 }

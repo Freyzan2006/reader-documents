@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
 import '../tokens/app_spacing.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_icons.dart';
 
 class AppDismissible extends StatelessWidget {
   const AppDismissible({
@@ -33,17 +34,17 @@ class AppDismissible extends StatelessWidget {
     background:
         background ??
         AppDismissibleAction(
-          icon: FLucideIcons.trash,
-          color: context.theme.colors.destructive,
-          foregroundColor: context.theme.colors.destructiveForeground,
+          icon: AppIcons.trash,
+          color: context.tokens.palette.danger,
+          foregroundColor: context.tokens.palette.onDanger,
           alignment: Alignment.centerLeft,
         ),
     secondaryBackground:
         secondaryBackground ??
         AppDismissibleAction(
-          icon: FLucideIcons.trash,
-          color: context.theme.colors.destructive,
-          foregroundColor: context.theme.colors.destructiveForeground,
+          icon: AppIcons.trash,
+          color: context.tokens.palette.danger,
+          foregroundColor: context.tokens.palette.onDanger,
           alignment: Alignment.centerRight,
         ),
     child: child,

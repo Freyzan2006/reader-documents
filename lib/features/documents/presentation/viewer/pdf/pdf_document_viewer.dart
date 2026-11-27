@@ -150,17 +150,17 @@ class _PdfDocumentViewerState extends State<PdfDocumentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
+    final palette = context.tokens.palette;
 
     return AppTextSelectionTheme(
-      color: AppColors.accent(context).withValues(alpha: 0.35),
+      color: palette.mark,
       child: PdfViewer.file(
         widget.file.path,
         initialPageNumber: widget.initialPageNumber,
         controller: _rawController,
         passwordProvider: widget.passwordProvider,
         params: PdfViewerParams(
-          backgroundColor: colors.background,
+          backgroundColor: palette.paper,
           maxImageBytesCachedOnMemory:
               PdfDocumentViewer._maxImageBytesCachedOnMemory,
           horizontalCacheExtent: PdfDocumentViewer._pageCacheExtent,
@@ -178,9 +178,8 @@ class _PdfDocumentViewerState extends State<PdfDocumentViewer> {
           onViewerReady: _onViewerReady,
           buildContextMenu: _buildContextMenu,
           pagePaintCallbacks: _pagePaintCallbacks,
-          matchTextColor: AppColors.accent(context).withValues(alpha: 0.35),
-          activeMatchTextColor: AppColors.accent(context)
-              .withValues(alpha: 0.65),
+          matchTextColor: palette.mark,
+          activeMatchTextColor: palette.ink.withValues(alpha: 0.35),
           textSelectionParams: PdfTextSelectionParams(
             magnifier: PdfViewerSelectionMagnifierParams(
               builder: _buildMagnifier,

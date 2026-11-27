@@ -1,25 +1,58 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../tokens/app_colors.dart';
+import '../primitives/tappable.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_palette.dart';
+import '../tokens/app_radius.dart';
+import '../tokens/app_typography.dart';
 
-/// Button intent, mirroring Forui's [FButtonVariant] under our own name so
-/// screens depend on the ui_kit's vocabulary, not Forui's directly.
 enum AppButtonVariant {
   primary,
   secondary,
   outline,
   ghost,
-  destructive,
-  success,
-  accent,
-  warning,
+  danger,
+  dangerGhost;
+
+  Color fill(AppPalette palette, {required bool pressed}) => switch (this) {
+    primary =>
+      pressed ? Color.lerp(palette.ink, palette.ink3, 0.25)! : palette.ink,
+    secondary => pressed ? palette.shadeStrong : palette.shade,
+    outline => pressed ? palette.shade : palette.sheet,
+    ghost || dangerGhost => pressed ? palette.shade : const Color(0x00000000),
+    danger =>
+      pressed ? Color.lerp(palette.danger, palette.ink, 0.15)! : palette.danger,
+  };
+
+  Color foreground(AppPalette palette) => switch (this) {
+    primary => palette.onInk,
+    secondary || outline || ghost => palette.ink,
+    danger => palette.onDanger,
+    dangerGhost => palette.danger,
+  };
+
+  Color? border(AppPalette palette) =>
+      this == outline ? palette.ruleStrong : null;
 }
 
-/// Button size, mirroring Forui's [FButtonSizeVariant].
-enum AppButtonSize { sm, md, lg }
+enum AppButtonSize {
+  sm(height: 32, padding: 12, fontSize: 13, iconSize: 16),
+  md(height: 44, padding: 16, fontSize: 14, iconSize: 18),
+  lg(height: 52, padding: 20, fontSize: 15, iconSize: 20);
 
-/// A pressable button. Wraps Forui's [FButton].
+  const AppButtonSize({
+    required this.height,
+    required this.padding,
+    required this.fontSize,
+    required this.iconSize,
+  });
+
+  final double height;
+  final double padding;
+  final double fontSize;
+  final double iconSize;
+}
+
 class AppButton extends StatelessWidget {
   const AppButton({
     required this.onPressed,
@@ -32,6 +65,8 @@ class AppButton extends StatelessWidget {
     super.key,
   });
 
+  static const _disabledOpacity = 0.38;
+
   final VoidCallback? onPressed;
   final Widget child;
   final AppButtonVariant variant;
@@ -40,81 +75,55 @@ class AppButton extends StatelessWidget {
   final Widget? prefix;
   final bool flexibleChild;
 
-  static FButtonVariant _variant(AppButtonVariant variant) => switch (variant) {
-    AppButtonVariant.primary => FButtonVariant.primary,
-    AppButtonVariant.secondary => FButtonVariant.secondary,
-    AppButtonVariant.outline => FButtonVariant.outline,
-    AppButtonVariant.ghost => FButtonVariant.ghost,
-    AppButtonVariant.destructive => FButtonVariant.destructive,
-    // Custom-colored variants reuse the primary shape; their color comes
-    // from a recolored FButtonStyle instead of Forui's built-in variants.
-    AppButtonVariant.success ||
-    AppButtonVariant.accent ||
-    AppButtonVariant.warning => FButtonVariant.primary,
-  };
-
-  static FButtonSizeVariant _size(AppButtonSize size) => switch (size) {
-    AppButtonSize.sm => FButtonSizeVariant.sm,
-    AppButtonSize.md => FButtonSizeVariant.md,
-    AppButtonSize.lg => FButtonSizeVariant.lg,
-  };
-
-  static (Color, Color)? _customColors(
-    BuildContext context,
-    AppButtonVariant variant,
-  ) => switch (variant) {
-    AppButtonVariant.success => (
-      AppColors.success(context),
-      AppColors.successForeground(context),
-    ),
-    AppButtonVariant.accent => (
-      AppColors.accent(context),
-      AppColors.accentForeground(context),
-    ),
-    AppButtonVariant.warning => (
-      AppColors.warning(context),
-      AppColors.warningForeground(context),
-    ),
-    _ => null,
-  };
-
-  static FButtonStyle _customStyle(
-    BuildContext context,
-    AppButtonSize size,
-    Color color,
-    Color foreground,
-  ) {
-    final theme = context.theme;
-    final colors = theme.colors.copyWith(
-      primary: color,
-      primaryForeground: foreground,
-    );
-    final sizeStyles = FButtonStyles.inherit(
-      colors: colors,
-      typography: theme.typography,
-      style: theme.style,
-      touch: true,
-    ).primary;
-    return sizeStyles.resolve({_size(size), context.platformVariant});
-  }
-
   @override
   Widget build(BuildContext context) {
-    final custom = _customColors(context, variant);
-
-    return FButton(
-      onPress: onPressed,
-      variant: _variant(variant),
-      size: _size(size),
-      style: custom == null
-          ? const FButtonStyleDelta.context()
-          : _customStyle(context, size, custom.$1, custom.$2),
-      mainAxisSize: mainAxisSize,
-      prefix: prefix,
-      builder: flexibleChild
-          ? (_, _, _, _, _, child) => Flexible(child: child!)
-          : FButton.defaultContentBuilder,
+    final tokens = context.tokens;
+    final palette = tokens.palette;
+    final foreground = variant.foreground(palette);
+    final border = variant.border(palette);
+    final label = DefaultTextStyle.merge(
+      style: AppTextStyles.label.copyWith(
+        fontSize: size.fontSize,
+        color: foreground,
+      ),
+      maxLines: flexibleChild ? 2 : 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
       child: child,
+    );
+
+    return AppTappable.builder(
+      onPressed: onPressed,
+      builder: (context, state) => Opacity(
+        opacity: state.enabled ? 1 : _disabledOpacity,
+        child: AppFocusRing(
+          visible: state.focused,
+          borderRadius: AppRadii.sm,
+          child: AnimatedContainer(
+            duration: tokens.motion.quick,
+            curve: Curves.easeOut,
+            constraints: BoxConstraints(minHeight: size.height),
+            padding: EdgeInsets.symmetric(horizontal: size.padding),
+            decoration: BoxDecoration(
+              color: variant.fill(palette, pressed: state.pressed),
+              borderRadius: AppRadii.sm,
+              border: border == null ? null : Border.all(color: border),
+            ),
+            child: IconTheme.merge(
+              data: IconThemeData(color: foreground, size: size.iconSize),
+              child: Row(
+                mainAxisSize: mainAxisSize,
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 8,
+                children: [
+                  ?prefix,
+                  if (flexibleChild) Flexible(child: label) else label,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

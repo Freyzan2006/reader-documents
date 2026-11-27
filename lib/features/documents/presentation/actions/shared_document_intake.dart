@@ -19,11 +19,18 @@ abstract final class SharedDocumentIntake {
     BuildContext context,
     WidgetRef ref, {
     required VoidCallback onBeforeNavigate,
+    ValueChanged<String>? onOpening,
   }) async {
     final media = await ReceiveSharingIntent.instance.getInitialMedia();
     unawaited(ReceiveSharingIntent.instance.reset());
     if (!context.mounted) return;
-    await _handleAll(context, ref, media, onBeforeNavigate: onBeforeNavigate);
+    await _handleAll(
+      context,
+      ref,
+      media,
+      onBeforeNavigate: onBeforeNavigate,
+      onOpening: onOpening,
+    );
   }
 
   static StreamSubscription<List<SharedMediaFile>> listen(
@@ -39,6 +46,7 @@ abstract final class SharedDocumentIntake {
     WidgetRef ref,
     List<SharedMediaFile> media, {
     required VoidCallback onBeforeNavigate,
+    ValueChanged<String>? onOpening,
   }) async {
     for (final item in media) {
       final extension = p.extension(item.path).replaceFirst('.', '');
@@ -52,6 +60,7 @@ abstract final class SharedDocumentIntake {
 
       _handling = true;
       _lastHandledPath = item.path;
+      onOpening?.call(p.basename(item.path));
       try {
         final file = await ref
             .read(documentsProvider.notifier)

@@ -9,8 +9,8 @@ import 'side_panel.dart';
 /// bottom sheet), but when shown from inside a rotated surface, an
 /// [AppSidePanel] anchored to [AppRotation.bottomEdge] instead, with its
 /// content counter-rotated to read upright — a plain anchored popover can't
-/// be used there (forui's portal positioning gets the trigger's transform
-/// wrong once it includes a rotation), and an unrotated bottom sheet would
+/// be used there (portal positioning gets the trigger's transform wrong once
+/// it includes a rotation), and an unrotated bottom sheet would
 /// visually contradict the rotated content it's opened from.
 ///
 /// [builder]'s `scrollController` is only non-null in the unrotated case,

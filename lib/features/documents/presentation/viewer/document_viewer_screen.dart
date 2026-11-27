@@ -18,13 +18,12 @@ import 'common/document_notes.dart';
 import 'common/document_error_view.dart';
 import 'common/document_loading_banner.dart';
 import 'common/document_magnifier.dart';
-import 'common/document_page_indicator.dart';
 import 'common/document_password_prompt.dart';
 import 'common/document_reading_filter.dart';
 import 'common/document_viewer_header_overlay.dart';
 import 'common/document_viewer_search_bar.dart';
 import 'common/document_viewer_toolbar.dart';
-import 'common/document_viewer_zoom_controls.dart';
+import 'common/document_viewer_bottom_bar.dart';
 import 'contract/document_text_selection.dart';
 import 'contract/document_viewer_controller.dart';
 import 'document_password_controller.dart';
@@ -126,6 +125,14 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   void _handleViewerReady(DocumentViewerController controller) {
     controller.addListener(_onControllerChanged);
     setState(() => _viewerController = controller);
+    if (controller.supportsPagination && controller.pageCount > 0) {
+      _rememberPageCount(controller.pageCount);
+    }
+  }
+
+  Future<void> _rememberPageCount(int count) async {
+    await ref.read(pageCountRepositoryProvider).save(widget.file.path, count);
+    if (mounted) ref.invalidate(pageCountProvider(widget.file.path));
   }
 
   Future<void> _openSearch() async {
@@ -278,15 +285,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                             onSearch: _openSearch,
                             onRotate: _rotate,
                             onScreenshot: _captureScreenshot,
-                            isBookmarked: viewerController?.currentPage != null
-                                ? _bookmarks.isBookmarked(
-                                    viewerController!.currentPage!,
-                                  )
-                                : false,
-                            onToggleBookmark: _toggleBookmark,
                             onShowNotes: _showNotes,
-                            warmReadingFilterEnabled: warmReadingFilter,
-                            onToggleWarmFilter: _toggleWarmFilter,
                             onExportNotes:
                                 DocumentNotesExport.hasContent(
                                   _bookmarks.value,
@@ -296,32 +295,23 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                                 : null,
                           ),
                   ),
-                  if (!_password.isPrompting) ...[
-                    Positioned(
-                      right: AppSpacing.lg,
-                      bottom: AppSpacing.lg,
-                      child: SafeArea(
-                        child: AppFade(
-                          visible: _headerVisibility.visible,
-                          child: DocumentViewerZoomControls(
-                            controller: viewerController,
-                          ),
-                        ),
+                  if (!_password.isPrompting && !_searchActive)
+                    DocumentViewerHeaderOverlay(
+                      visible: _headerVisibility.visible,
+                      topSafeArea: _quarterTurns == 0,
+                      edge: DocumentViewerBarEdge.bottom,
+                      child: DocumentViewerBottomBar(
+                        controller: viewerController,
+                        isBookmarked: viewerController?.currentPage != null
+                            ? _bookmarks.isBookmarked(
+                                viewerController!.currentPage!,
+                              )
+                            : false,
+                        onToggleBookmark: _toggleBookmark,
+                        warmFilterEnabled: warmReadingFilter,
+                        onToggleWarmFilter: _toggleWarmFilter,
                       ),
                     ),
-                    Positioned(
-                      left: AppSpacing.lg,
-                      bottom: AppSpacing.lg,
-                      child: SafeArea(
-                        child: AppFade(
-                          visible: _headerVisibility.visible,
-                          child: DocumentPageIndicator(
-                            controller: viewerController,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),

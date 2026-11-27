@@ -9,6 +9,7 @@ import 'package:reader_documents/features/documents/data/repositories/favorites_
 import 'package:reader_documents/features/documents/data/repositories/highlights_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_offset_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_progress_repository.dart';
+import 'package:reader_documents/features/documents/data/repositories/page_count_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/recently_opened_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/tag_definitions_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/tags_repository.dart';
@@ -28,6 +29,10 @@ final documentsRepositoryProvider = Provider<DocumentsRepository>(
 
 final readingProgressRepositoryProvider = Provider<ReadingProgressRepository>(
   (ref) => const ReadingProgressRepository(),
+);
+
+final pageCountRepositoryProvider = Provider<PageCountRepository>(
+  (ref) => const PageCountRepository(),
 );
 
 final readingOffsetRepositoryProvider = Provider<ReadingOffsetRepository>(
@@ -128,9 +133,8 @@ final favoriteDocumentsProvider = Provider<AsyncValue<List<DocumentFile>>>((
 });
 
 /// The saved reading-progress page for a document, or `null` if it's never
-/// been opened (or nothing was saved yet). There's no persisted page *count*
-/// alongside it — see [ReadingProgressRepository] — so this can only report
-/// a page number, not a fraction/percentage.
+/// been opened (or nothing was saved yet). [readingFractionProvider] combines
+/// it with [pageCountProvider] into a fraction.
 final lastReadingProgressPageProvider = FutureProvider.family<int?, String>(
   (ref, documentPath) =>
       ref.watch(readingProgressRepositoryProvider).load(documentPath),
@@ -147,6 +151,23 @@ final lastReadingOffsetProvider = FutureProvider.family<double?, String>(
   (ref, documentPath) =>
       ref.watch(readingOffsetRepositoryProvider).load(documentPath),
 );
+
+final pageCountProvider = FutureProvider.family<int?, String>(
+  (ref, documentPath) =>
+      ref.watch(pageCountRepositoryProvider).load(documentPath),
+);
+
+final readingFractionProvider = Provider.family<double?, String>((
+  ref,
+  documentPath,
+) {
+  final offset = ref.watch(lastReadingOffsetProvider(documentPath)).value;
+  if (offset != null) return offset.clamp(0.0, 1.0);
+  final page = ref.watch(lastReadingProgressPageProvider(documentPath)).value;
+  final count = ref.watch(pageCountProvider(documentPath)).value;
+  if (page == null || count == null || count <= 0) return null;
+  return (page / count).clamp(0.0, 1.0);
+});
 
 const recentDocumentsLimit = 4;
 

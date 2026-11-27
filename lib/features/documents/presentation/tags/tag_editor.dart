@@ -165,7 +165,7 @@ class _ColorSwatch extends StatelessWidget {
           color: color.value,
           shape: BoxShape.circle,
           border: selected
-              ? Border.all(color: AppColors.of(context).foreground, width: 2)
+              ? Border.all(color: context.tokens.palette.ink, width: 2)
               : null,
         ),
       ),

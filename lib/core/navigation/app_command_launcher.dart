@@ -6,6 +6,8 @@ import 'package:reader_documents/features/documents/presentation/actions/documen
 import 'package:reader_documents/features/settings/presentation/theme_commands.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import 'navigation_commands.dart';
+
 abstract final class AppCommandLauncher {
   static void show(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
@@ -13,11 +15,17 @@ abstract final class AppCommandLauncher {
     AppCommandPalette.show(
       context: context,
       hint: l10n.searchHint,
-      recentLabel: l10n.searchRecentCommands,
+      recentLabel: l10n.menuRecentTitle,
       noResultsLabel: l10n.searchNoResults,
+      clearLabel: l10n.clear,
+      noResultsAction: AppCommandItem(
+        label: l10n.importDocument,
+        icon: AppIcons.upload,
+        onSelect: () => DocumentCommands.importDocument(ref),
+      ),
       groups: [
         AppCommandGroup(
-          label: l10n.homeRecentTitle,
+          label: l10n.documentsTitle,
           mode: AppCommandGroupMode.idle,
           items: DocumentSearchItems.recent(context, ref),
         ),
@@ -28,11 +36,14 @@ abstract final class AppCommandLauncher {
         ),
         AppCommandGroup(
           label: l10n.searchActionsTitle,
-          items: DocumentCommands.items(context, ref),
+          items: [
+            ...DocumentCommands.items(context, ref),
+            ...ThemeCommands.items(context, ref),
+          ],
         ),
         AppCommandGroup(
-          label: l10n.themeSectionTitle,
-          items: ThemeCommands.items(context, ref),
+          label: l10n.searchGoToTitle,
+          items: NavigationCommands.items(context, ref),
         ),
       ],
     );

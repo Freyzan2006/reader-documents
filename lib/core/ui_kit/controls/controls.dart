@@ -1,9 +1,12 @@
 export 'button.dart';
 export 'checkbox.dart';
+export 'editable_text.dart';
 export 'float_button.dart';
 export 'icon_button.dart';
 export 'input.dart';
 export 'number_input.dart';
 export 'radio.dart';
+export 'search_field.dart';
 export 'slider.dart';
 export 'switch.dart';
+export 'text_selection.dart';

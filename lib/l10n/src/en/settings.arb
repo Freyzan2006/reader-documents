@@ -3,9 +3,7 @@
   "settingsLoadError": "Could not load settings",
   "themeSectionTitle": "Theme",
   "languageSectionTitle": "Language",
-  "systemLanguage": "System",
-  "profileSectionTitle": "Profile",
-  "nameLabel": "Name",
+  "systemLanguage": "As on device",
   "lightTheme": "Light theme",
   "darkTheme": "Dark theme",
   "systemTheme": "System theme",
@@ -13,17 +11,54 @@
   "darkThemeShort": "Dark",
   "systemThemeShort": "System",
   "aboutSectionTitle": "About",
-  "appVersion": "Version {version}",
-  "@appVersion": {
-    "placeholders": {
-      "version": { "type": "String" }
-    }
-  },
   "effectsSectionTitle": "Visual effects",
   "effectsSectionHint": "Interface animations and effects. Performance makes the app faster and smoother on older devices.",
-  "effectsSystem": "System",
   "effectsQuality": "Quality",
   "effectsPerformance": "Performance",
   "warmFilterEnabledToast": "Warm filter enabled",
-  "warmFilterDisabledToast": "Warm filter disabled"
+  "warmFilterDisabledToast": "Warm filter disabled",
+  "nowValue": "now: {value}",
+  "@nowValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "appearanceTitle": "Appearance",
+  "readingSectionTitle": "Reading",
+  "warmFilterTitle": "Warm filter",
+  "warmFilterHint": "Warms the pages in the evening",
+  "graphicsSectionTitle": "Graphics",
+  "graphicsModeTitle": "Graphics mode",
+  "graphicsAuto": "Auto",
+  "graphicsPerformanceShort": "Performance",
+  "graphicsAutoNow": "Auto: now “{mode}”",
+  "paletteSectionTitle": "Palette",
+  "paletteMonochrome": "Monochrome",
+  "paletteMonochromeThemes": "Paper · Graphite",
+  "palettesComingSoon": "New palettes will appear here",
+  "@graphicsAutoNow": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "languagePickerTitle": "App language",
+  "languagesCount": "{count, plural, =1{1 language} other{{count} languages}}",
+  "languageAppliesNow": "The app switches to the chosen language right away",
+  "languageNameRu": "Russian",
+  "languageNameEn": "English",
+  "languageNameUz": "Uzbek",
+  "darkModeTitle": "Dark mode",
+  "themePickerTitle": "Color theme",
+  "themeTitle": "Theme",
+  "@languagesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

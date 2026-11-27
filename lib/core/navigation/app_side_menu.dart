@@ -5,15 +5,15 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/features/documents/presentation/actions/document_commands.dart';
 import 'package:reader_documents/features/documents/presentation/menu/continue_reading_menu_section.dart';
-import 'package:reader_documents/features/documents/presentation/menu/favorites_menu_link.dart';
 import 'package:reader_documents/features/documents/presentation/menu/import_document_menu_button.dart';
 import 'package:reader_documents/features/documents/presentation/menu/recent_documents_menu_section.dart';
-import 'package:reader_documents/features/settings/presentation/menu/profile_menu_header.dart';
 import 'package:reader_documents/features/settings/presentation/menu/theme_mode_switcher.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 import 'app_nav_tab.dart';
 import 'navigation_providers.dart';
+import 'side_menu_brand.dart';
+import 'side_menu_nav.dart';
 
 class AppSideMenuActions {
   const AppSideMenuActions({
@@ -44,18 +44,22 @@ class AppSideMenuActions {
   }
 
   Future<void> goTo(AppNavDestination destination) async {
-    await controller.close();
     ref.read(currentNavDestinationProvider.notifier).state = destination;
+    await controller.close();
   }
 }
 
 abstract final class AppSideMenu {
+  static const _panelFraction = 0.86;
+
   static void show(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
 
     AppSidePanel.show(
       context: context,
       side: AppEdge.left,
+      panelFraction: _panelFraction,
+      dismissLabel: l10n.menuTitle,
       builder: (_, controller) {
         final actions = AppSideMenuActions(
           context: context,
@@ -64,36 +68,57 @@ abstract final class AppSideMenu {
         );
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppSidePanelHeader(
-              title: l10n.menuTitle,
-              onClose: controller.close,
-            ),
-            AppSidePanelContent(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: AppSpacing.xl,
-                children: [
-                  ProfileMenuHeader(
-                    onTap: () => actions.goTo(AppNavDestination.settings),
-                  ),
-                  FavoritesMenuLink(onTap: actions.openFavorites),
-                  ContinueReadingMenuSection(onOpen: actions.openDocument),
-                  RecentDocumentsMenuSection(onOpen: actions.openDocument),
-                  ImportDocumentMenuButton(onPressed: actions.importDocument),
-                ],
+            const SideMenuBrand(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm,
+                  0,
+                  AppSpacing.sm,
+                  AppSpacing.lg,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.xl,
+                  children: [
+                    SideMenuNav(
+                      onDestination: actions.goTo,
+                      onFavorites: actions.openFavorites,
+                    ),
+                    ContinueReadingMenuSection(onOpen: actions.openDocument),
+                    RecentDocumentsMenuSection(onOpen: actions.openDocument),
+                  ],
+                ),
               ),
             ),
-            AppSidePanelFooter(
-              children: [
-                Expanded(
-                  child: AppText(
-                    l10n.appVersion(AppBrand.version),
-                    variant: AppTextVariant.caption,
-                  ),
-                ),
-                const ThemeModeSwitcher(),
-              ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
+              child: ImportDocumentMenuButton(
+                onPressed: actions.importDocument,
+              ),
+            ),
+            const AppDivider(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
+              child: Row(
+                children: [
+                  const ThemeModeSwitcher(),
+                  const Spacer(),
+                  AppText('v${AppBrand.version}', variant: AppTextVariant.meta),
+                ],
+              ),
             ),
           ],
         );

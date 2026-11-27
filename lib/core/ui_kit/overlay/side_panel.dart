@@ -1,50 +1,26 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../controls/button.dart';
+import '../controls/icon_button.dart';
 import '../data_display/text.dart';
 import '../layout/divider.dart';
 import '../tokens/app_spacing.dart';
+import '../theme/app_tokens.dart';
+import '../theme/graphics_mode.dart';
+import '../tokens/app_icons.dart';
 import 'barrier.dart';
+import 'edge.dart';
 import 'sheet_surface.dart';
 
-enum AppEdge { top, bottom, left, right }
+export 'edge.dart';
 
-extension on AppEdge {
-  FLayout get _layout => switch (this) {
-    AppEdge.top => FLayout.ttb,
-    AppEdge.bottom => FLayout.btt,
-    AppEdge.left => FLayout.ltr,
-    AppEdge.right => FLayout.rtl,
-  };
-}
-
-/// Controls a panel opened by [AppSidePanel.show].
 class AppSidePanelController {
   const AppSidePanelController._(this._close);
 
   final Future<void> Function() _close;
 
-  /// Animates the panel closed, then removes it. Safe to call more than
-  /// once (later calls are no-ops).
   Future<void> close() => _close();
 }
 
-/// A panel docked to one edge of the screen, dimming and blocking
-/// interaction with the rest of the app while shown — the same "modal"
-/// behavior as [AppSheet], just anchored to a side instead of the bottom.
-///
-/// Forui's own `showFPersistentSheet` was tried here first and dropped: it's
-/// explicitly the *non*-modal sheet (no barrier at all, by design — see its
-/// docs), and its single-child sliding mechanism (`Sheet`/`ShiftedSheet`)
-/// has no room to add one without the barrier incorrectly sliding in lock-step
-/// with the panel instead of staying put and simply fading. So this is a
-/// small bespoke overlay instead: an [Overlay] entry with a fading barrier
-/// (tap to dismiss) behind a [SlideTransition]-driven panel, sized to
-/// [panelFraction] of the screen.
-///
-/// Doesn't require an `FScaffold` — any `BuildContext` with an [Overlay]
-/// ancestor works (so, anywhere under `MaterialApp`).
 abstract final class AppSidePanel {
   static AppSidePanelController show({
     required BuildContext context,
@@ -57,139 +33,136 @@ abstract final class AppSidePanel {
     double panelFraction = 0.8,
     bool barrierDismissible = true,
     AppBarrierVariant? barrierVariant,
+    String? dismissLabel,
   }) {
-    final overlay = Overlay.of(context);
-    final resolvedBarrier = AppBarrier.resolve(context, barrierVariant);
-    final key = GlobalKey<_SidePanelOverlayState>();
-    late final OverlayEntry entry;
-    var closed = false;
+    final navigator = Navigator.of(context);
+    late final _SidePanelRoute route;
 
     Future<void> close() async {
-      if (closed) return;
-      closed = true;
-      await key.currentState?.animateOut();
-      entry.remove();
+      if (!route.isActive) return;
+      if (route.isCurrent) {
+        navigator.pop();
+      } else {
+        navigator.removeRoute(route);
+      }
+      await route.completed;
     }
 
     final controller = AppSidePanelController._(close);
-
-    entry = OverlayEntry(
-      builder: (context) => _SidePanelOverlay(
-        key: key,
-        side: side._layout,
-        panelFraction: panelFraction,
-        barrierDismissible: barrierDismissible,
-        barrierVariant: resolvedBarrier,
-        onBarrierTap: close,
-        builder: (context) => builder(context, controller),
-      ),
+    route = _SidePanelRoute(
+      side: side,
+      panelFraction: panelFraction,
+      tokens: context.tokens,
+      barrier: AppBarrier.resolve(context, barrierVariant),
+      dismissible: barrierDismissible,
+      dismissLabel: dismissLabel,
+      builder: (context) => builder(context, controller),
     );
-
-    overlay.insert(entry);
+    navigator.push(route);
     return controller;
   }
 }
 
-class _SidePanelOverlay extends StatefulWidget {
-  const _SidePanelOverlay({
+class _SidePanelRoute extends PopupRoute<void> {
+  _SidePanelRoute({
     required this.side,
     required this.panelFraction,
-    required this.barrierDismissible,
-    required this.barrierVariant,
-    required this.onBarrierTap,
+    required this.tokens,
+    required this.barrier,
+    required this.dismissible,
+    required this.dismissLabel,
     required this.builder,
-    super.key,
   });
 
-  final FLayout side;
+  final AppEdge side;
   final double panelFraction;
-  final bool barrierDismissible;
-  final AppBarrierVariant barrierVariant;
-  final VoidCallback onBarrierTap;
+  final AppTokens tokens;
+  final AppBarrierVariant barrier;
+  final bool dismissible;
+  final String? dismissLabel;
   final WidgetBuilder builder;
 
   @override
-  State<_SidePanelOverlay> createState() => _SidePanelOverlayState();
-}
+  Color? get barrierColor => null;
 
-class _SidePanelOverlayState extends State<_SidePanelOverlay>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 250),
-  )..forward();
-  late final CurvedAnimation _curve = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOutCubic,
+  @override
+  bool get barrierDismissible => false;
+
+  @override
+  String? get barrierLabel => dismissLabel;
+
+  @override
+  Duration get transitionDuration => tokens.motion.sheet;
+
+  @override
+  Duration get reverseTransitionDuration => tokens.motion.quick;
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) => AppThemeScope(
+    tokens: tokens,
+    child: Align(
+      alignment: side.alignment,
+      child: FractionallySizedBox(
+        widthFactor: side.vertical ? 1 : panelFraction,
+        heightFactor: side.vertical ? panelFraction : 1,
+        child: SheetSurface(
+          side: side,
+          child: Builder(builder: builder),
+        ),
+      ),
+    ),
   );
 
-  Future<void> animateOut() => _controller.reverse();
-
   @override
-  void dispose() {
-    _curve.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Offset get _hiddenOffset => switch (widget.side) {
-    FLayout.rtl => const Offset(1, 0),
-    FLayout.ltr => const Offset(-1, 0),
-    FLayout.ttb => const Offset(0, -1),
-    FLayout.btt => const Offset(0, 1),
-  };
-
-  Alignment get _alignment => switch (widget.side) {
-    FLayout.rtl => Alignment.centerRight,
-    FLayout.ltr => Alignment.centerLeft,
-    FLayout.ttb => Alignment.topCenter,
-    FLayout.btt => Alignment.bottomCenter,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) => Stack(
-        children: [
-          Positioned.fill(
-            child: AppBarrierLayer(
-              variant: widget.barrierVariant,
-              animation: _controller.value,
-              onTap: widget.barrierDismissible ? widget.onBarrierTap : null,
-            ),
-          ),
-          Align(
-            alignment: _alignment,
-            child: FractionallySizedBox(
-              widthFactor: widget.side.vertical ? 1 : widget.panelFraction,
-              heightFactor: widget.side.vertical ? widget.panelFraction : 1,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: _hiddenOffset,
-                  end: Offset.zero,
-                ).animate(_curve),
-                child: SheetSurface(
-                  side: widget.side,
-                  child: widget.builder(context),
-                ),
-              ),
-            ),
-          ),
-        ],
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => Stack(
+    fit: StackFit.expand,
+    children: [
+      AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) => AppBarrierLayer(
+          variant: barrier,
+          animation: animation.value,
+          semanticsLabel: dismissLabel,
+          onTap: dismissible ? () => Navigator.of(context).maybePop() : null,
+        ),
       ),
-    );
-  }
+      SlideTransition(
+        position: Tween(begin: side.hiddenOffset, end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: AppMotion.curve,
+            reverseCurve: Curves.easeIn,
+          ),
+        ),
+        child: child,
+      ),
+    ],
+  );
 }
 
 /// A side panel's title row, with an optional close button. Follows it with
 /// an [AppDivider] — pair with [AppSidePanelContent] and, optionally,
 /// [AppSidePanelFooter] inside the [AppSidePanel.show] `builder`'s `Column`.
 class AppSidePanelHeader extends StatelessWidget {
-  const AppSidePanelHeader({required this.title, this.onClose, super.key});
+  const AppSidePanelHeader({
+    required this.title,
+    this.onClose,
+    this.closeLabel,
+    super.key,
+  });
 
   final String title;
   final VoidCallback? onClose;
+  final String? closeLabel;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -206,10 +179,10 @@ class AppSidePanelHeader extends StatelessWidget {
           children: [
             Expanded(child: AppText(title, variant: AppTextVariant.title)),
             if (onClose != null)
-              AppButton(
-                variant: AppButtonVariant.ghost,
+              AppIconButton(
+                icon: AppIcons.x,
                 onPressed: onClose,
-                child: const Icon(FLucideIcons.x),
+                semanticsLabel: closeLabel,
               ),
           ],
         ),

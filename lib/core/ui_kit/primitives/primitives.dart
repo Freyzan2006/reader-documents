@@ -1,3 +1,4 @@
+export 'bar_surface.dart';
 export 'center.dart';
 export 'fade.dart';
 export 'frosted_surface.dart';

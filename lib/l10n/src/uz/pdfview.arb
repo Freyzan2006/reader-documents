@@ -31,5 +31,8 @@
   "pdfMenuNotes": "Qaydlar",
   "highlightsEmpty": "Hozircha taʼkidlashlar yoʻq",
   "pdfMenuWarmFilterOn": "Issiq filtrni yoqish",
-  "pdfMenuWarmFilterOff": "Issiq filtrni oʻchirish"
+  "pdfMenuWarmFilterOff": "Issiq filtrni oʻchirish",
+  "pageCountShort": "{count} bet",
+  "zoomIn": "Kattalashtirish",
+  "zoomOut": "Kichraytirish"
 }

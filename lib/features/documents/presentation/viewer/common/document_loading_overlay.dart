@@ -17,10 +17,7 @@ class DocumentLoadingOverlay extends StatelessWidget {
   Widget build(BuildContext context) => Stack(
     children: [
       Positioned.fill(
-        child: ColoredBox(
-          color: AppColors.of(context).background,
-          child: banner,
-        ),
+        child: ColoredBox(color: context.tokens.palette.shade, child: banner),
       ),
     ],
   );

@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
@@ -22,23 +21,11 @@ class HomeContinueReadingSection extends ConsumerWidget {
         .when(
           data: (file) => file == null
               ? const SizedBox.shrink()
-              : AppSection(
-                  title: l10n.homeContinueReadingTitle,
-                  icon: AppIcons.bookOpen,
-                  child: HomeContinueReadingCard(file: file),
-                ),
-          loading: () => AppSection(
-            title: l10n.homeContinueReadingTitle,
-            icon: AppIcons.bookOpen,
-            child: const HomeContinueReadingSkeleton(),
-          ),
-          error: (error, _) => AppSection(
-            title: l10n.homeContinueReadingTitle,
-            icon: AppIcons.bookOpen,
-            child: HomeSectionErrorBanner(
-              message: l10n.documentsLoadError,
-              error: error,
-            ),
+              : HomeContinueReadingCard(file: file),
+          loading: () => const HomeContinueReadingSkeleton(),
+          error: (error, _) => HomeSectionErrorBanner(
+            message: l10n.documentsLoadError,
+            error: error,
           ),
         );
   }

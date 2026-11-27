@@ -19,10 +19,10 @@ class DocumentPasswordPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = AppColors.of(context);
+    final palette = context.tokens.palette;
 
     return ColoredBox(
-      color: colors.background,
+      color: palette.paper,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
@@ -30,13 +30,13 @@ class DocumentPasswordPrompt extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: AppSpacing.md,
             children: [
-              Icon(AppIcons.lock, size: 40, color: colors.mutedForeground),
+              Icon(AppIcons.lock, size: 40, color: palette.ink3),
               AppText(l10n.pdfPasswordTitle, textAlign: TextAlign.center),
               if (incorrect)
                 AppText(
                   l10n.pdfPasswordIncorrect,
                   variant: AppTextVariant.caption,
-                  color: colors.destructive,
+                  color: palette.danger,
                   textAlign: TextAlign.center,
                 ),
               AppInput(

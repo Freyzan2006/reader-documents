@@ -101,7 +101,7 @@ class _Swatch extends StatelessWidget {
       DecoratedBox(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: AppRadius.of(context).sm,
+          borderRadius: AppRadii.sm,
           border: AppBorders.all(context),
         ),
         child: const SizedBox(width: 48, height: 48),
@@ -119,11 +119,23 @@ class _TokensSection extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     spacing: AppSpacing.md,
     children: [
-      const AppText('Colors (AppColors)', variant: AppTextVariant.caption),
-      const AppRow(
+      const AppText('Palette (AppPalette)', variant: AppTextVariant.caption),
+      Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
         children: [
-          _Swatch(color: AppColors.graphite, label: 'graphite'),
-          _Swatch(color: AppColors.silver, label: 'silver'),
+          for (final (label, color) in [
+            ('paper', context.tokens.palette.paper),
+            ('sheet', context.tokens.palette.sheet),
+            ('shade', context.tokens.palette.shade),
+            ('rule', context.tokens.palette.rule),
+            ('ruleStrong', context.tokens.palette.ruleStrong),
+            ('ink', context.tokens.palette.ink),
+            ('ink2', context.tokens.palette.ink2),
+            ('ink3', context.tokens.palette.ink3),
+            ('danger', context.tokens.palette.danger),
+          ])
+            _Swatch(color: color, label: label),
         ],
       ),
       const AppText('Spacing (AppSpacing)', variant: AppTextVariant.caption),
@@ -144,19 +156,23 @@ class _TokensSection extends StatelessWidget {
                   width: 28,
                   child: AppText(label, variant: AppTextVariant.caption),
                 ),
-                Container(width: value, height: 8, color: AppColors.silver),
+                Container(
+                  width: value,
+                  height: 8,
+                  color: context.tokens.palette.ruleStrong,
+                ),
               ],
             ),
         ],
       ),
-      const AppText('Radius (AppRadius)', variant: AppTextVariant.caption),
+      const AppText('Radius (AppRadii)', variant: AppTextVariant.caption),
       AppRow(
         children: [
           for (final (label, radius) in [
-            ('sm', AppRadius.of(context).sm),
-            ('md', AppRadius.of(context).md),
-            ('lg', AppRadius.of(context).lg),
-            ('pill', AppRadius.of(context).pill),
+            ('sm', AppRadii.sm),
+            ('md', AppRadii.md),
+            ('lg', AppRadii.lg),
+            ('pill', AppRadii.pill),
           ])
             Column(
               spacing: AppSpacing.xs,
@@ -173,22 +189,13 @@ class _TokensSection extends StatelessWidget {
             ),
         ],
       ),
-      const AppText(
-        'Typography (AppTypography)',
-        variant: AppTextVariant.caption,
-      ),
+      const AppText('Typography (AppText)', variant: AppTextVariant.caption),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: AppSpacing.xs,
         children: [
-          for (final (label, style) in [
-            ('display.xl2', AppTypography.of(context).display.xl2),
-            ('display.lg', AppTypography.of(context).display.lg),
-            ('body.md', AppTypography.of(context).body.md),
-            ('body.sm', AppTypography.of(context).body.sm),
-            ('body.xs3', AppTypography.of(context).body.xs3),
-          ])
-            Text(label, style: style),
+          for (final variant in AppTextVariant.values)
+            AppText(variant.name, variant: variant),
         ],
       ),
     ],
@@ -327,8 +334,8 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
         spacing: AppSpacing.sm,
         runSpacing: AppSpacing.sm,
         children: [
-          for (final variant in AppTagVariant.values)
-            AppTag(label: Text(variant.name), variant: variant),
+          for (final color in const [Color(0xFFE5484D), Color(0xFF3E63DD)])
+            AppTag(label: const Text('custom'), color: color),
         ],
       ),
       const AppText('AppAvatar', variant: AppTextVariant.caption),
@@ -578,7 +585,7 @@ class _NavigationSection extends StatelessWidget {
       DecoratedBox(
         decoration: BoxDecoration(
           border: AppBorders.all(context),
-          borderRadius: AppRadius.of(context).md,
+          borderRadius: AppRadii.md,
         ),
         child: AppHeader(
           title: 'ChatGPT',
@@ -664,7 +671,11 @@ class _PrimitivesSection extends StatelessWidget {
         height: 60,
         child: AppStack(
           children: [
-            Container(color: AppColors.silver, width: 60, height: 60),
+            Container(
+              color: context.tokens.palette.shade,
+              width: 60,
+              height: 60,
+            ),
             const Icon(AppIcons.star),
           ],
         ),
@@ -684,7 +695,7 @@ class _PrimitivesSection extends StatelessWidget {
             DecoratedBox(
               decoration: BoxDecoration(
                 border: AppBorders.all(context),
-                borderRadius: AppRadius.of(context).sm,
+                borderRadius: AppRadii.sm,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.md),
@@ -700,13 +711,11 @@ class _PrimitivesSection extends StatelessWidget {
       SizedBox(
         height: 140,
         child: ClipRRect(
-          borderRadius: AppRadius.of(context).sm,
+          borderRadius: AppRadii.sm,
           child: AppZoomable(
             child: DecoratedBox(
-              decoration: BoxDecoration(color: AppColors.silver),
-              child: Center(
-                child: AppText('Page 1', color: AppColors.graphite),
-              ),
+              decoration: BoxDecoration(color: context.tokens.palette.sheet),
+              child: const Center(child: AppText('Page 1')),
             ),
           ),
         ),
@@ -723,7 +732,7 @@ class _PrimitivesSection extends StatelessWidget {
               DecoratedBox(
                 decoration: BoxDecoration(
                   border: AppBorders.all(context),
-                  borderRadius: AppRadius.of(context).sm,
+                  borderRadius: AppRadii.sm,
                 ),
                 child: AppCenter(child: AppText(label)),
               ),

@@ -1,26 +1,44 @@
 import 'package:flutter/widgets.dart';
-import 'package:forui/forui.dart';
 
-import '../tokens/app_colors.dart';
+import '../theme/app_tokens.dart';
+import '../tokens/app_palette.dart';
 import '../tokens/app_typography.dart';
 
-/// A small, opinionated set of text styles built on Forui's typography scale
-/// (`context.theme.typography.display`/`.body`, each with its own `xs`...`xl8`
-/// sizes) — this doesn't re-expose that whole scale, just the roles screens
-/// actually need.
 enum AppTextVariant {
   display,
   title,
   subtitle,
+  item,
   body,
   label,
   caption,
+  numeral,
+  meta,
   overline,
   annotation,
-  code,
+  code;
+
+  TextStyle get style => switch (this) {
+    display => AppTextStyles.display,
+    title => AppTextStyles.title,
+    subtitle => AppTextStyles.subtitle,
+    item => AppTextStyles.item,
+    body || annotation => AppTextStyles.body,
+    label => AppTextStyles.label,
+    caption => AppTextStyles.caption,
+    numeral => AppTextStyles.numeral,
+    meta || code => AppTextStyles.meta,
+    overline => AppTextStyles.overline,
+  };
+
+  Color colorIn(AppPalette palette) => switch (this) {
+    display || title || subtitle || item || label || numeral => palette.ink,
+    annotation || code => palette.ink,
+    body || caption => palette.ink2,
+    meta || overline => palette.ink3,
+  };
 }
 
-/// Themed text. Wraps a plain [Text] styled from [AppTextVariant].
 class AppText extends StatelessWidget {
   const AppText(
     this.data, {
@@ -39,67 +57,19 @@ class AppText extends StatelessWidget {
   final TextOverflow? overflow;
   final TextAlign? textAlign;
 
-  static TextStyle _style(BuildContext context, AppTextVariant variant) {
-    final typography = AppTypography.of(context);
-    return switch (variant) {
-      AppTextVariant.display => typography.display.xl2,
-      AppTextVariant.title => typography.display.lg,
-      // Same size as body, but heavier — sits between title and body by
-      // emphasis rather than by size, since Forui's scale has no stop
-      // between them.
-      AppTextVariant.subtitle => typography.body.md.copyWith(
-        fontWeight: FontWeight.w600,
-      ),
-      AppTextVariant.body => typography.body.md,
-      AppTextVariant.label => typography.body.xs.copyWith(
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.2,
-      ),
-      AppTextVariant.caption => typography.body.sm,
-      AppTextVariant.overline => typography.body.xs2.copyWith(
-        fontWeight: FontWeight.w600,
-        letterSpacing: 1.2,
-      ),
-      AppTextVariant.annotation => typography.body.md,
-      // Pinned to the monospace family explicitly (with a system-monospace
-      // fallback), so code stays monospace even if the app's base font ever
-      // stops being one.
-      AppTextVariant.code => typography.body.sm.copyWith(
-        fontFamily: AppTypography.fontFamily,
-        fontFamilyFallback: const ['monospace'],
-      ),
-    };
-  }
-
-  static Color _defaultColor(BuildContext context, AppTextVariant variant) {
-    final colors = context.theme.colors;
-    return switch (variant) {
-      AppTextVariant.display => colors.foreground,
-      AppTextVariant.title => colors.foreground,
-      AppTextVariant.subtitle => colors.foreground,
-      AppTextVariant.body => colors.mutedForeground,
-      AppTextVariant.label => colors.foreground,
-      AppTextVariant.caption => colors.mutedForeground,
-      AppTextVariant.overline => colors.mutedForeground,
-      AppTextVariant.annotation => colors.foreground,
-      AppTextVariant.code => colors.foreground,
-    };
-  }
-
   static TextStyle styleOf(
     BuildContext context,
     AppTextVariant variant, {
     Color? color,
   }) {
-    final style = _style(
-      context,
-      variant,
-    ).copyWith(color: color ?? _defaultColor(context, variant));
-
+    final palette = context.tokens.palette;
+    final style = variant.style.copyWith(
+      color: color ?? variant.colorIn(palette),
+    );
     return variant == AppTextVariant.annotation
         ? style.copyWith(
             decoration: TextDecoration.underline,
-            decorationColor: AppColors.accent(context),
+            decorationColor: palette.ink,
             decorationThickness: 2,
           )
         : style;
@@ -107,7 +77,7 @@ class AppText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    data,
+    variant == AppTextVariant.overline ? data.toUpperCase() : data,
     style: styleOf(context, variant, color: color),
     maxLines: maxLines,
     overflow: overflow,

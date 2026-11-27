@@ -4,5 +4,11 @@
   "saved": "Saqlandi",
   "retry": "Qayta urinish",
   "delete": "O'chirish",
-  "menuTitle": "Menyu"
+  "menuTitle": "Menyu",
+  "copiedToClipboard": "Buferga nusxalandi",
+  "clear": "Tozalash",
+  "undo": "Bekor qilish",
+  "splashFailedTitle": "Ilovani ishga tushirib bo'lmadi",
+  "splashFailedStorage": "Hujjatlar ombori ochilmadi",
+  "splashFailedTimeout": "Ishga tushish juda uzoq davom etmoqda"
 }

@@ -79,7 +79,7 @@ class DocumentContextMenuContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final foreground = AppColors.of(context).foreground;
+    final foreground = context.tokens.palette.ink;
     final entries = <DocumentContextMenuEntry>[];
 
     if (selection.isCopyAllowed && selection.hasSelectedText) {

@@ -7,5 +7,5 @@ class HomeContinueReadingSkeleton extends StatelessWidget {
   const HomeContinueReadingSkeleton({super.key});
 
   @override
-  Widget build(BuildContext context) => const AppSkeleton(height: 64);
+  Widget build(BuildContext context) => const AppSkeleton(height: 134);
 }

@@ -69,17 +69,17 @@ class _DocumentContextMenuState extends State<DocumentContextMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
+    final palette = context.tokens.palette;
     final expanded = _expandedGroup;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: AppRadius.of(context).lg,
+        color: palette.sheet,
+        borderRadius: AppRadii.lg,
         border: AppBorders.all(context),
         boxShadow: [
           BoxShadow(
-            color: colors.foreground.withValues(alpha: 0.15),
+            color: palette.ink.withValues(alpha: 0.15),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -98,7 +98,7 @@ class _DocumentContextMenuState extends State<DocumentContextMenu> {
               : [
                   _iconButton(
                     label: AppLocalizations.of(context)!.goBack,
-                    icon: Icon(AppIcons.arrowLeft, color: colors.foreground),
+                    icon: Icon(AppIcons.arrowLeft, color: palette.ink),
                     onPressed: () => setState(() => _expandedGroup = null),
                   ),
                   for (final action in expanded.children)
