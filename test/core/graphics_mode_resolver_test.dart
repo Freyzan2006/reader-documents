@@ -76,4 +76,19 @@ void main() {
     expect(profile.lowRamDevice, isTrue);
     expect(profile.powerSaveMode, isFalse);
   });
+
+  test('performance keeps only cheap motion, reduce motion keeps none', () {
+    const performance = AppMotion.performance;
+    expect(performance.expressive, isFalse);
+    expect(performance.layoutChange, Duration.zero);
+    expect(performance.paletteChange, Duration.zero);
+    expect(performance.sheet, greaterThan(Duration.zero));
+    expect(performance.reveal, Duration.zero);
+    expect(performance.staggerDelay(0), isNull);
+    expect(AppMotion.quality.staggerDelay(AppMotion.staggerLimit), isNull);
+
+    final reduced = AppMotion.resolve(GraphicsMode.quality, reduceMotion: true);
+    expect(reduced.route, Duration.zero);
+    expect(reduced.sheet, Duration.zero);
+  });
 }

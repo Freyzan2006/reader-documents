@@ -1,5 +1,4 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/navigation/app_nav_tab.dart';
@@ -26,9 +25,9 @@ abstract final class DocumentCommands {
     ];
   }
 
-  static Future<void> openFavorites(BuildContext context) => Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => const FavoritesScreen()));
+  static Future<void> openFavorites(BuildContext context) =>
+      Navigator.of(context)
+          .push(AppPageRoute<void>(builder: (_) => const FavoritesScreen()));
 
   /// Shared favorite toggle — used by document cards and the viewer toolbar,
   /// so both confirm the change with the same toast.
@@ -92,7 +91,7 @@ abstract final class DocumentCommands {
     }
 
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => DocumentViewerScreen(file: file)),
+      AppPageRoute(builder: (context) => DocumentViewerScreen(file: file)),
     );
   }
 

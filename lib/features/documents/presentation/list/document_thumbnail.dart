@@ -3,6 +3,20 @@ import 'package:pdfrx/pdfrx.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
+@immutable
+final class DocumentPageHeroTag {
+  DocumentPageHeroTag.of(DocumentFile file) : path = file.path;
+
+  final String path;
+
+  @override
+  bool operator ==(Object other) =>
+      other is DocumentPageHeroTag && other.path == path;
+
+  @override
+  int get hashCode => Object.hash(DocumentPageHeroTag, path);
+}
+
 class DocumentThumbnail extends StatelessWidget {
   const DocumentThumbnail._({required this.file, super.key});
 
@@ -27,11 +41,22 @@ class DocumentThumbnail extends StatelessWidget {
           : PdfPageView(
               document: document,
               pageNumber: 1,
-              alignment: Alignment.topCenter,
-              backgroundColor: tokens.palette.sheet,
               maximumDpi: tokens.graphics == GraphicsMode.quality
                   ? _qualityDpi
                   : _performanceDpi,
+              decorationBuilder: (context, pageSize, page, image) => Align(
+                alignment: Alignment.topCenter,
+                child: AspectRatio(
+                  aspectRatio: pageSize.width / pageSize.height,
+                  child: AppReveal(
+                    visible: image != null,
+                    child: ColoredBox(
+                      color: tokens.palette.sheet,
+                      child: image ?? const SizedBox.expand(),
+                    ),
+                  ),
+                ),
+              ),
             ),
     );
   }

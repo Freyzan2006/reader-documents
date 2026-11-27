@@ -3,9 +3,10 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
 class DocumentLoadingBanner extends StatelessWidget {
-  const DocumentLoadingBanner({this.type, super.key});
+  const DocumentLoadingBanner({this.type, this.heroTag, super.key});
 
   final DocumentType? type;
+  final Object? heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,7 @@ class DocumentLoadingBanner extends StatelessWidget {
                   scanned: type == DocumentType.djvu,
                   borderRadius: BorderRadius.zero,
                   fill: true,
+                  heroTag: heroTag,
                 ),
               ),
             ),

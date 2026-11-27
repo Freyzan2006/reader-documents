@@ -29,6 +29,7 @@ class HomeContinueReadingCard extends ConsumerWidget {
       meta: page == null ? file.type.label : l10n.bookmarkPageLabel(page),
       progress: progress,
       thumbnail: DocumentThumbnail.of(file),
+      heroTag: DocumentPageHeroTag.of(file),
       onTap: onTap ?? () => DocumentCommands.open(context, ref, file),
     );
   }

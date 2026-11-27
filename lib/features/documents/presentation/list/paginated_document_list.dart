@@ -119,29 +119,33 @@ class _PaginatedDocumentListState extends ConsumerState<PaginatedDocumentList> {
           for (final (index, file) in pageFiles.indexed) ...[
             if (index > 0)
               const AppDivider(indent: AppSpacing.lg + 42 + AppSpacing.md),
-            AppDismissible(
-              itemKey: ValueKey(file.path),
-              direction: selecting
-                  ? DismissDirection.none
-                  : DismissDirection.horizontal,
-              confirmDismiss: selecting
-                  ? null
-                  : (direction) => _confirmDismiss(file, direction),
-              onDismissed: () => widget.onDelete(file),
-              background: AppDismissibleAction(
-                icon: AppIcons.star,
-                color: context.tokens.palette.ink,
-                foregroundColor: context.tokens.palette.onInk,
-                alignment: Alignment.centerLeft,
-              ),
-              child: DocumentCard(
-                file: file,
-                onTap: () =>
-                    selecting ? _toggleSelection(file) : widget.onOpen(file),
-                onLongPress: () =>
-                    selecting ? _toggleSelection(file) : _startSelection(file),
-                selectionMode: selecting,
-                selected: selection.contains(file.path),
+            AppEntrance(
+              index: index,
+              child: AppDismissible(
+                itemKey: ValueKey(file.path),
+                direction: selecting
+                    ? DismissDirection.none
+                    : DismissDirection.horizontal,
+                confirmDismiss: selecting
+                    ? null
+                    : (direction) => _confirmDismiss(file, direction),
+                onDismissed: () => widget.onDelete(file),
+                background: AppDismissibleAction(
+                  icon: AppIcons.star,
+                  color: context.tokens.palette.ink,
+                  foregroundColor: context.tokens.palette.onInk,
+                  alignment: Alignment.centerLeft,
+                ),
+                child: DocumentCard(
+                  file: file,
+                  onTap: () =>
+                      selecting ? _toggleSelection(file) : widget.onOpen(file),
+                  onLongPress: () => selecting
+                      ? _toggleSelection(file)
+                      : _startSelection(file),
+                  selectionMode: selecting,
+                  selected: selection.contains(file.path),
+                ),
               ),
             ),
           ],
@@ -188,7 +192,7 @@ class _DocumentGrid extends StatelessWidget {
                   for (var i = start; i < start + columns; i++)
                     Expanded(
                       child: i < files.length
-                          ? builder(files[i])
+                          ? AppEntrance(index: i, child: builder(files[i]))
                           : const SizedBox.shrink(),
                     ),
                 ],

@@ -3,6 +3,7 @@ export 'center.dart';
 export 'fade.dart';
 export 'frosted_surface.dart';
 export 'gap.dart';
+export 'motion.dart';
 export 'grid.dart';
 export 'page_view.dart';
 export 'pull_to_refresh.dart';

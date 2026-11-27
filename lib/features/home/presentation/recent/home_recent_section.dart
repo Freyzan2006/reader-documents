@@ -40,10 +40,13 @@ class HomeRecentSection extends ConsumerWidget {
               )
             : HomeDocumentShelf(
                 children: [
-                  for (final file in files)
-                    DocumentCompactCard(
-                      file: file,
-                      onTap: () => DocumentCommands.open(context, ref, file),
+                  for (final (index, file) in files.indexed)
+                    AppEntrance(
+                      index: index,
+                      child: DocumentCompactCard(
+                        file: file,
+                        onTap: () => DocumentCommands.open(context, ref, file),
+                      ),
                     ),
                 ],
               ),

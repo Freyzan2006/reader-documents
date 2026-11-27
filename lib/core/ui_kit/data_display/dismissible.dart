@@ -30,6 +30,8 @@ class AppDismissible extends StatelessWidget {
     key: itemKey,
     direction: direction,
     confirmDismiss: confirmDismiss,
+    movementDuration: context.tokens.motion.exit,
+    resizeDuration: context.tokens.motion.layoutChange,
     onDismissed: (_) => onDismissed(),
     background:
         background ??

@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../controls/checkbox.dart';
 import '../controls/icon_button.dart';
 import '../feedback/progress.dart';
+import '../primitives/motion.dart';
 import '../primitives/tappable.dart';
 import '../theme/app_tokens.dart';
 import '../tokens/app_icons.dart';
@@ -28,6 +29,7 @@ class AppPageThumbnail extends StatelessWidget {
     this.scanned = false,
     this.borderRadius = AppRadii.sm,
     this.fill = false,
+    this.heroTag,
     super.key,
   });
 
@@ -39,6 +41,7 @@ class AppPageThumbnail extends StatelessWidget {
   final bool scanned;
   final BorderRadius borderRadius;
   final bool fill;
+  final Object? heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -78,21 +81,20 @@ class AppPageThumbnail extends StatelessWidget {
               Positioned(
                 right: 6,
                 top: 6,
-                child: AppCheckMark(checked: selected, round: true, size: 20),
+                child: AppPop(
+                  active: selected,
+                  child: AppCheckMark(checked: selected, round: true, size: 20),
+                ),
               )
-            else if (favorite)
+            else
               Positioned(
                 right: 4,
                 top: 4,
-                child: Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    color: palette.sheet,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: palette.rule),
-                  ),
-                  child: Icon(AppIcons.star, size: 14, color: palette.ink),
+                child: AppPop(
+                  active: favorite,
+                  child: favorite
+                      ? const _FavoriteBadge()
+                      : const SizedBox.shrink(),
                 ),
               ),
             if (progress != null)
@@ -106,9 +108,31 @@ class AppPageThumbnail extends StatelessWidget {
         ),
       ),
     );
+    final hero = AppHero(tag: heroTag, child: sheet);
     return fill
-        ? sheet
-        : AspectRatio(aspectRatio: AppPageRatio.widthToHeight, child: sheet);
+        ? hero
+        : AspectRatio(aspectRatio: AppPageRatio.widthToHeight, child: hero);
+  }
+}
+
+class _FavoriteBadge extends StatelessWidget {
+  const _FavoriteBadge();
+
+  static const _size = 26.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.tokens.palette;
+    return Container(
+      width: _size,
+      height: _size,
+      decoration: BoxDecoration(
+        color: palette.sheet,
+        shape: BoxShape.circle,
+        border: Border.all(color: palette.rule),
+      ),
+      child: Icon(AppIcons.star, size: 14, color: palette.ink),
+    );
   }
 }
 
@@ -162,6 +186,7 @@ class AppDocumentCard extends StatelessWidget {
     required this.meta,
     this.format,
     this.thumbnail,
+    this.heroTag,
     this.progress,
     this.favorite = false,
     this.selected,
@@ -176,6 +201,7 @@ class AppDocumentCard extends StatelessWidget {
   final String meta;
   final String? format;
   final Widget? thumbnail;
+  final Object? heroTag;
   final double? progress;
   final bool favorite;
   final bool? selected;
@@ -191,12 +217,14 @@ class AppDocumentCard extends StatelessWidget {
     selected: selected ?? false,
     semanticsHint: semanticsHint,
     pressedOpacity: 0.8,
+    pressedScale: 0.97,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: AppSpacing.sm,
       children: [
         AppPageThumbnail(
           image: thumbnail,
+          heroTag: heroTag,
           format: format,
           progress: progress,
           favorite: favorite,
@@ -232,6 +260,7 @@ class AppDocumentRow extends StatelessWidget {
     required this.meta,
     this.format,
     this.thumbnail,
+    this.heroTag,
     this.progress,
     this.favorite = false,
     this.selected,
@@ -251,6 +280,7 @@ class AppDocumentRow extends StatelessWidget {
   final String meta;
   final String? format;
   final Widget? thumbnail;
+  final Object? heroTag;
   final double? progress;
   final bool favorite;
   final bool? selected;
@@ -295,6 +325,7 @@ class AppDocumentRow extends StatelessWidget {
               width: _thumbWidth,
               child: AppPageThumbnail(
                 image: thumbnail,
+                heroTag: heroTag,
                 scanned: scanned,
                 borderRadius: AppRadii.xs,
               ),
@@ -361,6 +392,7 @@ class AppContinueReadingCard extends StatelessWidget {
     required this.meta,
     this.progress,
     this.thumbnail,
+    this.heroTag,
     this.onTap,
     super.key,
   });
@@ -372,6 +404,7 @@ class AppContinueReadingCard extends StatelessWidget {
   final String meta;
   final double? progress;
   final Widget? thumbnail;
+  final Object? heroTag;
   final VoidCallback? onTap;
 
   @override
@@ -381,6 +414,7 @@ class AppContinueReadingCard extends StatelessWidget {
     return AppTappable(
       onPressed: onTap,
       pressedOpacity: 0.85,
+      pressedScale: 0.97,
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
@@ -399,6 +433,7 @@ class AppContinueReadingCard extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   child: AppPageThumbnail(
                     image: thumbnail,
+                    heroTag: heroTag,
                     borderRadius: AppRadii.xs,
                   ),
                 ),

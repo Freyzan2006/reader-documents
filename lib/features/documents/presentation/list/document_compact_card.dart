@@ -25,6 +25,7 @@ class DocumentCompactCard extends ConsumerWidget {
       scanned: file.type == DocumentType.djvu,
       progress: ref.watch(readingFractionProvider(file.path)),
       thumbnail: DocumentThumbnail.of(file),
+      heroTag: DocumentPageHeroTag.of(file),
       onTap: onTap,
     ),
   );

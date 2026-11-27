@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../primitives/tappable.dart';
 import '../theme/app_tokens.dart';
+import '../theme/graphics_mode.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_typography.dart';
 
@@ -39,7 +40,8 @@ class AppFloatButton extends StatelessWidget {
         visible: state.focused,
         borderRadius: AppRadii.lg,
         child: AnimatedContainer(
-          duration: tokens.motion.quick,
+          duration: tokens.motion.layoutChange,
+          curve: AppMotion.curve,
           height: _size,
           constraints: const BoxConstraints(minWidth: _size),
           padding: EdgeInsets.only(
@@ -54,8 +56,8 @@ class AppFloatButton extends StatelessWidget {
             boxShadow: tokens.elevation.fab,
           ),
           child: AnimatedSize(
-            duration: tokens.motion.quick,
-            curve: Curves.easeOut,
+            duration: tokens.motion.layoutChange,
+            curve: AppMotion.curve,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,

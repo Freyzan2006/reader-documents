@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
@@ -49,9 +48,8 @@ abstract final class NavigationCommands {
       AppCommandItem(
         label: l10n.appearanceTitle,
         icon: AppIcons.palette,
-        onSelect: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const AppearanceScreen()),
-        ),
+        onSelect: () => Navigator.of(context)
+            .push(AppPageRoute<void>(builder: (_) => const AppearanceScreen())),
       ),
     ];
   }

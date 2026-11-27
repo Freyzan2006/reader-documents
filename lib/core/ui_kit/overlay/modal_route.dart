@@ -17,8 +17,6 @@ class AppModalRoute<T> extends PopupRoute<T> {
     super.settings,
   });
 
-  static const _scaleFrom = 0.96;
-
   final WidgetBuilder builder;
   final AppModalPlacement placement;
   final AppTokens tokens;
@@ -39,7 +37,7 @@ class AppModalRoute<T> extends PopupRoute<T> {
   Duration get transitionDuration => tokens.motion.sheet;
 
   @override
-  Duration get reverseTransitionDuration => tokens.motion.quick;
+  Duration get reverseTransitionDuration => tokens.motion.exit;
 
   @override
   Widget buildPage(
@@ -86,9 +84,12 @@ class AppModalRoute<T> extends PopupRoute<T> {
           ),
           AppModalPlacement.center => FadeTransition(
             opacity: curved,
-            child: tokens.graphics == GraphicsMode.quality
+            child: tokens.motion.scale
                 ? ScaleTransition(
-                    scale: Tween(begin: _scaleFrom, end: 1.0).animate(curved),
+                    scale: Tween(
+                      begin: AppMotion.scaleFrom,
+                      end: 1.0,
+                    ).animate(curved),
                     child: child,
                   )
                 : child,

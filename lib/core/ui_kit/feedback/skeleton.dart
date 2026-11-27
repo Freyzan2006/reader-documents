@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
 import '../theme/app_tokens.dart';
-import '../theme/graphics_mode.dart';
 
 class AppPulse extends StatefulWidget {
   const AppPulse({required this.child, this.minOpacity = 0.45, super.key});
@@ -26,9 +25,7 @@ class _AppPulseState extends State<AppPulse>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final animate =
-        context.tokens.graphics == GraphicsMode.quality &&
-        !MediaQuery.disableAnimationsOf(context);
+    final animate = context.tokens.motion.loops;
     if (animate && !_controller.isAnimating) {
       _controller.repeat(reverse: true);
     } else if (!animate && _controller.isAnimating) {

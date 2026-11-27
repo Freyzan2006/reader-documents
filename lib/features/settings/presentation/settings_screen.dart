@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/config/app_brand.dart';
@@ -90,9 +89,7 @@ class _SettingsGroups extends ConsumerWidget {
               value: l10n.paletteMonochrome,
               chevron: true,
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const AppearanceScreen(),
-                ),
+                AppPageRoute<void>(builder: (_) => const AppearanceScreen()),
               ),
             ),
             AppListRow(

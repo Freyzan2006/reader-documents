@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import '../../application/documents_providers.dart';
@@ -72,9 +72,7 @@ abstract final class SharedDocumentIntake {
         if (!context.mounted) return;
 
         await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => DocumentViewerScreen(file: file),
-          ),
+          AppPageRoute(builder: (context) => DocumentViewerScreen(file: file)),
         );
       } finally {
         _handling = false;

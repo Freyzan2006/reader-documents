@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../primitives/tappable.dart';
 import '../theme/app_tokens.dart';
+import '../theme/graphics_mode.dart';
 import '../tokens/app_icons.dart';
 import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
@@ -126,17 +127,20 @@ class AppToasterState extends State<AppToaster> {
           bottom: MediaQuery.paddingOf(context).bottom + widget.bottomOffset,
           child: AnimatedSwitcher(
             duration: tokens.motion.quick,
-            switchInCurve: Curves.easeOut,
+            reverseDuration: tokens.motion.exit,
+            switchInCurve: AppMotion.curve,
             switchOutCurve: Curves.easeIn,
             transitionBuilder: (child, animation) => FadeTransition(
               opacity: animation,
-              child: SlideTransition(
-                position: Tween(
-                  begin: const Offset(0, 0.25),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
+              child: tokens.motion.slide
+                  ? SlideTransition(
+                      position: Tween(
+                        begin: const Offset(0, 0.33),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    )
+                  : child,
             ),
             child: current == null
                 ? const SizedBox.shrink()

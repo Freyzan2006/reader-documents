@@ -6,7 +6,11 @@ import 'graphics_mode.dart';
 
 @immutable
 final class AppTokens {
-  const AppTokens({required this.palette, required this.graphics});
+  const AppTokens({
+    required this.palette,
+    required this.graphics,
+    this.reduceMotion = false,
+  });
 
   static const fallback = AppTokens(
     palette: AppPalette.light,
@@ -15,10 +19,12 @@ final class AppTokens {
 
   final AppPalette palette;
   final GraphicsMode graphics;
+  final bool reduceMotion;
 
   Brightness get brightness => palette.brightness;
 
-  AppMotion get motion => AppMotion.of(graphics);
+  AppMotion get motion =>
+      AppMotion.resolve(graphics, reduceMotion: reduceMotion);
 
   AppBlur get blur => AppBlur.of(graphics);
 
@@ -28,16 +34,18 @@ final class AppTokens {
       AppTokens(
         palette: palette ?? this.palette,
         graphics: graphics ?? this.graphics,
+        reduceMotion: reduceMotion,
       );
 
   @override
   bool operator ==(Object other) =>
       other is AppTokens &&
       other.palette == palette &&
-      other.graphics == graphics;
+      other.graphics == graphics &&
+      other.reduceMotion == reduceMotion;
 
   @override
-  int get hashCode => Object.hash(palette, graphics);
+  int get hashCode => Object.hash(palette, graphics, reduceMotion);
 }
 
 class AppThemeScope extends InheritedWidget {

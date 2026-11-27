@@ -95,7 +95,7 @@ class _SidePanelRoute extends PopupRoute<void> {
   Duration get transitionDuration => tokens.motion.sheet;
 
   @override
-  Duration get reverseTransitionDuration => tokens.motion.quick;
+  Duration get reverseTransitionDuration => tokens.motion.exit;
 
   @override
   Widget buildPage(

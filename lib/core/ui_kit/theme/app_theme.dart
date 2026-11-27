@@ -16,9 +16,7 @@ class AppTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TweenAnimationBuilder<AppPalette>(
     tween: _AppPaletteTween(end: tokens.palette),
-    duration: tokens.graphics == GraphicsMode.quality
-        ? tokens.motion.sheet
-        : Duration.zero,
+    duration: tokens.motion.paletteChange,
     curve: AppMotion.curve,
     child: child,
     builder: (context, palette, child) => AppThemeScope(

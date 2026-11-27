@@ -30,6 +30,7 @@ class AppTappable extends StatefulWidget {
     this.semanticsLabel,
     this.semanticsHint,
     this.pressedOpacity = 0.72,
+    this.pressedScale = 1,
     this.excludeChildSemantics = false,
     super.key,
   }) : builder = null;
@@ -44,7 +45,8 @@ class AppTappable extends StatefulWidget {
     this.excludeChildSemantics = false,
     super.key,
   }) : child = null,
-       pressedOpacity = 1;
+       pressedOpacity = 1,
+       pressedScale = 1;
 
   final Widget? child;
   final AppTapBuilder? builder;
@@ -54,6 +56,7 @@ class AppTappable extends StatefulWidget {
   final String? semanticsLabel;
   final String? semanticsHint;
   final double pressedOpacity;
+  final double pressedScale;
   final bool excludeChildSemantics;
 
   @override
@@ -99,11 +102,11 @@ class _AppTappableState extends State<AppTappable> {
     final builder = widget.builder;
     final content = builder != null
         ? builder(context, state)
-        : AnimatedOpacity(
-            opacity: _pressed ? widget.pressedOpacity : 1,
-            duration: context.tokens.motion.quick,
-            curve: Curves.easeOut,
-            child: widget.child,
+        : _PressFeedback(
+            pressed: _pressed,
+            opacity: widget.pressedOpacity,
+            scale: widget.pressedScale,
+            child: widget.child!,
           );
 
     return Semantics(
@@ -170,4 +173,39 @@ class AppFocusRing extends StatelessWidget {
         : const BoxDecoration(),
     child: child,
   );
+}
+
+class _PressFeedback extends StatelessWidget {
+  const _PressFeedback({
+    required this.pressed,
+    required this.opacity,
+    required this.scale,
+    required this.child,
+  });
+
+  final bool pressed;
+  final double opacity;
+  final double scale;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final motion = context.tokens.motion;
+    final target = pressed ? opacity : 1.0;
+    final faded = motion.press == Duration.zero
+        ? Opacity(opacity: target, child: child)
+        : AnimatedOpacity(
+            opacity: target,
+            duration: motion.press,
+            curve: Curves.easeOut,
+            child: child,
+          );
+    if (scale == 1 || !motion.scale) return faded;
+    return AnimatedScale(
+      scale: pressed ? scale : 1,
+      duration: motion.press,
+      curve: Curves.easeOut,
+      child: faded,
+    );
+  }
 }

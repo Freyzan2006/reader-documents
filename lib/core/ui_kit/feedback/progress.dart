@@ -44,7 +44,7 @@ class _AppProgressState extends State<AppProgress>
 
   void _sync() {
     final indeterminate = widget.value == null;
-    final animate = indeterminate && !MediaQuery.disableAnimationsOf(context);
+    final animate = indeterminate && !context.tokens.reduceMotion;
     if (animate && !_controller.isAnimating) {
       _controller.repeat();
     } else if (!animate && _controller.isAnimating) {

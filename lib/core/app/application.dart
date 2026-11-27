@@ -34,17 +34,21 @@ class Application extends ConsumerWidget {
       locale: settings.language.locale,
       localeResolutionCallback: (locale, supportedLocales) =>
           AppLocaleResolver.resolve(locale, supportedLocales),
-      builder: (context, child) => AppTheme(
-        tokens: AppTokens(
-          palette: AppPalette.of(brightness),
-          graphics: _graphics.resolve(
-            preference: settings.effectsMode,
-            device: device,
-            platformReducesMotion: MediaQuery.disableAnimationsOf(context),
+      builder: (context, child) {
+        final reduceMotion = MediaQuery.disableAnimationsOf(context);
+        return AppTheme(
+          tokens: AppTokens(
+            palette: AppPalette.of(brightness),
+            graphics: _graphics.resolve(
+              preference: settings.effectsMode,
+              device: device,
+              platformReducesMotion: reduceMotion,
+            ),
+            reduceMotion: reduceMotion,
           ),
-        ),
-        child: AppToaster(child: child!),
-      ),
+          child: AppToaster(child: child!),
+        );
+      },
       home: const AppBootstrap(),
     );
   }

@@ -53,7 +53,10 @@ class AppShell extends ConsumerWidget {
       ),
       child: IndexedStack(
         index: index,
-        children: [for (final tab in tabs) tab.screen],
+        children: [
+          for (final (tabIndex, tab) in tabs.indexed)
+            HeroMode(enabled: tabIndex == index, child: tab.screen),
+        ],
       ),
     );
   }

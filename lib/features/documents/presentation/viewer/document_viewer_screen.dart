@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:reader_documents/features/documents/presentation/list/document_thumbnail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/controllers/document_bookmarks_controller.dart';
@@ -214,7 +215,10 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   Widget _buildContent(BuildContext context, DocumentFile file) {
     if (!_readingProgress.isReady) {
-      return DocumentLoadingBanner(type: file.type);
+      return DocumentLoadingBanner(
+        type: file.type,
+        heroTag: DocumentPageHeroTag.of(file),
+      );
     }
     return DocumentViewerFactory.build(
       file: file,
@@ -234,7 +238,10 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
                 isPasswordProtected: isPasswordProtected,
                 onBack: onBack,
               ),
-      buildLoadingBanner: (context) => DocumentLoadingBanner(type: file.type),
+      buildLoadingBanner: (context) => DocumentLoadingBanner(
+        type: file.type,
+        heroTag: DocumentPageHeroTag.of(file),
+      ),
       initialReadFraction: _readingProgress.initialFraction,
       onReadFractionChanged: _readingProgress.onScrollFraction,
     );

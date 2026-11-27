@@ -32,6 +32,10 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap>
     vsync: this,
     value: 1,
   );
+  late final Animation<double> _exit = CurvedAnimation(
+    parent: _fade,
+    curve: AppMotion.curve,
+  );
   final _sharedSettled = Completer<void>();
   bool _revealed = false;
   bool _splashGone = false;
@@ -118,24 +122,19 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap>
 
   @override
   Widget build(BuildContext context) {
-    final splash = AppSplash(
-      openingName: _openingName,
-      failure: _failure,
-      onRetry: _retry,
-    );
     return Stack(
       fit: StackFit.expand,
       children: [
         const AppShell(),
         if (!_splashGone)
           FadeTransition(
-            opacity: _fade,
-            child: context.tokens.graphics == GraphicsMode.quality
-                ? ScaleTransition(
-                    scale: Tween(begin: 0.94, end: 1.0).animate(_fade),
-                    child: splash,
-                  )
-                : splash,
+            opacity: _exit,
+            child: AppSplash(
+              openingName: _openingName,
+              failure: _failure,
+              onRetry: _retry,
+              exit: _exit,
+            ),
           ),
       ],
     );
@@ -143,7 +142,13 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap>
 }
 
 class AppSplash extends StatefulWidget {
-  const AppSplash({this.openingName, this.failure, this.onRetry, super.key});
+  const AppSplash({
+    this.openingName,
+    this.failure,
+    this.onRetry,
+    this.exit,
+    super.key,
+  });
 
   static const background = Color(0xFF000000);
   static const ink = Color(0xFFFFFFFF);
@@ -152,6 +157,7 @@ class AppSplash extends StatefulWidget {
   final String? openingName;
   final AppSplashFailure? failure;
   final VoidCallback? onRetry;
+  final Animation<double>? exit;
 
   @override
   State<AppSplash> createState() => _AppSplashState();
@@ -181,6 +187,14 @@ class _AppSplashState extends State<AppSplash> {
     super.dispose();
   }
 
+  Animation<double> _logoScale(BuildContext context) {
+    final exit = widget.exit;
+    if (exit == null || !context.tokens.motion.scale) {
+      return kAlwaysCompleteAnimation;
+    }
+    return exit.drive(Tween(begin: AppMotion.scaleFrom, end: 1.0));
+  }
+
   String _reason(AppLocalizations l10n, AppSplashFailure failure) =>
       switch (failure) {
         AppSplashFailure.storage => l10n.splashFailedStorage,
@@ -206,10 +220,13 @@ class _AppSplashState extends State<AppSplash> {
                 mainAxisSize: MainAxisSize.min,
                 spacing: AppSpacing.lg,
                 children: [
-                  Image.asset(
-                    'assets/icon/launch_logo.png',
-                    width: _logoWidth,
-                    filterQuality: FilterQuality.medium,
+                  ScaleTransition(
+                    scale: _logoScale(context),
+                    child: Image.asset(
+                      'assets/icon/launch_logo.png',
+                      width: _logoWidth,
+                      filterQuality: FilterQuality.medium,
+                    ),
                   ),
                   SizedBox(
                     height: _barSlot,
