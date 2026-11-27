@@ -20,13 +20,6 @@ class _DocumentGestureHintBannerState
   static const _duration = Duration(seconds: 7);
 
   Timer? _timer;
-  bool _dismissed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer(_duration, _dismiss);
-  }
 
   @override
   void dispose() {
@@ -36,15 +29,25 @@ class _DocumentGestureHintBannerState
 
   void _dismiss() {
     _timer?.cancel();
-    if (_dismissed) return;
-    setState(() => _dismissed = true);
+    _timer = null;
     ref.read(gestureHintSeenProvider.notifier).markSeen();
+  }
+
+  void _updateTimer({required bool visible}) {
+    if (!visible) {
+      _timer?.cancel();
+      _timer = null;
+      return;
+    }
+    _timer ??= Timer(_duration, _dismiss);
   }
 
   @override
   Widget build(BuildContext context) {
     final seen = ref.watch(gestureHintSeenProvider).value ?? true;
-    if (seen || _dismissed) return const SizedBox.shrink();
+    final visible = !seen && TickerMode.valuesOf(context).enabled;
+    _updateTimer(visible: visible);
+    if (seen) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context)!;
     return AppCard(

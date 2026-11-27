@@ -39,5 +39,9 @@
   "languageNameUz": "Узбекский",
   "darkModeTitle": "Тёмный режим",
   "themePickerTitle": "Цветовой режим",
-  "themeTitle": "Тема"
+  "themeTitle": "Тема",
+  "hintsSectionTitle": "Подсказки",
+  "resetHintsTitle": "Сбросить подсказки",
+  "resetHintsHint": "Показать все подсказки заново",
+  "hintsResetToast": "Подсказки появятся снова"
 }

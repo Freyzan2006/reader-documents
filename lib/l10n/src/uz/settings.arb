@@ -39,5 +39,9 @@
   "languageNameUz": "Oʻzbekcha",
   "darkModeTitle": "Qorong'i rejim",
   "themePickerTitle": "Rang rejimi",
-  "themeTitle": "Mavzu"
+  "themeTitle": "Mavzu",
+  "hintsSectionTitle": "Maslahatlar",
+  "resetHintsTitle": "Maslahatlarni tiklash",
+  "resetHintsHint": "Barcha maslahatlarni qayta ko‘rsatish",
+  "hintsResetToast": "Maslahatlar yana ko‘rsatiladi"
 }

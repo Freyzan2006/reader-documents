@@ -4,6 +4,7 @@ import 'package:reader_documents/core/config/app_brand.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import '../application/hint_commands.dart';
 import '../application/settings_providers.dart';
 import '../data/app_settings.dart';
 import 'appearance_screen.dart';
@@ -115,6 +116,17 @@ class _SettingsGroups extends ConsumerWidget {
               value: LanguagePicker(l10n).label(settings.language),
               chevron: true,
               onTap: () => _pickLanguage(context, ref),
+            ),
+          ],
+        ),
+        AppListGroup(
+          label: l10n.hintsSectionTitle,
+          children: [
+            AppListRow(
+              title: l10n.resetHintsTitle,
+              subtitle: l10n.resetHintsHint,
+              leading: AppIcons.rotateCw,
+              onTap: () => HintCommands.resetAll(context, ref),
             ),
           ],
         ),

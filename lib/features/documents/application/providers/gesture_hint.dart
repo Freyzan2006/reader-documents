@@ -27,6 +27,11 @@ class GestureHintNotifier extends AsyncNotifier<bool> {
     await ref.read(gestureHintRepositoryProvider).save(true);
     state = const AsyncData(true);
   }
+
+  Future<void> reset() async {
+    await ref.read(gestureHintRepositoryProvider).clear();
+    state = const AsyncData(false);
+  }
 }
 
 final gestureHintSeenProvider =

@@ -27,12 +27,12 @@ class DocumentCard extends ConsumerWidget {
   final bool selected;
   final bool tile;
 
-  String _meta(List<String> tags) {
-    final visible = tags.take(_maxVisibleTags).map((tag) => '#$tag');
+  String _meta(Iterable<String> tags, String? pages) {
     final hidden = tags.length - _maxVisibleTags;
     return [
       file.formattedSize,
-      ...visible,
+      ?pages,
+      ...tags.take(_maxVisibleTags).map((tag) => '#$tag'),
       if (hidden > 0) '+$hidden',
     ].join(' · ');
   }
@@ -44,6 +44,11 @@ class DocumentCard extends ConsumerWidget {
     final isFavorite = ref.watch(isFavoriteProvider(file.path));
     final progress = ref.watch(readingFractionProvider(file.path));
     final l10n = AppLocalizations.of(context)!;
+    final pageCount = ref.watch(pageCountProvider(file.path)).value;
+    final pages = pageCount != null && pageCount > 0
+        ? l10n.pageCountShort(pageCount)
+        : null;
+    final meta = _meta(tile ? const <String>[] : tags, pages);
 
     return Semantics(
       selected: selectionMode ? selected : null,
@@ -51,7 +56,7 @@ class DocumentCard extends ConsumerWidget {
       child: tile
           ? AppDocumentCard(
               title: title,
-              meta: file.formattedSize,
+              meta: meta,
               format: file.type.label,
               favorite: isFavorite,
               progress: progress,
@@ -65,7 +70,7 @@ class DocumentCard extends ConsumerWidget {
             )
           : AppDocumentRow(
               title: title,
-              meta: _meta(tags),
+              meta: meta,
               format: file.type.label,
               favorite: isFavorite,
               progress: progress,

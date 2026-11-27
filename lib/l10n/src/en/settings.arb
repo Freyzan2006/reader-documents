@@ -54,6 +54,10 @@
   "darkModeTitle": "Dark mode",
   "themePickerTitle": "Color theme",
   "themeTitle": "Theme",
+  "hintsSectionTitle": "Hints",
+  "resetHintsTitle": "Reset hints",
+  "resetHintsHint": "Show all tips again",
+  "hintsResetToast": "Hints will be shown again",
   "@languagesCount": {
     "placeholders": {
       "count": {

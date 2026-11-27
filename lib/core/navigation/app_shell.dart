@@ -55,7 +55,10 @@ class AppShell extends ConsumerWidget {
         index: index,
         children: [
           for (final (tabIndex, tab) in tabs.indexed)
-            HeroMode(enabled: tabIndex == index, child: tab.screen),
+            HeroMode(
+              enabled: tabIndex == index,
+              child: TickerMode(enabled: tabIndex == index, child: tab.screen),
+            ),
         ],
       ),
     );

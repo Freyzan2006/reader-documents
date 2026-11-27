@@ -44,18 +44,11 @@ class DocumentThumbnail extends StatelessWidget {
               maximumDpi: tokens.graphics == GraphicsMode.quality
                   ? _qualityDpi
                   : _performanceDpi,
-              decorationBuilder: (context, pageSize, page, image) => Align(
-                alignment: Alignment.topCenter,
-                child: AspectRatio(
-                  aspectRatio: pageSize.width / pageSize.height,
-                  child: AppReveal(
-                    visible: image != null,
-                    child: ColoredBox(
-                      color: tokens.palette.sheet,
-                      child: image ?? const SizedBox.expand(),
-                    ),
-                  ),
-                ),
+              decorationBuilder: (context, pageSize, page, image) => AppReveal(
+                visible: image != null,
+                child: image == null
+                    ? const SizedBox.expand()
+                    : FittedBox(fit: BoxFit.cover, child: image),
               ),
             ),
     );
