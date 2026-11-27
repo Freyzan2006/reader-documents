@@ -29,10 +29,10 @@ abstract final class AppCommandLauncher {
           mode: AppCommandGroupMode.idle,
           items: DocumentSearchItems.recent(context, ref),
         ),
-        AppCommandGroup(
+        AppCommandGroup.search(
           label: l10n.documentsTitle,
-          mode: AppCommandGroupMode.search,
-          items: DocumentSearchItems.all(context, ref),
+          search: (query, limit) =>
+              DocumentSearchItems.search(context, ref, query, limit: limit),
         ),
         AppCommandGroup(
           label: l10n.searchActionsTitle,

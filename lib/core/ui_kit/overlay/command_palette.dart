@@ -45,17 +45,28 @@ enum AppCommandGroupMode { always, idle, search }
 class AppCommandGroup {
   const AppCommandGroup({
     required this.label,
-    required this.items,
+    this.items = const [],
     this.mode = AppCommandGroupMode.always,
-  });
+  }) : search = null,
+       searchLimit = 30;
+
+  const AppCommandGroup.search({
+    required this.label,
+    required List<AppCommandItem> Function(String query, int limit) this.search,
+    this.searchLimit = 30,
+  }) : items = const [],
+       mode = AppCommandGroupMode.search;
 
   final String label;
   final List<AppCommandItem> items;
   final AppCommandGroupMode mode;
+  final List<AppCommandItem> Function(String query, int limit)? search;
+  final int searchLimit;
 
+  bool get isLazy => search != null;
   bool get showsWhenIdle => mode != AppCommandGroupMode.search;
   bool get showsInSearch => mode != AppCommandGroupMode.idle;
-  bool get tracksRecent => mode == AppCommandGroupMode.always;
+  bool get tracksRecent => mode == AppCommandGroupMode.always && !isLazy;
 
   AppCommandGroup filtered(String lowerQuery) => AppCommandGroup(
     label: label,
@@ -156,13 +167,6 @@ abstract final class AppCommandPalette {
   }
 }
 
-class _CommandSection {
-  const _CommandSection(this.label, this.items);
-
-  final String label;
-  final List<AppCommandItem> items;
-}
-
 class _CommandPaletteContent extends StatefulWidget {
   const _CommandPaletteContent({
     required this.groups,
@@ -186,25 +190,31 @@ class _CommandPaletteContent extends StatefulWidget {
   State<_CommandPaletteContent> createState() => _CommandPaletteContentState();
 }
 
+class _CommandSection {
+  const _CommandSection(this.label, this.items);
+
+  final String label;
+  final List<AppCommandItem> items;
+}
+
 class _CommandPaletteContentState extends State<_CommandPaletteContent> {
   final _controller = TextEditingController();
-  int _highlighted = 0;
   String _query = '';
+  int _highlighted = 0;
   List<_CommandSection> _sections = const [];
+  List<AppCommandItem> _visible = const [];
+
+  bool get _searching => _query.isNotEmpty;
 
   List<AppCommandItem> get _trackedItems => [
     for (final group in widget.groups)
       if (group.tracksRecent) ...group.items,
   ];
 
-  List<AppCommandItem> get _visible => [
-    for (final section in _sections) ...section.items,
-  ];
-
   @override
   void initState() {
     super.initState();
-    _applyQuery('');
+    _rebuild();
   }
 
   @override
@@ -213,59 +223,71 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
     super.dispose();
   }
 
-  void _applyQuery(String query) {
+  void _onQueryChanged(String query) => setState(() {
     _query = query.trim();
-    _sections = _query.isEmpty ? _idleSections() : _searchSections();
+    _highlighted = 0;
+    _rebuild();
+  });
+
+  void _rebuild() {
+    _sections = _searching ? _searchSections() : _idleSections();
+    _visible = [for (final section in _sections) ...section.items];
   }
 
   List<_CommandSection> _idleSections() {
-    final byLabel = {for (final item in _trackedItems) item.label: item};
-    final recent = [
-      for (final label in AppCommandPalette._recentLabels) ?byLabel[label],
-    ];
+    final tracked = _trackedItems;
+    final recent = _recent(tracked);
     final recentLabels = recent.map((item) => item.label).toSet();
     return [
       _CommandSection(widget.recentLabel, recent),
       for (final group in widget.groups)
         if (group.showsWhenIdle)
-          _CommandSection(group.label, [
-            for (final item in group.items)
-              if (!group.tracksRecent || !recentLabels.contains(item.label))
-                item,
-          ]),
+          _CommandSection(group.label, _idleItems(group, recentLabels)),
     ].where((section) => section.items.isNotEmpty).toList();
   }
+
+  List<AppCommandItem> _recent(List<AppCommandItem> tracked) {
+    final byLabel = {for (final item in tracked) item.label: item};
+    return [
+      for (final label in AppCommandPalette._recentLabels) ?byLabel[label],
+    ];
+  }
+
+  List<AppCommandItem> _idleItems(
+    AppCommandGroup group,
+    Set<String> recentLabels,
+  ) => [
+    for (final item in group.items)
+      if (!group.tracksRecent || !recentLabels.contains(item.label)) item,
+  ];
 
   List<_CommandSection> _searchSections() {
     final lower = _query.toLowerCase();
     return [
       for (final group in widget.groups)
-        if (group.showsInSearch)
-          () {
-            final items = group.filtered(lower).items;
-            return _CommandSection('${group.label} · ${items.length}', items);
-          }(),
+        if (group.showsInSearch) _searchSection(group, lower),
     ].where((section) => section.items.isNotEmpty).toList();
   }
 
-  void _onQueryChanged(String query) => setState(() {
-    _applyQuery(query);
-    _highlighted = 0;
-  });
+  _CommandSection _searchSection(AppCommandGroup group, String lower) {
+    final items = group.isLazy
+        ? group.search!(_query, group.searchLimit)
+        : group.filtered(lower).items;
+    final count = group.isLazy && items.length == group.searchLimit
+        ? '${items.length}+'
+        : '${items.length}';
+    return _CommandSection('${group.label} · $count', items);
+  }
 
   void _move(int delta) {
-    final visible = _visible;
-    if (visible.isEmpty) return;
-    setState(
-      () => _highlighted =
-          (_highlighted + delta + visible.length) % visible.length,
-    );
+    if (_visible.isEmpty) return;
+    setState(() {
+      _highlighted = (_highlighted + delta + _visible.length) % _visible.length;
+    });
   }
 
   void _selectHighlighted() {
-    final visible = _visible;
-    if (visible.isEmpty) return;
-    _select(visible[_highlighted]);
+    if (_visible.isNotEmpty) _select(_visible[_highlighted]);
   }
 
   void _select(AppCommandItem item) {
@@ -276,35 +298,69 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
     item.onSelect();
   }
 
-  List<Widget> _buildSections() {
-    var cursor = 0;
-    final searching = _query.isNotEmpty;
+  Widget _buildResults(BuildContext context) {
+    final noResultsAction = widget.noResultsAction;
+    if (_sections.isEmpty) {
+      return ListView(
+        controller: widget.scrollController,
+        children: [
+          AppEmptyState(
+            icon: AppIcons.search,
+            message: widget.noResultsLabel,
+            action: noResultsAction == null
+                ? null
+                : AppButton(
+                    variant: AppButtonVariant.outline,
+                    mainAxisSize: MainAxisSize.min,
+                    prefix: noResultsAction.prefix,
+                    onPressed: () => _select(noResultsAction),
+                    child: Text(noResultsAction.label),
+                  ),
+          ),
+        ],
+      );
+    }
 
-    return [
-      for (final section in _sections)
-        () {
-          final start = cursor;
-          cursor += section.items.length;
-          return AppListGroup(
-            label: section.label,
-            children: [
-              for (final (i, item) in section.items.indexed)
-                _CommandRow(
-                  item: item,
-                  match: searching ? _query : null,
-                  highlighted: searching && start + i == _highlighted,
-                  onTap: () => _select(item),
-                ),
-            ],
-          );
-        }(),
-    ];
+    return ListView.builder(
+      controller: widget.scrollController,
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        0,
+        AppSpacing.lg,
+        MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
+      ),
+      itemCount: _sections.length,
+      itemBuilder: (context, index) => _buildSection(index),
+    );
+  }
+
+  Widget _buildSection(int index) {
+    var start = 0;
+    for (var i = 0; i < index; i++) {
+      start += _sections[i].items.length;
+    }
+    final section = _sections[index];
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: index == _sections.length - 1 ? 0 : AppSpacing.lg,
+      ),
+      child: AppListGroup(
+        label: section.label,
+        children: [
+          for (final (i, item) in section.items.indexed)
+            _CommandRow(
+              item: item,
+              match: _searching ? _query : null,
+              highlighted: _searching && start + i == _highlighted,
+              onTap: () => _select(item),
+            ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final noResultsAction = widget.noResultsAction;
-
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.arrowDown): () => _move(1),
@@ -331,42 +387,7 @@ class _CommandPaletteContentState extends State<_CommandPaletteContent> {
               onSubmitted: (_) => _selectHighlighted(),
             ),
           ),
-          Expanded(
-            child: _sections.isEmpty
-                ? ListView(
-                    controller: widget.scrollController,
-                    children: [
-                      AppEmptyState(
-                        icon: AppIcons.search,
-                        message: widget.noResultsLabel,
-                        action: noResultsAction == null
-                            ? null
-                            : AppButton(
-                                variant: AppButtonVariant.outline,
-                                mainAxisSize: MainAxisSize.min,
-                                prefix: noResultsAction.prefix,
-                                onPressed: () => _select(noResultsAction),
-                                child: Text(noResultsAction.label),
-                              ),
-                      ),
-                    ],
-                  )
-                : ListView(
-                    controller: widget.scrollController,
-                    padding: EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      0,
-                      AppSpacing.lg,
-                      MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
-                    ),
-                    children: [
-                      for (final section in _buildSections()) ...[
-                        section,
-                        const SizedBox(height: AppSpacing.lg),
-                      ],
-                    ],
-                  ),
-          ),
+          Expanded(child: _buildResults(context)),
         ],
       ),
     );
