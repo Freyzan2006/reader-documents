@@ -34,17 +34,14 @@ class DocumentThumbnail extends StatelessWidget {
   ]);
 
   static Widget? of(DocumentFile file, {bool preview = true}) {
-    for (final engine in registry.engines) {
-      if (engine.supports(file.type)) {
-        return DocumentThumbnail._(
-          key: ValueKey('${file.path}:$preview'),
-          file: file,
-          engine: engine,
-          preview: preview,
-        );
-      }
-    }
-    return null;
+    final engine = registry.engineFor(file.type);
+    if (engine == null) return null;
+    return DocumentThumbnail._(
+      key: ValueKey('${file.path}:$preview'),
+      file: file,
+      engine: engine,
+      preview: preview,
+    );
   }
 
   final DocumentFile file;
