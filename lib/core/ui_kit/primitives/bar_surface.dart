@@ -24,7 +24,7 @@ class AppBarSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.tokens;
     final palette = tokens.palette;
-    final glass = tokens.graphics.blur;
+    final glass = tokens.graphics.blur && showDivider;
     final edge = divider;
     final side = BorderSide(
       color: showDivider ? palette.rule : const Color(0x00000000),
