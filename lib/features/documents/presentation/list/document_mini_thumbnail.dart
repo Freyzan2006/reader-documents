@@ -16,7 +16,7 @@ class DocumentMiniThumbnail extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: width,
     child: AppPageThumbnail(
-      image: DocumentThumbnail.of(file),
+      image: DocumentThumbnail.of(file, preview: false),
       scanned: file.type == DocumentType.djvu,
       borderRadius: _radius,
     ),

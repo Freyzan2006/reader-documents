@@ -146,7 +146,7 @@ packages:
     source: hosted
     version: "0.8.0"
   docx_creator:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: docx_creator
       sha256: "04971c958642f4448985f7d3b4594803ef73c84168959fd02ade0e1d9c566435"

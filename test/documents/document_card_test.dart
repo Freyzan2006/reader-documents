@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/features/documents/application/documents_providers.dart';
+import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/features/documents/presentation/list/document_card.dart';
 
 import '../helpers/fakes.dart';
@@ -57,5 +59,31 @@ void main() {
 
     expect(find.text('1.0 KB'), findsOneWidget);
     expect(find.textContaining(' pp'), findsNothing);
+  });
+
+  testWidgets('docx card shows a lightweight document preview', (tester) async {
+    final file = DocumentFile(
+      path: '/docs/doc.docx',
+      name: 'doc.docx',
+      type: DocumentType.docx,
+      sizeBytes: 1024,
+      modifiedAt: DateTime(2026),
+    );
+
+    await pumpTestApp(
+      tester,
+      ProviderScope(
+        overrides: [
+          pageCountRepositoryProvider.overrideWithValue(
+            FakePageCountRepository({}),
+          ),
+        ],
+        child: DocumentCard(file: file),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppPageThumbnail), findsOneWidget);
+    expect(find.byIcon(AppIcons.fileText), findsOneWidget);
   });
 }
