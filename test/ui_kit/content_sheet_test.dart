@@ -1,37 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:forui/forui.dart';
 import 'package:reader_documents/core/ui_kit/overlay/sheet_surface.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
-import 'package:reader_documents/l10n/app_localizations.dart';
+
+import '../helpers/test_app.dart';
 
 void main() {
   testWidgets('content-sized sheet hugs a short payload', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: [
-          ...AppLocalizations.localizationsDelegates,
-          ...FLocalizations.localizationsDelegates,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: FTheme(
-          data: AppTheme.of(Brightness.light),
-          child: FToaster(
-            child: Scaffold(
-              body: Center(
-                child: Builder(
-                  builder: (context) => AppButton(
-                    onPressed: () => AppSheet.showContent<void>(
-                      context: context,
-                      builder: (context, scrollController) => const Padding(
-                        padding: EdgeInsets.all(AppSpacing.lg),
-                        child: AppText('Tiny sheet'),
-                      ),
-                    ),
-                    child: const Text('Open'),
-                  ),
+    await pumpTestApp(
+      tester,
+      Scaffold(
+        body: Center(
+          child: Builder(
+            builder: (context) => AppButton(
+              onPressed: () => AppSheet.showContent<void>(
+                context: context,
+                builder: (context, scrollController) => const Padding(
+                  padding: EdgeInsets.all(AppSpacing.lg),
+                  child: AppText('Tiny sheet'),
                 ),
               ),
+              child: const Text('Open'),
             ),
           ),
         ),
