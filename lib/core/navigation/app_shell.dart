@@ -11,26 +11,34 @@ import 'app_nav_tab.dart';
 import 'app_side_menu.dart';
 import 'navigation_providers.dart';
 
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  final Set<int> _visitedTabs = {0};
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final tabs = AppNavTabs.all(l10n);
     final destination = ref.watch(currentNavDestinationProvider);
     final index = tabs.indexWhere((tab) => tab.destination == destination);
+    final currentIndex = index < 0 ? 0 : index;
+    _visitedTabs.add(currentIndex);
 
-    ref.listen(
-      currentNavDestinationProvider,
-      (_, _) => ref.read(documentSelectionProvider.notifier).clear(),
-    );
+    ref.listen(currentNavDestinationProvider, (_, _) {
+      ref.read(documentSelectionProvider.notifier).clear();
+    });
 
     return AppScaffold(
       contentKey: destination,
       header: DocumentSelectionAwareHeader(
         normal: AppHeader(
-          title: tabs[index].label,
+          title: tabs[currentIndex].label,
           collapsible: destination != AppNavDestination.home,
           onMenuTap: () => AppSideMenu.show(context, ref),
           menuLabel: l10n.menuTitle,
@@ -41,7 +49,7 @@ class AppShell extends ConsumerWidget {
       ),
       footer: DocumentSelectionAwareFooter(
         normal: AppBottomNav(
-          currentIndex: index,
+          currentIndex: currentIndex,
           onChanged: (next) =>
               ref.read(currentNavDestinationProvider.notifier).state =
                   tabs[next].destination,
@@ -52,15 +60,30 @@ class AppShell extends ConsumerWidget {
         ),
       ),
       child: IndexedStack(
-        index: index,
+        index: currentIndex,
         children: [
           for (final (tabIndex, tab) in tabs.indexed)
-            HeroMode(
-              enabled: tabIndex == index,
-              child: TickerMode(enabled: tabIndex == index, child: tab.screen),
+            _LazyTab(
+              active: tabIndex == currentIndex,
+              child: _visitedTabs.contains(tabIndex)
+                  ? tab.screen
+                  : const SizedBox.shrink(),
             ),
         ],
       ),
     );
   }
+}
+
+class _LazyTab extends StatelessWidget {
+  const _LazyTab({required this.active, required this.child});
+
+  final bool active;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => HeroMode(
+    enabled: active,
+    child: TickerMode(enabled: active, child: child),
+  );
 }

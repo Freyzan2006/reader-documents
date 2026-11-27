@@ -52,9 +52,10 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   bool _onScroll(ScrollNotification notification) {
-    if (notification.metrics.axis != Axis.vertical) return false;
-    final scrolled =
-        notification.metrics.extentBefore > widget.scrolledThreshold;
+    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
+      return false;
+    }
+    final scrolled = notification.metrics.pixels > widget.scrolledThreshold;
     if (scrolled != _scrolled) setState(() => _scrolled = scrolled);
     return false;
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../controls/icon_button.dart';
+import '../layout/scaffold.dart';
 import '../primitives/bar_surface.dart';
 import '../primitives/tappable.dart';
 import '../theme/app_tokens.dart';
@@ -98,8 +99,10 @@ class AppSelectionActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.tokens.palette;
+    final scrolled = AppScrollScope.of(context);
     return AppBarSurface(
       divider: AppBarEdge.top,
+      showDivider: scrolled,
       child: SafeArea(
         top: false,
         child: SizedBox(

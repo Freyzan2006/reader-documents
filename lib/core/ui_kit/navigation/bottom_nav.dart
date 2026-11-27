@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../layout/scaffold.dart';
 import '../primitives/bar_surface.dart';
 import '../primitives/tappable.dart';
 import '../theme/app_tokens.dart';
@@ -32,30 +33,34 @@ class AppBottomNav extends StatelessWidget {
   final ValueChanged<int> onChanged;
 
   @override
-  Widget build(BuildContext context) => AppBarSurface(
-    divider: AppBarEdge.top,
-    child: SafeArea(
-      top: false,
-      child: SizedBox(
-        height: height,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Row(
-            children: [
-              for (final (index, item) in items.indexed)
-                Expanded(
-                  child: _AppBottomNavTab(
-                    item: item,
-                    selected: index == currentIndex,
-                    onPress: () => onChanged(index),
+  Widget build(BuildContext context) {
+    final scrolled = AppScrollScope.of(context);
+    return AppBarSurface(
+      divider: AppBarEdge.top,
+      showDivider: scrolled,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: height,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            child: Row(
+              children: [
+                for (final (index, item) in items.indexed)
+                  Expanded(
+                    child: _AppBottomNavTab(
+                      item: item,
+                      selected: index == currentIndex,
+                      onPress: () => onChanged(index),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _AppBottomNavTab extends StatelessWidget {

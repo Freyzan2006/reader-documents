@@ -225,42 +225,94 @@ class _DocxPreviewFrame extends StatelessWidget {
       color: palette.sheet,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isCompact = compact || constraints.maxHeight < 72;
-          final lines = isCompact ? _compactLines : _lines;
-          return Padding(
-            padding: EdgeInsets.fromLTRB(
-              10,
-              isCompact ? 8 : 12,
-              10,
-              isCompact ? 6 : 8,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  AppIcons.fileText,
-                  size: isCompact ? 12 : 14,
-                  color: palette.ink3,
-                ),
-                SizedBox(height: isCompact ? 4 : 8),
-                for (final width in lines) ...[
-                  FractionallySizedBox(
-                    widthFactor: width,
-                    child: Container(
-                      height: 2,
-                      decoration: BoxDecoration(
-                        color: lineColor,
-                        borderRadius: BorderRadius.circular(1),
-                      ),
-                    ),
+          final layout = _DocxPreviewLayout.resolve(
+            compact: compact,
+            maxHeight: constraints.maxHeight,
+          );
+
+          return ClipRect(
+            child: Padding(
+              padding: layout.padding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    AppIcons.fileText,
+                    size: layout.iconSize,
+                    color: palette.ink3,
                   ),
-                  SizedBox(height: isCompact ? 3 : 4),
+                  if (layout.visibleLines.isNotEmpty) ...[
+                    SizedBox(height: layout.gap),
+                    for (final width in layout.visibleLines)
+                      Padding(
+                        padding: EdgeInsets.only(bottom: layout.lineGap),
+                        child: FractionallySizedBox(
+                          widthFactor: width,
+                          child: Container(
+                            height: _DocxPreviewLayout.lineHeight,
+                            decoration: BoxDecoration(
+                              color: lineColor,
+                              borderRadius: BorderRadius.circular(1),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ],
-              ],
+              ),
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class _DocxPreviewLayout {
+  const _DocxPreviewLayout({
+    required this.padding,
+    required this.iconSize,
+    required this.gap,
+    required this.lineGap,
+    required this.visibleLines,
+  });
+
+  static const lineHeight = 2.0;
+
+  final EdgeInsets padding;
+  final double iconSize;
+  final double gap;
+  final double lineGap;
+  final List<double> visibleLines;
+
+  static _DocxPreviewLayout resolve({
+    required bool compact,
+    required double maxHeight,
+  }) {
+    final isCompact = compact || maxHeight < 72;
+    final lines = isCompact
+        ? _DocxPreviewFrame._compactLines
+        : _DocxPreviewFrame._lines;
+    final padding = EdgeInsets.fromLTRB(
+      10,
+      isCompact ? 8 : 12,
+      10,
+      isCompact ? 6 : 8,
+    );
+    final iconSize = isCompact ? 12.0 : 14.0;
+    final gap = isCompact ? 4.0 : 8.0;
+    final lineGap = isCompact ? 3.0 : 4.0;
+    final available = maxHeight - padding.vertical - iconSize - gap;
+    final count = available <= 0
+        ? 0
+        : (available / (lineHeight + lineGap)).floor().clamp(0, lines.length);
+
+    return _DocxPreviewLayout(
+      padding: padding,
+      iconSize: iconSize,
+      gap: gap,
+      lineGap: lineGap,
+      visibleLines: lines.take(count).toList(growable: false),
     );
   }
 }
