@@ -1,8 +1,6 @@
 export 'barrier.dart';
 export 'command_palette.dart';
-export 'context_menu.dart';
 export 'dialog.dart';
-export 'popover.dart';
 export 'popover_menu.dart';
 export 'rotated_sheet.dart';
 export 'rotation.dart';

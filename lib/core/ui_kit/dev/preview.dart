@@ -234,13 +234,6 @@ class _ControlsSectionState extends State<_ControlsSection> {
       ),
       const AppText('AppInput', variant: AppTextVariant.caption),
       const AppInput(label: 'Document title', hint: 'Untitled document'),
-      const AppText('AppSelect', variant: AppTextVariant.caption),
-      AppSelect<String>(
-        label: 'Page size',
-        hint: 'Choose a size',
-        items: const {'A4': 'a4', 'Letter': 'letter', 'Legal': 'legal'},
-        onChanged: (value) {},
-      ),
       const AppText('AppSwitch', variant: AppTextVariant.caption),
       AppSwitch(
         value: _switched,
@@ -251,22 +244,6 @@ class _ControlsSectionState extends State<_ControlsSection> {
       AppSlider(
         value: _sliderValue,
         onChanged: (value) => setState(() => _sliderValue = value),
-      ),
-      const AppText('AppLabel', variant: AppTextVariant.caption),
-      AppLabel(
-        label: 'Zoom',
-        description: 'Applies to the current document only.',
-        child: AppSlider(
-          value: _sliderValue,
-          onChanged: (value) => setState(() => _sliderValue = value),
-        ),
-      ),
-      const AppText('AppDateTimePicker', variant: AppTextVariant.caption),
-      const SizedBox(height: 160, child: AppDateTimePicker()),
-      const AppText('AppUpload', variant: AppTextVariant.caption),
-      AppUpload(
-        allowedExtensions: const ['pdf', 'docx', 'png'],
-        onChanged: (files) {},
       ),
       const AppText('AppRadioGroup (classic)', variant: AppTextVariant.caption),
       AppRadioGroup<String>(
@@ -289,8 +266,6 @@ class _ControlsSectionState extends State<_ControlsSection> {
           AppRadioOption(value: 'djvu', label: 'DjVu'),
         ],
       ),
-      const AppText('AppOtpField', variant: AppTextVariant.caption),
-      AppOtpField(length: 4, onCompleted: (code) {}),
     ],
   );
 }
@@ -307,11 +282,6 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
     'Invoice.pdf',
     'Report.docx',
     'Scan.djvu',
-  ];
-  final List<String> _reorderableItems = [
-    'First chapter',
-    'Second chapter',
-    'Third chapter',
   ];
   final List<String> _tagItems = ['All', 'PDF', 'DOCX', 'DjVu'];
 
@@ -361,11 +331,6 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
             AppTag(label: Text(variant.name), variant: variant),
         ],
       ),
-      const AppText('AppCollapsible', variant: AppTextVariant.caption),
-      const AppCollapsible(
-        title: 'What file formats are supported?',
-        child: AppText('PDF, DOCX and DjVu.', variant: AppTextVariant.caption),
-      ),
       const AppText('AppAvatar', variant: AppTextVariant.caption),
       const AppRow(
         children: [
@@ -373,27 +338,6 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
           AppAvatar(initials: 'JD', size: 56),
         ],
       ),
-      const AppText('AppAccordion', variant: AppTextVariant.caption),
-      AppAccordion(
-        items: [
-          AppAccordionItem(
-            title: 'What file formats are supported?',
-            child: const AppText(
-              'PDF, DOCX and DjVu.',
-              variant: AppTextVariant.caption,
-            ),
-          ),
-          AppAccordionItem(
-            title: 'Can I edit scanned documents?',
-            child: const AppText(
-              'Only PDF and DjVu, via OCR.',
-              variant: AppTextVariant.caption,
-            ),
-          ),
-        ],
-      ),
-      const AppText('AppLineCalendar', variant: AppTextVariant.caption),
-      SizedBox(height: 88, child: AppLineCalendar(onChanged: (date) {})),
       const AppText(
         'AppDismissible (swipe to delete)',
         variant: AppTextVariant.caption,
@@ -413,28 +357,6 @@ class _DataDisplaySectionState extends State<_DataDisplaySection> {
               ),
             ),
         ],
-      ),
-      const AppText(
-        'AppReorderableList (drag handle)',
-        variant: AppTextVariant.caption,
-      ),
-      SizedBox(
-        height: 160,
-        child: AppReorderableList<String>(
-          items: _reorderableItems,
-          itemKey: (item) => ValueKey(item),
-          onReorder: (oldIndex, newIndex) => setState(() {
-            final item = _reorderableItems.removeAt(oldIndex);
-            _reorderableItems.insert(newIndex, item);
-          }),
-          itemBuilder: (context, item, index) => AppCard(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            child: AppText(item),
-          ),
-        ),
       ),
     ],
   );
@@ -500,17 +422,6 @@ class _OverlaySection extends StatelessWidget {
           child: const Text('Hover / long-press me'),
         ),
       ),
-      AppPopover(
-        popoverBuilder: (context) => const Padding(
-          padding: EdgeInsets.all(AppSpacing.md),
-          child: AppText('A popover, aligned to its child.'),
-        ),
-        child: const AppButton(
-          variant: AppButtonVariant.outline,
-          onPressed: null,
-          child: Text('Show popover'),
-        ),
-      ),
       AppPopoverMenu(
         items: [
           AppCommandItem(
@@ -533,35 +444,6 @@ class _OverlaySection extends StatelessWidget {
           variant: AppButtonVariant.outline,
           onPressed: null,
           child: Text('Show popover menu'),
-        ),
-      ),
-      AppContextMenu(
-        items: [
-          AppCommandItem(
-            label: 'Rename',
-            icon: AppIcons.pencil,
-            onSelect: () {},
-          ),
-          AppCommandItem(
-            label: 'Duplicate',
-            icon: AppIcons.copy,
-            onSelect: () {},
-          ),
-          AppCommandItem(
-            label: 'Delete',
-            icon: AppIcons.trash2,
-            onSelect: () {},
-          ),
-        ],
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: AppBorders.all(context),
-            borderRadius: AppRadius.of(context).md,
-          ),
-          child: const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: AppText('Long-press me'),
-          ),
         ),
       ),
       AppButton(
@@ -751,24 +633,6 @@ class _LayoutSection extends StatelessWidget {
       const Text('Above'),
       const AppDivider(),
       const Text('Below'),
-      const AppGap.sm(),
-      const AppText('AppResizable', variant: AppTextVariant.caption),
-      SizedBox(
-        height: 120,
-        child: AppResizable(
-          axis: Axis.horizontal,
-          regions: [
-            AppResizableRegion(
-              flex: 1,
-              child: const AppCenter(child: Text('Outline')),
-            ),
-            AppResizableRegion(
-              flex: 2,
-              child: const AppCenter(child: Text('Document')),
-            ),
-          ],
-        ),
-      ),
     ],
   );
 }
