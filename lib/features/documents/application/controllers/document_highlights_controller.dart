@@ -15,16 +15,38 @@ class DocumentHighlightsController
     value = highlights ?? const [];
   }
 
-  Future<void> add(
+  Future<DocumentHighlight> add(
     DocumentHighlightDraft draft,
-    DocumentHighlightColor color,
-  ) async {
+    DocumentHighlightColor color, {
+    String note = '',
+  }) async {
     final highlight = DocumentHighlight.fromDraft(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       draft: draft,
       color: color,
+      note: note,
     );
     value = [...value, highlight];
+    await _repository.save(_documentPath, value);
+    return highlight;
+  }
+
+  Future<void> recolor(
+    DocumentHighlight highlight,
+    DocumentHighlightColor color,
+  ) => _replace(highlight, (h) => h.copyWith(color: color));
+
+  Future<void> setNote(DocumentHighlight highlight, String note) =>
+      _replace(highlight, (h) => h.copyWith(note: note.trim()));
+
+  Future<void> _replace(
+    DocumentHighlight highlight,
+    DocumentHighlight Function(DocumentHighlight) transform,
+  ) async {
+    value = [
+      for (final h in value)
+        if (h.id == highlight.id) transform(h) else h,
+    ];
     await _repository.save(_documentPath, value);
   }
 

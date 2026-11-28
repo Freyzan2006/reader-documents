@@ -14,7 +14,9 @@ import 'package:reader_documents/features/documents/data/repositories/highlights
 import 'package:reader_documents/features/documents/data/repositories/reading_offset_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_progress_repository.dart';
 import 'package:reader_documents/features/documents/data/conversion/cached_pdf_projection.dart';
-import 'package:reader_documents/features/documents/data/conversion/docx_creator_pdf_converter.dart';
+import 'package:reader_documents/features/documents/data/conversion/deferred_pdf_converter.dart';
+import 'package:reader_documents/features/documents/data/conversion/docx_creator/docx_creator_pdf_converter.dart';
+import 'package:reader_documents/features/documents/data/conversion/fonts/asset_font_library.dart';
 import 'package:reader_documents/features/documents/data/conversion/file_converted_pdf_cache.dart';
 import 'package:reader_documents/features/documents/data/conversion/isolate_pdf_converter.dart';
 import 'package:reader_documents/features/documents/data/conversion/pdf_projection.dart';
@@ -50,13 +52,18 @@ final readingOffsetRepositoryProvider = Provider<ReadingOffsetRepository>(
 
 final docxPdfProjectionProvider = Provider<PdfProjection>(
   (ref) => CachedPdfProjection(
-    converter: const IsolatePdfConverter(DocxCreatorPdfConverter()),
-    cache: FileConvertedPdfCache(resolveDirectory: _docxPdfCacheDirectory),
+    converter: DeferredPdfConverter(
+      id: DocxCreatorPdfConverter.pipelineId,
+      create: () async => IsolatePdfConverter(
+        DocxCreatorPdfConverter(fonts: await const AssetFontLibrary().load()),
+      ),
+    ),
+    cache: FileConvertedPdfCache(resolveDirectory: docxPdfCacheDirectory),
   ),
 );
 
 // The support directory keeps generated PDFs out of the document library.
-Future<Directory> _docxPdfCacheDirectory() async {
+Future<Directory> docxPdfCacheDirectory() async {
   final root = await getApplicationSupportDirectory();
   return Directory(p.join(root.path, 'docx_pdf_cache')).create(recursive: true);
 }

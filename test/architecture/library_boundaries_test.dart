@@ -11,7 +11,7 @@ const _pdfAdapters = [
 /// Values are allowed files or directory prefixes.
 const _boundaries = {
   'package:docx_creator/': [
-    'lib/features/documents/data/conversion/docx_creator_pdf_converter.dart',
+    'lib/features/documents/data/conversion/docx_creator/',
   ],
   'package:pdfrx/': _pdfAdapters,
   'package:syncfusion_flutter_pdf/': _pdfAdapters,

@@ -11,6 +11,18 @@
   "darkThemeShort": "Qorong'i",
   "systemThemeShort": "Tizim",
   "aboutSectionTitle": "Ilova haqida",
+  "generalSectionTitle": "Umumiy",
+  "accessibilitySectionTitle": "Maxsus imkoniyatlar",
+  "aboutTagline": "Barcha hujjatlaringiz uchun bitta osoyishta joy",
+  "aboutNoAdsTitle": "Reklamasiz",
+  "aboutNoAdsBody": "O'qishdan hech narsa chalg'itmaydi: na bannerlar, na qalqib chiquvchi oynalar.",
+  "aboutPrivacyTitle": "Maxfiylik",
+  "aboutPrivacyBody": "Fayllaringiz faqat qurilmangizda saqlanadi.",
+  "aboutFreeTitle": "Butunlay bepul",
+  "aboutFreeBody": "Barcha imkoniyatlar darhol ochiq — obunalar va pullik versiyalarsiz.",
+  "aboutFormatsTitle": "Barcha formatlar bitta ilovada",
+  "aboutFormatsBody": "PDF va DOCX bitta joyda. Vaqt o'tishi bilan formatlar ko'payadi.",
+  "aboutVersion": "Versiya",
   "effectsSectionTitle": "Vizual effektlar",
   "effectsSectionHint": "Interfeys animatsiyalari va effektlari. «Unumdorlik» eski qurilmalarda ilovani tezroq va silliqroq qiladi.",
   "effectsQuality": "Sifat",
@@ -26,11 +38,14 @@
   "graphicsModeTitle": "Grafika rejimi",
   "graphicsAuto": "Avto",
   "graphicsPerformanceShort": "Unumdor.",
-  "documentsSectionTitle": "Hujjatlar",
   "documentsViewTitle": "Hujjatlar ro'yxati ko'rinishi",
   "documentsViewAuto": "Avto",
   "documentsViewCard": "Karta",
   "documentsViewCardRow": "Kartalar qatori",
+  "documentPreviewsTitle": "Hujjatlar prevyusi",
+  "documentPreviewsShow": "Ko'rsatish",
+  "documentPreviewsHide": "Yashirish",
+  "documentPreviewsHint": "Sahifa prevyularini chizish kuchsiz qurilmalarni yuklaydi. «Avto» ularni «Unumdorlik» grafika rejimida o'chiradi.",
   "paletteSectionTitle": "Palitra",
   "paletteMonochrome": "Monoxrom",
   "paletteMonochromeThemes": "Qog'oz · Grafit",
@@ -45,8 +60,20 @@
   "darkModeTitle": "Qorong'i rejim",
   "themePickerTitle": "Rang rejimi",
   "themeTitle": "Mavzu",
-  "hintsSectionTitle": "Maslahatlar",
   "resetHintsTitle": "Maslahatlarni tiklash",
   "resetHintsHint": "Barcha maslahatlarni qayta ko‘rsatish",
-  "hintsResetToast": "Maslahatlar yana ko‘rsatiladi"
+  "resetHintsAction": "Tiklash",
+  "hintsResetToast": "Maslahatlar yana ko‘rsatiladi",
+  "clearCacheTitle": "Keshni tozalash",
+  "clearCacheHint": "Hujjatlar prevyusi va vaqtinchalik fayllar",
+  "clearCacheAction": "Tozalash",
+  "cacheClearedToast": "Kesh tozalandi · {size} bo'shatildi",
+  "@cacheClearedToast": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheAlreadyEmptyToast": "Kesh allaqachon bo'sh"
 }

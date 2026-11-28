@@ -5,6 +5,7 @@ import 'package:reader_documents/features/documents/application/controllers/docu
 import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import '../../actions/document_highlight_note_prompt.dart';
 import '../contract/document_viewer_controller.dart';
 import 'document_bookmarks.dart';
 import 'document_outline.dart';
@@ -93,6 +94,23 @@ class DocumentHighlightsView extends StatelessWidget {
     onDismiss();
   }
 
+  Future<void> _edit(BuildContext context, DocumentHighlight highlight) async {
+    final result = await DocumentHighlightNotePrompt.show(
+      context: context,
+      quote: highlight.text,
+      note: highlight.note,
+      canRemoveHighlight: true,
+    );
+    switch (result) {
+      case HighlightNoteSaved(:final note):
+        await highlights.setNote(highlight, note);
+      case HighlightNoteRemoveHighlight():
+        await highlights.remove(highlight);
+      case null:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: highlights,
@@ -113,11 +131,15 @@ class DocumentHighlightsView extends StatelessWidget {
               for (final highlight in items)
                 AppListItem(
                   title: highlight.text,
-                  subtitle: l10n.bookmarkPageLabel(highlight.pageNumber),
+                  subtitle: [
+                    l10n.bookmarkPageLabel(highlight.pageNumber),
+                    if (highlight.note.isNotEmpty) highlight.note,
+                  ].join(' · '),
                   leading: AppIcons.highlighter,
-                  trailing: AppIcons.trash2,
+                  trailing: AppIcons.pencil,
+                  trailingLabel: l10n.editHighlightNote,
                   onTap: () => _goTo(highlight),
-                  onTrailingTap: () => highlights.remove(highlight),
+                  onTrailingTap: () => _edit(context, highlight),
                 ),
             ],
           ),

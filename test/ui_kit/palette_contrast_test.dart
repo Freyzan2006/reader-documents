@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reader_documents/core/ui_kit/tokens/app_palette.dart';
 
-/// WCAG 2.x contrast ratio between two opaque colors.
 double _contrast(Color a, Color b) {
   final la = a.computeLuminance();
   final lb = b.computeLuminance();

@@ -59,14 +59,17 @@ class ReadingProgressController extends ChangeNotifier {
   Future<void> flush() async {
     final page = _pendingPage;
     _pendingPage = null;
-    if (page != null) await _pages.save(documentPath, page);
+    // Reporting only after an awaited write also keeps [onSaved] out of
+    // [dispose], where the widget tree is locked.
+    if (page == null) return;
+    await _pages.save(documentPath, page);
     onSaved?.call();
   }
 
   @override
   void dispose() {
     _saveTimer?.cancel();
-    flush();
+    unawaited(flush());
     super.dispose();
   }
 }

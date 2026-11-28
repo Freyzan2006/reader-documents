@@ -11,6 +11,18 @@
   "darkThemeShort": "Тёмная",
   "systemThemeShort": "Системная",
   "aboutSectionTitle": "О приложении",
+  "generalSectionTitle": "Общие",
+  "accessibilitySectionTitle": "Специальные возможности",
+  "aboutTagline": "Одно спокойное место для всех ваших документов",
+  "aboutNoAdsTitle": "Без рекламы",
+  "aboutNoAdsBody": "Ничто не отвлекает от чтения: ни баннеров, ни всплывающих окон.",
+  "aboutPrivacyTitle": "Конфиденциальность",
+  "aboutPrivacyBody": "Ваши файлы хранятся только на вашем устройстве.",
+  "aboutFreeTitle": "Полностью бесплатно",
+  "aboutFreeBody": "Все возможности доступны сразу — без подписок и платных версий.",
+  "aboutFormatsTitle": "Все форматы в одном приложении",
+  "aboutFormatsBody": "PDF и DOCX в одном месте. Со временем форматов станет больше.",
+  "aboutVersion": "Версия",
   "effectsSectionTitle": "Визуальные эффекты",
   "effectsSectionHint": "Анимации и эффекты интерфейса. «Производительность» делает приложение быстрее и плавнее на старых устройствах.",
   "effectsQuality": "Качество",
@@ -26,11 +38,14 @@
   "graphicsModeTitle": "Режим графики",
   "graphicsAuto": "Авто",
   "graphicsPerformanceShort": "Производ.",
-  "documentsSectionTitle": "Документы",
   "documentsViewTitle": "Вид списка документов",
   "documentsViewAuto": "Авто",
   "documentsViewCard": "Карточка",
   "documentsViewCardRow": "Ряд карточек",
+  "documentPreviewsTitle": "Превью документов",
+  "documentPreviewsShow": "Показывать",
+  "documentPreviewsHide": "Скрывать",
+  "documentPreviewsHint": "Отрисовка превью страниц нагружает слабые устройства. «Авто» отключает их в режиме графики «Производительность».",
   "paletteSectionTitle": "Палитра",
   "paletteMonochrome": "Монохром",
   "paletteMonochromeThemes": "Бумага · Графит",
@@ -45,8 +60,20 @@
   "darkModeTitle": "Тёмный режим",
   "themePickerTitle": "Цветовой режим",
   "themeTitle": "Тема",
-  "hintsSectionTitle": "Подсказки",
   "resetHintsTitle": "Сбросить подсказки",
   "resetHintsHint": "Показать все подсказки заново",
-  "hintsResetToast": "Подсказки появятся снова"
+  "resetHintsAction": "Сбросить",
+  "hintsResetToast": "Подсказки появятся снова",
+  "clearCacheTitle": "Очистить кэш",
+  "clearCacheHint": "Превью документов и временные файлы",
+  "clearCacheAction": "Очистить",
+  "cacheClearedToast": "Кэш очищен · освобождено {size}",
+  "@cacheClearedToast": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheAlreadyEmptyToast": "Кэш уже пуст"
 }

@@ -4,20 +4,8 @@ import '../theme/app_tokens.dart';
 import '../tokens/app_palette.dart';
 import '../tokens/app_radius.dart';
 
-/// How a document list is drawn inside [AppLayoutPreview].
-enum AppLayoutPreviewKind {
-  /// One document per line: thumbnail + title and meta.
-  rows,
+enum AppLayoutPreviewKind { rows, grid }
 
-  /// Several document cards per line.
-  grid,
-}
-
-/// A miniature of a document list, used to pick a list layout.
-///
-/// Pass one kind for a single layout, or two — `[narrow, wide]` — to show a
-/// phone next to a tablet, e.g. for an "auto" layout that switches by screen
-/// size.
 class AppLayoutPreview extends StatelessWidget {
   const AppLayoutPreview({required this.kinds, super.key});
 
@@ -95,7 +83,6 @@ class _Devices extends StatelessWidget {
   );
 }
 
-/// A device outline with a scaled-down layout inside.
 class _Device extends StatelessWidget {
   const _Device({
     required this.kind,
@@ -145,11 +132,9 @@ class _Pane extends StatelessWidget {
   final AppLayoutPreviewKind kind;
   final AppPalette palette;
 
-  /// Fixed drawing unit; derived from the width when null.
   final double? unit;
   final int columns;
 
-  /// Lines to draw; defaults to 5 rows of a list or 2 rows of a grid.
   final int? rows;
 
   @override

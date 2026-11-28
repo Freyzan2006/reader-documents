@@ -52,12 +52,13 @@ dependencies:
   # Pure-Dart DOCX parser and PDF exporter. DOCX files are converted locally
   # and then displayed by pdfrx — no server, no network, no WebView.
   docx_creator: ^1.4.0
+  archive: ^4.3.0
+  xml: ^7.0.1
   lucide_icons_flutter: ^4.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  archive: ^4.3.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -84,6 +85,8 @@ flutter:
     - assets/pdf.png
     - assets/docx.png
     - assets/icon/launch_logo.png
+    # Free stand-ins for Word fonts, used when converting DOCX to PDF.
+    - assets/docx_fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

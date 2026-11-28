@@ -35,6 +35,9 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> setPalette(AppPaletteFamily palette) =>
       _update((settings) => settings.copyWith(palette: palette));
 
+  Future<void> setDocumentPreviews(DocumentPreviews previews) =>
+      _update((settings) => settings.copyWith(documentPreviews: previews));
+
   Future<void> _update(
     AppSettings Function(AppSettings current) transform,
   ) async {

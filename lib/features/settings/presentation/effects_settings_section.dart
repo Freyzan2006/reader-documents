@@ -22,7 +22,6 @@ class EffectsSettingsSection extends StatelessWidget {
 
   static List<GraphicsMode> _previewModes(AppEffectsMode mode) =>
       switch (mode) {
-        // Quality takes the lower half, where its motion trail is drawn.
         AppEffectsMode.system => const [
           GraphicsMode.performance,
           GraphicsMode.quality,

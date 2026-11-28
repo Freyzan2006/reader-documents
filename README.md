@@ -29,10 +29,16 @@ layout engine. Unmodelled OOXML, recalculated TOC fields and floating-object
 wrap may differ from Word. The read-only PDF is a projection: future editing
 will operate on the document model and refresh that projection.
 
+Word fonts are replaced with free, metric-compatible ones bundled in
+`assets/docx_fonts/`: Liberation Serif/Sans/Mono for Times New Roman, Arial
+and Courier New, Carlito for Calibri (SIL OFL, licences next to the files).
+Unknown families fall back to Liberation Sans. Fonts embedded in the DOCX
+take precedence.
+
 The app depends only on the interfaces in
 `lib/features/documents/data/conversion/` (`PdfConverter`,
-`ConvertedPdfCache`, `PdfProjection`). `docx_creator` lives in a single
-adapter, `DocxCreatorPdfConverter`, and the implementations are wired in
+`ConvertedPdfCache`, `PdfProjection`, `FontLibrary`). `docx_creator` lives in
+`conversion/docx_creator/`, and the implementations are wired in
 `docxPdfProjectionProvider`. Swapping the converter means writing another
 `PdfConverter` and changing that provider; its `id` is part of the cache key,
 so PDFs from the old converter are not reused.

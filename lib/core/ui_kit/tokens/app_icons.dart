@@ -7,6 +7,7 @@ abstract final class AppIcons {
 
   static const arrowLeft = LucideIcons.arrowLeft;
   static const arrowRight = LucideIcons.arrowRight;
+  static const arrowUpRight = LucideIcons.arrowUpRight;
   static const bookOpen = LucideIcons.bookOpen;
   static const bookmark = LucideIcons.bookmark;
   static const bookmarkCheck = LucideIcons.bookmarkCheck;
@@ -20,11 +21,14 @@ abstract final class AppIcons {
   static const copy = LucideIcons.copy;
   static const cornerDownLeft = LucideIcons.cornerDownLeft;
   static const download = LucideIcons.download;
+  static const ellipsis = LucideIcons.ellipsis;
   static const ellipsisVertical = LucideIcons.ellipsisVertical;
   static const file = LucideIcons.file;
+  static const files = LucideIcons.files;
   static const fileText = LucideIcons.fileText;
   static const fileWarning = LucideIcons.fileWarning;
   static const folderPlus = LucideIcons.folderPlus;
+  static const gift = LucideIcons.gift;
   static const hardDrive = LucideIcons.hardDrive;
   static const highlighter = LucideIcons.highlighter;
   static const history = LucideIcons.history;
@@ -35,6 +39,7 @@ abstract final class AppIcons {
   static const list = LucideIcons.list;
   static const listChecks = LucideIcons.listChecks;
   static const lock = LucideIcons.lock;
+  static const megaphoneOff = LucideIcons.megaphoneOff;
   static const menu = LucideIcons.menu;
   static const minus = LucideIcons.minus;
   static const mousePointerClick = LucideIcons.mousePointerClick;
@@ -43,11 +48,13 @@ abstract final class AppIcons {
   static const palette = LucideIcons.palette;
   static const penOff = LucideIcons.penOff;
   static const plus = LucideIcons.plus;
+  static const quote = LucideIcons.quote;
   static const pencil = LucideIcons.pencil;
   static const rotateCw = LucideIcons.rotateCw;
   static const search = LucideIcons.search;
   static const settings = LucideIcons.settings;
   static const share2 = LucideIcons.share2;
+  static const shieldCheck = LucideIcons.shieldCheck;
   static const sparkles = LucideIcons.sparkles;
   static const star = LucideIcons.star;
   static const sun = LucideIcons.sun;

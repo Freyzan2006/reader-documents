@@ -60,9 +60,14 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   final _searchController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // Saves finish after the screen is gone, when `ref` is no longer usable; the
+  // container outlives the screen.
+  late final ProviderContainer _providers;
+
   @override
   void initState() {
     super.initState();
+    _providers = ProviderScope.containerOf(context, listen: false);
     _progressTrackingReady = widget.file.type != DocumentType.docx;
     _highlights = DocumentHighlightsController(
       ref.read(highlightsRepositoryProvider),
@@ -92,9 +97,9 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   // write has already landed by the time this fires, so re-reading yields the
   // new value instead of the one it replaced.
   void _onReadingProgressSaved() {
-    if (!mounted) return;
-    ref.invalidate(lastReadingProgressPageProvider(widget.file.path));
-    ref.invalidate(lastReadingOffsetProvider(widget.file.path));
+    _providers
+      ..invalidate(lastReadingProgressPageProvider(widget.file.path))
+      ..invalidate(lastReadingOffsetProvider(widget.file.path));
   }
 
   void _onControllerChanged() {
@@ -135,23 +140,24 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
 
   Future<void> _migrateLegacyDocxOffset(int pageCount) async {
     try {
-      final offsets = ref.read(readingOffsetRepositoryProvider);
+      final offsets = _providers.read(readingOffsetRepositoryProvider);
       final fraction = await offsets.load(widget.file.path);
       if (fraction == null) return;
 
-      final pages = ref.read(readingProgressRepositoryProvider);
+      final pages = _providers.read(readingProgressRepositoryProvider);
       if (await pages.load(widget.file.path) == null) {
         final page = (fraction.clamp(0.0, 1.0) * pageCount).ceil().clamp(
           1,
           pageCount,
         );
         await pages.save(widget.file.path, page);
-        await _readingProgress.load();
+        if (mounted) await _readingProgress.load();
       }
       await offsets.clear(widget.file.path);
-      ref.invalidate(lastReadingOffsetProvider(widget.file.path));
-      ref.invalidate(lastReadingProgressPageProvider(widget.file.path));
-      ref.invalidate(readingFractionProvider(widget.file.path));
+      _providers
+        ..invalidate(lastReadingOffsetProvider(widget.file.path))
+        ..invalidate(lastReadingProgressPageProvider(widget.file.path))
+        ..invalidate(readingFractionProvider(widget.file.path));
     } finally {
       if (mounted) setState(() => _progressTrackingReady = true);
     }
@@ -162,8 +168,10 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   }
 
   Future<void> _rememberPageCount(int count) async {
-    await ref.read(pageCountRepositoryProvider).save(widget.file.path, count);
-    if (mounted) ref.invalidate(pageCountProvider(widget.file.path));
+    await _providers
+        .read(pageCountRepositoryProvider)
+        .save(widget.file.path, count);
+    _providers.invalidate(pageCountProvider(widget.file.path));
   }
 
   Future<void> _openSearch() async {
@@ -235,6 +243,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
       selection: selection,
       highlights: _highlights,
       dismiss: dismiss,
+      documentTitle:
+          ref.read(documentTitleProvider(widget.file.path)) ?? widget.file.name,
     );
   }
 

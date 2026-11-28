@@ -13,6 +13,7 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
   static const _effectsModeKey = 'settings.effectsMode';
   static const _documentsLayoutKey = 'settings.documentsLayout';
   static const _paletteKey = 'settings.palette';
+  static const _documentPreviewsKey = 'settings.documentPreviews';
 
   @override
   Future<AppSettings> readFields(SharedPreferences prefs) async {
@@ -38,6 +39,11 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
       orElse: () => AppSettings.defaults.palette,
     );
 
+    final documentPreviews = DocumentPreviews.values.firstWhere(
+      (value) => value.name == prefs.getString(_documentPreviewsKey),
+      orElse: () => AppSettings.defaults.documentPreviews,
+    );
+
     return AppSettings(
       themeMode: themeMode,
       language: language,
@@ -45,11 +51,10 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
       effectsMode: effectsMode,
       documentsLayout: documentsLayout,
       palette: palette,
+      documentPreviews: documentPreviews,
     );
   }
 
-  /// Keeps layouts saved before `auto` was introduced working: the old
-  /// `list` / `grid` values map to `card` / `cardrow`.
   static DocumentsLayout _readDocumentsLayout(String? stored) {
     final legacy = switch (stored) {
       'list' => DocumentsLayout.card,
@@ -74,5 +79,6 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
     await prefs.setString(_effectsModeKey, settings.effectsMode.name);
     await prefs.setString(_documentsLayoutKey, settings.documentsLayout.name);
     await prefs.setString(_paletteKey, settings.palette.name);
+    await prefs.setString(_documentPreviewsKey, settings.documentPreviews.name);
   }
 }

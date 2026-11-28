@@ -11,6 +11,18 @@
   "darkThemeShort": "Dark",
   "systemThemeShort": "System",
   "aboutSectionTitle": "About",
+  "generalSectionTitle": "General",
+  "accessibilitySectionTitle": "Accessibility",
+  "aboutTagline": "One calm place for all your documents",
+  "aboutNoAdsTitle": "No ads",
+  "aboutNoAdsBody": "Nothing distracts from reading: no banners, no pop-ups.",
+  "aboutPrivacyTitle": "Privacy",
+  "aboutPrivacyBody": "Your files are stored only on your device.",
+  "aboutFreeTitle": "Completely free",
+  "aboutFreeBody": "Every feature is available right away, with no subscriptions or paid tiers.",
+  "aboutFormatsTitle": "All formats in one app",
+  "aboutFormatsBody": "PDF and DOCX in one place. More formats are coming over time.",
+  "aboutVersion": "Version",
   "effectsSectionTitle": "Visual effects",
   "effectsSectionHint": "Interface animations and effects. Performance makes the app faster and smoother on older devices.",
   "effectsQuality": "Quality",
@@ -33,11 +45,14 @@
   "graphicsModeTitle": "Graphics mode",
   "graphicsAuto": "Auto",
   "graphicsPerformanceShort": "Performance",
-  "documentsSectionTitle": "Documents",
   "documentsViewTitle": "Document list view",
   "documentsViewAuto": "Auto",
   "documentsViewCard": "Card",
   "documentsViewCardRow": "Card row",
+  "documentPreviewsTitle": "Document previews",
+  "documentPreviewsShow": "Show",
+  "documentPreviewsHide": "Hide",
+  "documentPreviewsHint": "Rendering page previews loads older devices. Auto turns them off in the Performance graphics mode.",
   "paletteSectionTitle": "Palette",
   "paletteMonochrome": "Monochrome",
   "paletteMonochromeThemes": "Paper · Graphite",
@@ -52,10 +67,22 @@
   "darkModeTitle": "Dark mode",
   "themePickerTitle": "Color theme",
   "themeTitle": "Theme",
-  "hintsSectionTitle": "Hints",
   "resetHintsTitle": "Reset hints",
   "resetHintsHint": "Show all tips again",
+  "resetHintsAction": "Reset",
   "hintsResetToast": "Hints will be shown again",
+  "clearCacheTitle": "Clear cache",
+  "clearCacheHint": "Document previews and temporary files",
+  "clearCacheAction": "Clear",
+  "cacheClearedToast": "Cache cleared · {size} freed",
+  "@cacheClearedToast": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheAlreadyEmptyToast": "Cache is already empty",
   "@languagesCount": {
     "placeholders": {
       "count": {

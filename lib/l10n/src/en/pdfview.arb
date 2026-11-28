@@ -16,6 +16,45 @@
   "minimapJumpToPageHint": "Go to page",
   "pdfSearchHint": "Search in document",
   "removeHighlight": "Remove Highlight",
+  "highlightAddedToast": "Highlight added",
+  "contextMenuNote": "Note",
+  "highlightNoteTitle": "Highlight note",
+  "highlightNoteHint": "Your thoughts on this passage",
+  "highlightNoteSavedToast": "Note saved",
+  "editHighlightNote": "Edit note",
+  "contextMenuCopyQuote": "Copy as quote",
+  "quoteSourceWithPage": "{title}, p. {page}",
+  "@quoteSourceWithPage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "contextMenuHighlightYellow": "Highlight yellow",
+  "contextMenuHighlightGreen": "Highlight green",
+  "contextMenuHighlightPink": "Highlight pink",
+  "contextMenuRemoveShort": "Remove",
+  "contextMenuTranslate": "Translate",
+  "contextMenuAskAi": "AI",
+  "contextMenuSearch": "Search",
+  "contextMenuMore": "More",
+  "contextMenuOpensIn": "{action}: opens {provider}",
+  "contextMenuMoreTitle": "Text actions",
+  "contextMenuDefaultFootnote": "The service you pick will open straight from the menu next time",
+  "@contextMenuOpensIn": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
   "pdfPasswordTitle": "Password required",
   "pdfPasswordHint": "Enter password",
   "pdfPasswordIncorrect": "Incorrect password. Try again.",

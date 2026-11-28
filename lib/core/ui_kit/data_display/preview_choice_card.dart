@@ -7,11 +7,6 @@ import '../tokens/app_radius.dart';
 import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
 
-/// One option of a single-choice row of visual previews — e.g. the theme or
-/// document layout pickers on the appearance screen.
-///
-/// Shows a 3:4 [preview] above a centered [label] and optional [sub] line;
-/// selection is carried by a thick ink border plus a check badge.
 class AppPreviewChoiceCard extends StatelessWidget {
   const AppPreviewChoiceCard({
     required this.label,
@@ -29,8 +24,6 @@ class AppPreviewChoiceCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onPressed;
 
-  /// Replaces [label] for screen readers, e.g. when [label] is abbreviated
-  /// to fit the card.
   final String? semanticsLabel;
 
   @override

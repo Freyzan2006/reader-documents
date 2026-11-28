@@ -1,13 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// A named color scheme, each with a light and a dark [AppPalette].
-enum AppPaletteFamily {
-  /// Neutral greys: "Paper" (light) · "Graphite" (dark).
-  monochrome,
-
-  /// Deep navy ink on cool paper: "Day" (light) · "Night" (dark).
-  ink,
-}
+enum AppPaletteFamily { monochrome, ink }
 
 @immutable
 final class AppPalette {
@@ -131,8 +124,6 @@ final class AppPalette {
 
   final Brightness brightness;
 
-  /// The scheme this palette belongs to, so previews can draw its other
-  /// brightness (e.g. the theme picker's light/dark thumbnails).
   final AppPaletteFamily family;
   final Color paper;
   final Color sheet;

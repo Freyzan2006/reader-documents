@@ -179,6 +179,33 @@ String _lists() => _document(
   ].join(),
 );
 
+// Word and Google Docs put a soft break or tab in the same run as the text.
+String _mixedRuns() => _document(
+  _paragraph(
+        '<w:r><w:t>Item text</w:t><w:br/></w:r>',
+        pPr: '<w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr>',
+      ) +
+      _paragraph(
+        '<w:r><w:t>Before tab</w:t><w:tab/><w:t>after tab</w:t></w:r>',
+      ),
+);
+
+String _fontFaces() {
+  String run(String text, String font, String style) => _run(
+    text,
+    rPr: '<w:rPr><w:rFonts w:ascii="$font" w:hAnsi="$font"/>$style</w:rPr>',
+  );
+  return _document(
+    _paragraph(
+          run('Обычный ', 'Times New Roman', '') +
+              run('жирный ', 'Times New Roman', '<w:b/>') +
+              run('курсив', 'Times New Roman', '<w:i/>'),
+        ) +
+        _paragraph(run('Calibri текст', 'Calibri', '')) +
+        _paragraph(run('Aptos текст', 'Aptos', '')),
+  );
+}
+
 Map<String, String> _parts(String body, {String? numbering}) => {
   '[Content_Types].xml': _contentTypes,
   '_rels/.rels': _rootRels,
@@ -208,6 +235,13 @@ void main(List<String> args) {
   _write(directory, 'fonts.docx', _parts(_fonts()));
   _write(directory, 'tables.docx', _parts(_tables()));
   _write(directory, 'lists.docx', _parts(_lists(), numbering: _numbering));
+  _write(
+    directory,
+    'mixed_runs.docx',
+    _parts(_mixedRuns(), numbering: _numbering),
+  );
 
-  stdout.writeln('Wrote 4 DOCX fixtures to $directory');
+  _write(directory, 'font_faces.docx', _parts(_fontFaces()));
+
+  stdout.writeln('Wrote 6 DOCX fixtures to $directory');
 }

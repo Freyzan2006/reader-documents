@@ -5,18 +5,6 @@ import '../theme/graphics_mode.dart';
 import '../tokens/app_palette.dart';
 import '../tokens/app_radius.dart';
 
-/// A miniature screen showing what a [GraphicsMode] looks like, used to pick
-/// the graphics mode.
-///
-/// [GraphicsMode.quality] draws a translucent header, soft shadows and a
-/// motion trail; [GraphicsMode.performance] draws the same screen flat —
-/// borders instead of shadows, no trail. Pass both modes to split the preview
-/// diagonally (as [AppThemePreview] does for "System"), e.g. for an "auto"
-/// mode that the device picks; the second mode gets the lower-right half,
-/// where the motion trail sits.
-///
-/// The preview always draws its effects, whatever mode the app is in, since
-/// it illustrates a choice rather than reflecting the current one.
 class AppEffectsPreview extends StatelessWidget {
   const AppEffectsPreview({required this.modes, super.key});
 
@@ -82,8 +70,6 @@ class _Pane extends StatelessWidget {
         final pad = unit * 2.2;
         return Stack(
           children: [
-            // A soft glow behind the content: gradients are a quality-only
-            // effect, and unlike shadows it stays visible in dark themes.
             if (_quality)
               Positioned(
                 left: -unit * 6,
@@ -101,7 +87,6 @@ class _Pane extends StatelessWidget {
                   ),
                 ),
               ),
-            // Content scrolling under the header.
             Positioned(
               left: pad,
               right: pad,
@@ -115,7 +100,6 @@ class _Pane extends StatelessWidget {
                 ],
               ),
             ),
-            // Header: translucent glass in quality, solid sheet otherwise.
             Positioned(
               left: 0,
               right: 0,
@@ -141,7 +125,6 @@ class _Pane extends StatelessWidget {
                 ),
               ),
             ),
-            // A moving element: with a fading trail in quality.
             Positioned(
               right: pad,
               bottom: unit * 2.6,

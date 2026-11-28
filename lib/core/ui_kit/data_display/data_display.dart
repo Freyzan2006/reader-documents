@@ -13,3 +13,4 @@ export 'selectable_card.dart';
 export 'tag.dart';
 export 'text.dart';
 export 'theme_preview.dart';
+export 'thumbnail_preview.dart';

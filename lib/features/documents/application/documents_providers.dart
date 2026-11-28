@@ -8,4 +8,5 @@ export 'providers/document_filter.dart';
 export 'providers/document_selection.dart';
 export 'providers/document_stats.dart';
 export 'providers/gesture_hint.dart';
+export 'providers/selection_tools.dart';
 export 'providers/documents_providers.dart';

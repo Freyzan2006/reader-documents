@@ -1,12 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:reader_documents/core/config/app_brand.dart';
 import 'package:reader_documents/core/ui_kit/ui_kit.dart';
+import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import '../application/cache_commands.dart';
 import '../application/hint_commands.dart';
 import '../application/settings_providers.dart';
 import '../data/app_settings.dart';
+import 'about_screen.dart';
 import 'appearance_screen.dart';
 import 'language_picker.dart';
 import 'palette_settings_section.dart';
@@ -83,6 +85,18 @@ class _SettingsGroups extends ConsumerWidget {
       spacing: AppSpacing.xl,
       children: [
         AppListGroup(
+          label: l10n.generalSectionTitle,
+          children: [
+            AppListRow(
+              title: l10n.languageSectionTitle,
+              leading: AppIcons.languages,
+              value: LanguagePicker(l10n).label(settings.language),
+              chevron: true,
+              onTap: () => _pickLanguage(context, ref),
+            ),
+          ],
+        ),
+        AppListGroup(
           label: l10n.appearanceTitle,
           children: [
             AppListRow(
@@ -111,39 +125,71 @@ class _SettingsGroups extends ConsumerWidget {
                 onChanged: (_) => notifier.toggleWarmReadingFilter(),
               ),
             ),
-            AppListRow(
-              title: l10n.languageSectionTitle,
-              leading: AppIcons.languages,
-              value: LanguagePicker(l10n).label(settings.language),
-              chevron: true,
-              onTap: () => _pickLanguage(context, ref),
-            ),
           ],
         ),
         AppListGroup(
-          label: l10n.hintsSectionTitle,
+          label: l10n.accessibilitySectionTitle,
           children: [
+            AppListRow(
+              title: l10n.clearCacheTitle,
+              subtitle: [
+                l10n.clearCacheHint,
+                ?ref
+                    .watch(cacheSizeProvider)
+                    .whenData(DocumentFile.formatBytes)
+                    .value,
+              ].join(' · '),
+              leading: AppIcons.trash2,
+              onTap: () => CacheCommands.clear(context, ref),
+              trailing: _RowAction(
+                label: l10n.clearCacheAction,
+                onPressed: () => CacheCommands.clear(context, ref),
+              ),
+            ),
             AppListRow(
               title: l10n.resetHintsTitle,
               subtitle: l10n.resetHintsHint,
               leading: AppIcons.rotateCw,
               onTap: () => HintCommands.resetAll(context, ref),
+              trailing: _RowAction(
+                label: l10n.resetHintsAction,
+                onPressed: () => HintCommands.resetAll(context, ref),
+              ),
             ),
           ],
         ),
         AppListGroup(
-          label: l10n.aboutSectionTitle,
           children: [
             AppListRow(
-              title: AppBrand.name,
+              title: l10n.aboutSectionTitle,
               leading: AppIcons.info,
-              value: '${AppBrand.version} (${AppBrand.buildNumber})',
+              value: AboutScreen.version(),
+              chevron: true,
+              onTap: () => Navigator.of(
+                context,
+              ).push(AppPageRoute<void>(builder: (_) => const AboutScreen())),
             ),
           ],
         ),
       ],
     );
   }
+}
+
+class _RowAction extends StatelessWidget {
+  const _RowAction({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => AppButton(
+    variant: AppButtonVariant.secondary,
+    size: AppButtonSize.sm,
+    mainAxisSize: MainAxisSize.min,
+    onPressed: onPressed,
+    child: Text(label),
+  );
 }
 
 class _SettingsSkeleton extends StatelessWidget {

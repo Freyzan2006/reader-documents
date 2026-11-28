@@ -52,7 +52,11 @@ abstract final class DocumentNotesExport {
         ..writeln(l10n.exportNotesHighlightsSection);
       for (final highlight in sortedHighlights) {
         final page = l10n.bookmarkPageLabel(highlight.pageNumber);
-        buffer.writeln('• $page: "${highlight.text}"');
+        buffer.writeln(
+          highlight.note.isEmpty
+              ? '• $page: "${highlight.text}"'
+              : '• $page: "${highlight.text}" — ${highlight.note}',
+        );
       }
     }
 

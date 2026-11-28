@@ -107,10 +107,7 @@ class _PaletteCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: AppSpacing.sm,
                 children: [
-                  _Swatches(
-                    // Three swatches leave room for the check badge.
-                    colors: [light.paper, light.ink, dark.paper],
-                  ),
+                  _Swatches(colors: [light.paper, light.ink, dark.paper]),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

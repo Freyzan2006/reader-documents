@@ -31,6 +31,24 @@ class AppFloatButton extends StatelessWidget {
     final palette = tokens.palette;
     final text = label;
     final showLabel = extended && text != null;
+    final resize = tokens.motion.layoutChange;
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 8,
+      children: [
+        Icon(icon, size: _iconSize, color: palette.onInk),
+        if (showLabel)
+          Text(
+            text,
+            style: AppTextStyles.label.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: palette.onInk,
+            ),
+          ),
+      ],
+    );
 
     return AppTappable.builder(
       onPressed: onPressed,
@@ -55,27 +73,15 @@ class AppFloatButton extends StatelessWidget {
             borderRadius: AppRadii.lg,
             boxShadow: tokens.elevation.fab,
           ),
-          child: AnimatedSize(
-            duration: tokens.motion.layoutChange,
-            curve: AppMotion.curve,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 8,
-              children: [
-                Icon(icon, size: _iconSize, color: palette.onInk),
-                if (showLabel)
-                  Text(
-                    text,
-                    style: AppTextStyles.label.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: palette.onInk,
-                    ),
-                  ),
-              ],
-            ),
-          ),
+          // AnimatedSize with a zero duration finishes inside its own layout
+          // and asserts, so motionless modes skip it.
+          child: resize == Duration.zero
+              ? content
+              : AnimatedSize(
+                  duration: resize,
+                  curve: AppMotion.curve,
+                  child: content,
+                ),
         ),
       ),
     );

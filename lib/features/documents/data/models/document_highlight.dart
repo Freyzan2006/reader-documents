@@ -38,12 +38,14 @@ class DocumentHighlight {
     required this.color,
     required this.text,
     required this.createdAt,
+    this.note = '',
   });
 
   factory DocumentHighlight.fromDraft({
     required String id,
     required DocumentHighlightDraft draft,
     required DocumentHighlightColor color,
+    String note = '',
   }) => DocumentHighlight(
     id: id,
     pageNumber: draft.pageNumber,
@@ -53,6 +55,7 @@ class DocumentHighlight {
     color: color,
     text: draft.text,
     createdAt: DateTime.now(),
+    note: note,
   );
 
   factory DocumentHighlight.fromJson(Map<String, dynamic> json) =>
@@ -67,6 +70,7 @@ class DocumentHighlight {
         color: DocumentHighlightColor.values.byName(json['color'] as String),
         text: json['text'] as String,
         createdAt: DateTime.parse(json['createdAt'] as String),
+        note: json['note'] as String? ?? '',
       );
 
   final String id;
@@ -77,6 +81,20 @@ class DocumentHighlight {
   final DocumentHighlightColor color;
   final String text;
   final DateTime createdAt;
+  final String note;
+
+  DocumentHighlight copyWith({DocumentHighlightColor? color, String? note}) =>
+      DocumentHighlight(
+        id: id,
+        pageNumber: pageNumber,
+        startIndex: startIndex,
+        endIndex: endIndex,
+        rects: rects,
+        color: color ?? this.color,
+        text: text,
+        createdAt: createdAt,
+        note: note ?? this.note,
+      );
 
   bool overlapsRange(int pageNumber, int start, int end) =>
       this.pageNumber == pageNumber && startIndex < end && start < endIndex;
@@ -90,6 +108,7 @@ class DocumentHighlight {
     'color': color.name,
     'text': text,
     'createdAt': createdAt.toIso8601String(),
+    if (note.isNotEmpty) 'note': note,
   };
 
   static List<DocumentRect> lineRects(
