@@ -35,6 +35,20 @@ class DocumentFile {
   final int sizeBytes;
   final DateTime modifiedAt;
 
+  DocumentFile copyWith({
+    String? path,
+    String? name,
+    DocumentType? type,
+    int? sizeBytes,
+    DateTime? modifiedAt,
+  }) => DocumentFile(
+    path: path ?? this.path,
+    name: name ?? this.name,
+    type: type ?? this.type,
+    sizeBytes: sizeBytes ?? this.sizeBytes,
+    modifiedAt: modifiedAt ?? this.modifiedAt,
+  );
+
   String get formattedSize => formatBytes(sizeBytes);
 
   static String formatBytes(int bytes) {

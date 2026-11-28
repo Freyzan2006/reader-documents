@@ -7,6 +7,7 @@ import 'package:reader_documents/features/documents/presentation/list/document_c
 import 'package:reader_documents/features/documents/presentation/list/document_selection_aware_header.dart';
 import 'package:reader_documents/features/documents/presentation/list/document_selection_header.dart';
 import 'package:reader_documents/features/documents/presentation/list/paginated_document_list.dart';
+import 'package:reader_documents/features/settings/data/app_settings.dart';
 
 import '../helpers/fakes.dart';
 import '../helpers/test_app.dart';
@@ -27,6 +28,7 @@ class _DocumentListScreen extends ConsumerWidget {
         onOpen: (_) {},
         confirmDelete: (_) async => false,
         onDelete: (_) {},
+        layout: DocumentsLayout.card,
       ),
     ),
   );

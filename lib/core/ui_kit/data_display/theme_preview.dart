@@ -78,7 +78,7 @@ class _Pane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = AppPalette.of(brightness);
+    final palette = AppPalette.of(brightness, context.tokens.palette.family);
     return ColoredBox(
       color: palette.paper,
       child: LayoutBuilder(

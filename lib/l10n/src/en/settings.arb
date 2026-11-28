@@ -33,18 +33,16 @@
   "graphicsModeTitle": "Graphics mode",
   "graphicsAuto": "Auto",
   "graphicsPerformanceShort": "Performance",
-  "graphicsAutoNow": "Auto: now “{mode}”",
+  "documentsSectionTitle": "Documents",
+  "documentsViewTitle": "Document list view",
+  "documentsViewAuto": "Auto",
+  "documentsViewCard": "Card",
+  "documentsViewCardRow": "Card row",
   "paletteSectionTitle": "Palette",
   "paletteMonochrome": "Monochrome",
   "paletteMonochromeThemes": "Paper · Graphite",
-  "palettesComingSoon": "New palettes will appear here",
-  "@graphicsAutoNow": {
-    "placeholders": {
-      "mode": {
-        "type": "String"
-      }
-    }
-  },
+  "paletteInk": "Ink",
+  "paletteInkThemes": "Day · Night",
   "languagePickerTitle": "App language",
   "languagesCount": "{count, plural, =1{1 language} other{{count} languages}}",
   "languageAppliesNow": "The app switches to the chosen language right away",

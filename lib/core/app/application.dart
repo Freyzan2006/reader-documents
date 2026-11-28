@@ -38,7 +38,7 @@ class Application extends ConsumerWidget {
         final reduceMotion = MediaQuery.disableAnimationsOf(context);
         return AppTheme(
           tokens: AppTokens(
-            palette: AppPalette.of(brightness),
+            palette: AppPalette.of(brightness, settings.palette),
             graphics: _graphics.resolve(
               preference: settings.effectsMode,
               device: device,

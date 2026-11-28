@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reader_documents/core/ui_kit/tokens/app_palette.dart';
 import 'package:reader_documents/features/settings/data/app_language.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/features/settings/data/settings_repository.dart';
@@ -30,6 +31,9 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> setDocumentsLayout(DocumentsLayout layout) =>
       _update((settings) => settings.copyWith(documentsLayout: layout));
+
+  Future<void> setPalette(AppPaletteFamily palette) =>
+      _update((settings) => settings.copyWith(palette: palette));
 
   Future<void> _update(
     AppSettings Function(AppSettings current) transform,

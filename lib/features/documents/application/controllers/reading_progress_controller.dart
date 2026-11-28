@@ -1,35 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:reader_documents/features/documents/data/repositories/reading_offset_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_progress_repository.dart';
 
-/// Restores and records where the reader left off.
-///
-/// Page-addressable formats (PDF) store an absolute page number. Formats
-/// without stable pages (DOCX, rendered as one continuous flow) store a
-/// fraction of the scrollable extent instead, which survives a different
-/// screen, orientation or window size. Both are persisted under separate keys
-/// so switching the mode never invalidates previously saved progress.
+/// Restores and records the last read page. Older DOCX scroll fractions are
+/// migrated once by the viewer screen.
 class ReadingProgressController extends ChangeNotifier {
   ReadingProgressController.page({
     required ReadingProgressRepository repository,
     required this.documentPath,
     this.onSaved,
-  }) : _pages = repository,
-       _offsets = null;
-
-  ReadingProgressController.offset({
-    required ReadingOffsetRepository repository,
-    required this.documentPath,
-    this.onSaved,
-  }) : _pages = null,
-       _offsets = repository;
+  }) : _pages = repository;
 
   static const _saveDebounce = Duration(milliseconds: 400);
 
-  final ReadingProgressRepository? _pages;
-  final ReadingOffsetRepository? _offsets;
+  final ReadingProgressRepository _pages;
   final String documentPath;
 
   /// Called after every completed write, including the one from [dispose].
@@ -42,44 +27,22 @@ class ReadingProgressController extends ChangeNotifier {
 
   Timer? _saveTimer;
   int? _pendingPage;
-  double? _pendingFraction;
 
   bool _isReady = false;
   int _initialPage = 1;
-  double _initialFraction = 0;
 
   bool get isReady => _isReady;
   int get initialPage => _initialPage;
 
-  /// Restored scroll position in 0..1. Always 0 when [isOffsetBased].
-  double get initialFraction => _initialFraction;
-
-  /// True when this controller tracks a scroll offset rather than a page.
-  bool get isOffsetBased => _offsets != null;
-
   Future<void> load() async {
-    if (isOffsetBased) {
-      final fraction = await _offsets!.load(documentPath);
-      _initialFraction = (fraction ?? 0).clamp(0.0, 1.0);
-    } else {
-      final page = await _pages!.load(documentPath);
-      _initialPage = page ?? 1;
-    }
+    _initialPage = await _pages.load(documentPath) ?? 1;
     _isReady = true;
     notifyListeners();
   }
 
   void onPageChanged(int? pageNumber) {
-    if (isOffsetBased) return;
     if (pageNumber == null) return;
     _pendingPage = pageNumber;
-    _scheduleSave();
-  }
-
-  void onScrollFraction(double fraction) {
-    if (!isOffsetBased) return;
-    final clamped = fraction.isFinite ? fraction.clamp(0.0, 1.0) : 0.0;
-    _pendingFraction = clamped;
     _scheduleSave();
   }
 
@@ -95,22 +58,8 @@ class ReadingProgressController extends ChangeNotifier {
   /// keep showing it.
   Future<void> flush() async {
     final page = _pendingPage;
-    final fraction = _pendingFraction;
     _pendingPage = null;
-    _pendingFraction = null;
-    if (isOffsetBased) {
-      if (fraction != null) {
-        // A document scrolled to its end is finished, not parked at 100%:
-        // drop the key so a later open starts from the top.
-        if (fraction >= 1) {
-          await _offsets!.clear(documentPath);
-        } else {
-          await _offsets!.save(documentPath, fraction);
-        }
-      }
-    } else if (page != null) {
-      await _pages!.save(documentPath, page);
-    }
+    if (page != null) await _pages.save(documentPath, page);
     onSaved?.call();
   }
 

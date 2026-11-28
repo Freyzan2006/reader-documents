@@ -20,62 +20,50 @@ class EffectsSettingsSection extends StatelessWidget {
         AppEffectsMode.performance => l10n.graphicsPerformanceShort,
       };
 
+  static List<GraphicsMode> _previewModes(AppEffectsMode mode) =>
+      switch (mode) {
+        // Quality takes the lower half, where its motion trail is drawn.
+        AppEffectsMode.system => const [
+          GraphicsMode.performance,
+          GraphicsMode.quality,
+        ],
+        AppEffectsMode.quality => const [GraphicsMode.quality],
+        AppEffectsMode.performance => const [GraphicsMode.performance],
+      };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final palette = context.tokens.palette;
     final resolved = context.tokens.graphics == GraphicsMode.quality
         ? l10n.effectsQuality
-        : l10n.effectsPerformance;
+        : l10n.graphicsPerformanceShort;
 
-    return AppListGroup(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            14,
-            AppSpacing.lg,
-            AppSpacing.lg,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.md,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.graphicsModeTitle,
-                    style: AppTextStyles.body.copyWith(color: palette.ink),
-                  ),
-                  if (effectsMode == AppEffectsMode.system)
-                    Text(
-                      l10n.graphicsAutoNow(resolved),
-                      style: AppTextStyles.caption.copyWith(
-                        color: palette.ink3,
-                      ),
-                    ),
-                ],
+    return Semantics(
+      container: true,
+      label: l10n.graphicsModeTitle,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.sm,
+          children: [
+            for (final mode in AppEffectsMode.values)
+              Expanded(
+                child: AppPreviewChoiceCard(
+                  label: _label(l10n, mode),
+                  semanticsLabel: mode == AppEffectsMode.performance
+                      ? l10n.effectsPerformance
+                      : null,
+                  sub: mode == AppEffectsMode.system
+                      ? l10n.nowValue(resolved.toLowerCase())
+                      : null,
+                  preview: AppEffectsPreview(modes: _previewModes(mode)),
+                  selected: mode == effectsMode,
+                  onPressed: () => onChanged(mode),
+                ),
               ),
-              AppSegmented<AppEffectsMode>(
-                expand: true,
-                value: effectsMode,
-                onChanged: onChanged,
-                segments: [
-                  for (final mode in AppEffectsMode.values)
-                    AppSegment(
-                      value: mode,
-                      label: _label(l10n, mode),
-                      semanticsLabel: mode == AppEffectsMode.performance
-                          ? l10n.effectsPerformance
-                          : null,
-                    ),
-                ],
-              ),
-            ],
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

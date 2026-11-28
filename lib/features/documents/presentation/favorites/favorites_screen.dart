@@ -53,8 +53,8 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     final stats = favorites.whenData(DocumentStats.from).value;
     final layout =
         ref.watch(settingsProvider).value?.documentsLayout ??
-        DocumentsLayout.grid;
-    final grid = layout == DocumentsLayout.grid;
+        AppSettings.defaults.documentsLayout;
+    final grid = layout.useCardRow(context.screenSize);
     final hasFavorites = (stats?.count ?? 0) > 0;
     final visible = favorites.whenData(
       (files) => files.where((file) => _filter.matches(file.type)).toList(),
@@ -75,7 +75,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                 onPressed: () => ref
                     .read(settingsProvider.notifier)
                     .setDocumentsLayout(
-                      grid ? DocumentsLayout.list : DocumentsLayout.grid,
+                      grid ? DocumentsLayout.card : DocumentsLayout.cardrow,
                     ),
               ),
           ],

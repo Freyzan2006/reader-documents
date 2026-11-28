@@ -16,7 +16,7 @@ class DocumentList extends StatelessWidget {
     required this.confirmDelete,
     required this.onDelete,
     this.skeletonCount = 5,
-    this.layout = DocumentsLayout.list,
+    this.layout = DocumentsLayout.auto,
     this.empty,
     super.key,
   });

@@ -4,8 +4,6 @@ pre-commit:
   jobs:
     - name: format
       glob: "**/*.dart"
-      exclude:
-        - "packages/**"
       run: dart format {staged_files}
       stage_fixed: true
 

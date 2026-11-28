@@ -5,6 +5,7 @@ import 'package:reader_documents/features/settings/application/settings_provider
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
+import 'documents_view_settings_section.dart';
 import 'effects_settings_section.dart';
 import 'palette_settings_section.dart';
 import 'theme_settings_section.dart';
@@ -45,13 +46,23 @@ class AppearanceScreen extends ConsumerWidget {
               ),
               _AppearanceGroup(
                 label: l10n.paletteSectionTitle,
-                child: const PaletteSettingsSection(),
+                child: PaletteSettingsSection(
+                  palette: settings.palette,
+                  onChanged: notifier.setPalette,
+                ),
               ),
               _AppearanceGroup(
                 label: l10n.graphicsSectionTitle,
                 child: EffectsSettingsSection(
                   effectsMode: settings.effectsMode,
                   onChanged: notifier.setEffectsMode,
+                ),
+              ),
+              _AppearanceGroup(
+                label: l10n.documentsSectionTitle,
+                child: DocumentsViewSettingsSection(
+                  layout: settings.documentsLayout,
+                  onChanged: notifier.setDocumentsLayout,
                 ),
               ),
               _AppearanceGroup(

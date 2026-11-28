@@ -1,11 +1,26 @@
 import 'package:flutter/widgets.dart';
+import 'package:reader_documents/core/ui_kit/tokens/app_breakpoints.dart';
+import 'package:reader_documents/core/ui_kit/tokens/app_palette.dart';
 import 'package:reader_documents/features/settings/data/app_language.dart';
 
 enum AppThemeMode { system, light, dark }
 
 enum AppEffectsMode { system, quality, performance }
 
-enum DocumentsLayout { list, grid }
+/// How document lists are laid out.
+///
+/// [DocumentsLayout.auto] follows the screen size: one card per row on
+/// phones, several cards per row on tablets and desktops.
+enum DocumentsLayout { auto, card, cardrow }
+
+extension DocumentsLayoutX on DocumentsLayout {
+  /// Whether documents are shown as a row of cards for the given [screenSize].
+  bool useCardRow(ScreenSize screenSize) => switch (this) {
+    DocumentsLayout.auto => screenSize != ScreenSize.mobile,
+    DocumentsLayout.cardrow => true,
+    DocumentsLayout.card => false,
+  };
+}
 
 class AppSettings {
   const AppSettings({
@@ -13,7 +28,8 @@ class AppSettings {
     required this.language,
     required this.warmReadingFilter,
     required this.effectsMode,
-    this.documentsLayout = DocumentsLayout.list,
+    this.documentsLayout = DocumentsLayout.auto,
+    this.palette = AppPaletteFamily.monochrome,
   });
 
   static const defaults = AppSettings(
@@ -32,6 +48,7 @@ class AppSettings {
 
   final AppEffectsMode effectsMode;
   final DocumentsLayout documentsLayout;
+  final AppPaletteFamily palette;
 
   Brightness resolveBrightness(Brightness platformBrightness) =>
       switch (themeMode) {
@@ -46,11 +63,13 @@ class AppSettings {
     bool? warmReadingFilter,
     AppEffectsMode? effectsMode,
     DocumentsLayout? documentsLayout,
+    AppPaletteFamily? palette,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
     language: language ?? this.language,
     warmReadingFilter: warmReadingFilter ?? this.warmReadingFilter,
     effectsMode: effectsMode ?? this.effectsMode,
     documentsLayout: documentsLayout ?? this.documentsLayout,
+    palette: palette ?? this.palette,
   );
 }

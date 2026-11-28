@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reader_documents/features/documents/application/documents_providers.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 
+import 'thumbnail/converted_pdf_thumbnail_engine.dart';
 import 'thumbnail/document_thumbnail_engine.dart';
 import 'thumbnail/document_thumbnail_registry.dart';
-import 'thumbnail/docx_document_thumbnail_engine.dart';
 import 'thumbnail/pdf_document_thumbnail_engine.dart';
 
 @immutable
@@ -28,9 +30,16 @@ class DocumentThumbnail extends StatelessWidget {
     super.key,
   });
 
-  static DocumentThumbnailRegistry registry = const DocumentThumbnailRegistry([
-    PdfDocumentThumbnailEngine(),
-    DocxDocumentThumbnailEngine(),
+  static DocumentThumbnailRegistry registry = DocumentThumbnailRegistry([
+    const PdfDocumentThumbnailEngine(),
+    ConvertedPdfThumbnailEngine(
+      type: DocumentType.docx,
+      projection: (context) => ProviderScope.containerOf(
+        context,
+        listen: false,
+      ).read(docxPdfProjectionProvider),
+      pdf: const PdfDocumentThumbnailEngine(),
+    ),
   ]);
 
   static Widget? of(DocumentFile file, {bool preview = true}) {

@@ -9,6 +9,7 @@ import '../application/settings_providers.dart';
 import '../data/app_settings.dart';
 import 'appearance_screen.dart';
 import 'language_picker.dart';
+import 'palette_settings_section.dart';
 import 'theme_mode_picker.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -87,7 +88,7 @@ class _SettingsGroups extends ConsumerWidget {
             AppListRow(
               title: l10n.themeTitle,
               leading: AppIcons.palette,
-              value: l10n.paletteMonochrome,
+              value: PaletteSettingsSection.label(l10n, settings.palette),
               chevron: true,
               onTap: () => Navigator.of(context).push(
                 AppPageRoute<void>(builder: (_) => const AppearanceScreen()),

@@ -49,17 +49,15 @@ dependencies:
   url_launcher: ^6.3.2
   simple_icons: ^16.23.0
   package_info_plus: ^10.2.1
-  # Vendored fork, not the plain pub.dev package — see
-  # packages/docx_file_viewer/PATCH.md for why and how to update it.
-  # origin source: https://pub.dev/packages/docx_file_viewer
-  docx_file_viewer:
-    path: packages/docx_file_viewer
-  docx_creator: ">=1.3.3 <2.0.0"
+  # Pure-Dart DOCX parser and PDF exporter. DOCX files are converted locally
+  # and then displayed by pdfrx — no server, no network, no WebView.
+  docx_creator: ^1.4.0
   lucide_icons_flutter: ^4.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  archive: ^4.3.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

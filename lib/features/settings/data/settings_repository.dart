@@ -1,4 +1,5 @@
 import 'package:reader_documents/core/storage/flat_global_store.dart';
+import 'package:reader_documents/core/ui_kit/tokens/app_palette.dart';
 import 'package:reader_documents/features/settings/data/app_language.dart';
 import 'package:reader_documents/features/settings/data/app_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,7 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
   static const _warmReadingFilterKey = 'settings.warmReadingFilter';
   static const _effectsModeKey = 'settings.effectsMode';
   static const _documentsLayoutKey = 'settings.documentsLayout';
+  static const _paletteKey = 'settings.palette';
 
   @override
   Future<AppSettings> readFields(SharedPreferences prefs) async {
@@ -27,9 +29,13 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
       orElse: () => AppEffectsMode.system,
     );
 
-    final documentsLayout = DocumentsLayout.values.firstWhere(
-      (layout) => layout.name == prefs.getString(_documentsLayoutKey),
-      orElse: () => DocumentsLayout.list,
+    final documentsLayout = _readDocumentsLayout(
+      prefs.getString(_documentsLayoutKey),
+    );
+
+    final palette = AppPaletteFamily.values.firstWhere(
+      (family) => family.name == prefs.getString(_paletteKey),
+      orElse: () => AppSettings.defaults.palette,
     );
 
     return AppSettings(
@@ -38,6 +44,22 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
       warmReadingFilter: prefs.getBool(_warmReadingFilterKey) ?? false,
       effectsMode: effectsMode,
       documentsLayout: documentsLayout,
+      palette: palette,
+    );
+  }
+
+  /// Keeps layouts saved before `auto` was introduced working: the old
+  /// `list` / `grid` values map to `card` / `cardrow`.
+  static DocumentsLayout _readDocumentsLayout(String? stored) {
+    final legacy = switch (stored) {
+      'list' => DocumentsLayout.card,
+      'grid' => DocumentsLayout.cardrow,
+      _ => null,
+    };
+    if (legacy != null) return legacy;
+    return DocumentsLayout.values.firstWhere(
+      (layout) => layout.name == stored,
+      orElse: () => AppSettings.defaults.documentsLayout,
     );
   }
 
@@ -51,5 +73,6 @@ class SettingsRepository extends FlatGlobalStore<AppSettings> {
     await prefs.setBool(_warmReadingFilterKey, settings.warmReadingFilter);
     await prefs.setString(_effectsModeKey, settings.effectsMode.name);
     await prefs.setString(_documentsLayoutKey, settings.documentsLayout.name);
+    await prefs.setString(_paletteKey, settings.palette.name);
   }
 }

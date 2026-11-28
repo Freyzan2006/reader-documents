@@ -43,8 +43,8 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
     final scrolled = AppScrollScope.of(context);
     final layout =
         ref.watch(settingsProvider).value?.documentsLayout ??
-        DocumentsLayout.list;
-    final grid = layout == DocumentsLayout.grid;
+        AppSettings.defaults.documentsLayout;
+    final grid = layout.useCardRow(context.screenSize);
 
     return Stack(
       children: [
@@ -85,8 +85,8 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
                             .read(settingsProvider.notifier)
                             .setDocumentsLayout(
                               grid
-                                  ? DocumentsLayout.list
-                                  : DocumentsLayout.grid,
+                                  ? DocumentsLayout.card
+                                  : DocumentsLayout.cardrow,
                             ),
                       ),
                       onChanged: (value) =>

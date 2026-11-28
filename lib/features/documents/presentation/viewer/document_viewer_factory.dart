@@ -2,10 +2,11 @@ import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/widgets.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/features/documents/data/models/document_highlight.dart';
+import 'package:reader_documents/features/documents/data/conversion/pdf_projection.dart';
 
 import 'contract/document_viewer.dart';
 import 'contract/document_viewer_controller.dart';
-import 'docx/docx_document_viewer.dart';
+import 'converted/converted_pdf_document_viewer.dart';
 import 'pdf/pdf_document_viewer.dart';
 
 abstract final class DocumentViewerFactory {
@@ -26,8 +27,7 @@ abstract final class DocumentViewerFactory {
     required DocumentMagnifierBuilder buildMagnifier,
     required DocumentErrorBannerBuilder buildErrorBanner,
     required DocumentLoadingBannerBuilder buildLoadingBanner,
-    double initialReadFraction = 0,
-    ValueChanged<double>? onReadFractionChanged,
+    required PdfProjection docxPdfProjection,
   }) => switch (file.type) {
     DocumentType.pdf => PdfDocumentViewer(
       file: file,
@@ -42,7 +42,7 @@ abstract final class DocumentViewerFactory {
       buildErrorBanner: buildErrorBanner,
       buildLoadingBanner: buildLoadingBanner,
     ),
-    DocumentType.docx => DocxDocumentViewer(
+    DocumentType.docx => ConvertedPdfDocumentViewer(
       file: file,
       initialPageNumber: initialPageNumber,
       highlights: highlights,
@@ -54,8 +54,7 @@ abstract final class DocumentViewerFactory {
       buildMagnifier: buildMagnifier,
       buildErrorBanner: buildErrorBanner,
       buildLoadingBanner: buildLoadingBanner,
-      initialReadFraction: initialReadFraction,
-      onReadFractionChanged: onReadFractionChanged,
+      projection: docxPdfProjection,
     ),
     DocumentType.djvu || DocumentType.other => throw UnsupportedError(
       'No viewer registered for ${file.type}',

@@ -3,14 +3,32 @@ import 'package:reader_documents/core/ui_kit/ui_kit.dart';
 import 'package:reader_documents/l10n/app_localizations.dart';
 
 class PaletteSettingsSection extends StatelessWidget {
-  const PaletteSettingsSection({super.key});
+  const PaletteSettingsSection({
+    required this.palette,
+    required this.onChanged,
+    super.key,
+  });
 
   static const _cardWidth = 132.0;
+
+  final AppPaletteFamily palette;
+  final ValueChanged<AppPaletteFamily> onChanged;
+
+  static String label(AppLocalizations l10n, AppPaletteFamily family) =>
+      switch (family) {
+        AppPaletteFamily.monochrome => l10n.paletteMonochrome,
+        AppPaletteFamily.ink => l10n.paletteInk,
+      };
+
+  static String _themes(AppLocalizations l10n, AppPaletteFamily family) =>
+      switch (family) {
+        AppPaletteFamily.monochrome => l10n.paletteMonochromeThemes,
+        AppPaletteFamily.ink => l10n.paletteInkThemes,
+      };
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final palette = context.tokens.palette;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -20,58 +38,96 @@ class PaletteSettingsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.sm,
           children: [
-            Semantics(
-              selected: true,
-              label: l10n.paletteMonochrome,
-              excludeSemantics: true,
-              child: Container(
+            for (final family in AppPaletteFamily.values)
+              SizedBox(
                 width: _cardWidth,
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: palette.sheet,
-                  borderRadius: AppRadii.md,
-                  border: Border.all(color: palette.ink, width: 2),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.sm,
-                  children: [
-                    _Swatches(
-                      colors: [palette.paper, palette.ruleStrong, palette.ink],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText(
-                          l10n.paletteMonochrome,
-                          variant: AppTextVariant.item,
-                        ),
-                        AppText(
-                          l10n.paletteMonochromeThemes,
-                          variant: AppTextVariant.meta,
-                        ),
-                      ],
-                    ),
-                  ],
+                child: _PaletteCard(
+                  family: family,
+                  label: label(l10n, family),
+                  themes: _themes(l10n, family),
+                  selected: family == palette,
+                  onPressed: () => onChanged(family),
                 ),
               ),
-            ),
-            SizedBox(
-              width: _cardWidth,
-              child: CustomPaint(
-                painter: _DashedBorder(color: palette.ruleStrong),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Center(
-                    child: AppText(
-                      l10n.palettesComingSoon,
-                      variant: AppTextVariant.caption,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PaletteCard extends StatelessWidget {
+  const _PaletteCard({
+    required this.family,
+    required this.label,
+    required this.themes,
+    required this.selected,
+    required this.onPressed,
+  });
+
+  final AppPaletteFamily family;
+  final String label;
+  final String themes;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    final palette = tokens.palette;
+    final light = AppPalette.of(Brightness.light, family);
+    final dark = AppPalette.of(Brightness.dark, family);
+
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      child: AppTappable(
+        onPressed: onPressed,
+        selected: selected,
+        semanticsLabel: '$label, $themes',
+        excludeChildSemantics: true,
+        pressedOpacity: 0.85,
+        child: AnimatedContainer(
+          duration: tokens.motion.quick,
+          padding: const EdgeInsets.all(AppSpacing.md),
+          foregroundDecoration: BoxDecoration(
+            borderRadius: AppRadii.md,
+            border: Border.all(
+              color: selected ? palette.ink : palette.rule,
+              width: selected ? 2 : 1,
+            ),
+          ),
+          decoration: BoxDecoration(
+            color: palette.sheet,
+            borderRadius: AppRadii.md,
+          ),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.sm,
+                children: [
+                  _Swatches(
+                    // Three swatches leave room for the check badge.
+                    colors: [light.paper, light.ink, dark.paper],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(label, variant: AppTextVariant.item),
+                      AppText(themes, variant: AppTextVariant.meta),
+                    ],
+                  ),
+                ],
+              ),
+              if (selected)
+                const Positioned(
+                  top: 0,
+                  right: 0,
+                  child: AppCheckMark(checked: true, round: true, size: 20),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -81,7 +137,7 @@ class PaletteSettingsSection extends StatelessWidget {
 class _Swatches extends StatelessWidget {
   const _Swatches({required this.colors});
 
-  static const _height = 28.0;
+  static const _size = 28.0;
   static const _overlap = 6.0;
 
   final List<Color> colors;
@@ -89,20 +145,23 @@ class _Swatches extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rule = context.tokens.palette.rule;
+    final step = _size - _overlap;
     return SizedBox(
-      height: _height,
-      child: Row(
+      width: colors.isEmpty ? 0 : _size + step * (colors.length - 1),
+      height: _size,
+      child: Stack(
         children: [
           for (final (index, color) in colors.indexed)
-            Expanded(
-              child: Transform.translate(
-                offset: Offset(-_overlap * index, 0),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: AppRadii.xs,
-                    border: Border.all(color: rule),
-                  ),
+            Positioned(
+              left: step * index,
+              top: 0,
+              width: _size,
+              height: _size,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: AppRadii.xs,
+                  border: Border.all(color: rule),
                 ),
               ),
             ),
@@ -110,31 +169,4 @@ class _Swatches extends StatelessWidget {
       ),
     );
   }
-}
-
-class _DashedBorder extends CustomPainter {
-  const _DashedBorder({required this.color});
-
-  static const _dash = 4.0;
-  static const _gap = 3.0;
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    final path = Path()
-      ..addRRect(AppRadii.md.toRRect(Offset.zero & size).deflate(0.5));
-    for (final metric in path.computeMetrics()) {
-      for (var d = 0.0; d < metric.length; d += _dash + _gap) {
-        canvas.drawPath(metric.extractPath(d, d + _dash), paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_DashedBorder oldDelegate) => oldDelegate.color != color;
 }

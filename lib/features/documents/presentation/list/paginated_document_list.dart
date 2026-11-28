@@ -17,7 +17,7 @@ class PaginatedDocumentList extends ConsumerStatefulWidget {
     required this.onOpen,
     required this.confirmDelete,
     required this.onDelete,
-    this.layout = DocumentsLayout.list,
+    this.layout = DocumentsLayout.auto,
     super.key,
   });
 
@@ -101,7 +101,7 @@ class _PaginatedDocumentListState extends ConsumerState<PaginatedDocumentList> {
             ),
             child: DocumentGestureHintBanner(),
           ),
-        if (widget.layout == DocumentsLayout.grid)
+        if (widget.layout.useCardRow(context.screenSize))
           _DocumentGrid(
             files: pageFiles,
             builder: (file) => DocumentCard(

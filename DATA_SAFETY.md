@@ -18,6 +18,9 @@ grounded in what was actually verified in this codebase — not guessed.
 - Local storage the app does use (`SharedPreferences`, app-private
   filesystem directory via `path_provider`) never leaves the device —
   there is no networking code anywhere in `lib/`.
+- DOCX files are converted to PDF locally by `docx_creator` (its
+  file/bytes APIs only) and cached in the app-private support directory.
+  No WebView, remote converter or document URL is used.
 
 Per Play's own Data Safety definition, "collection" means data
 **transmitted off the device**. Purely on-device storage (your
@@ -46,8 +49,9 @@ below if they appear:
 > This app stores documents, tags, highlights, and preferences only in
 > local on-device storage (SharedPreferences and the app's private
 > filesystem directory). It has no backend, no account system, and no
-> third-party SDKs. Verified: the release Android manifest declares no
-> permissions, and no code path performs network I/O.
+> third-party SDKs. DOCX-to-PDF conversion also runs entirely on the
+> device. Verified: the release Android manifest declares no permissions,
+> and no code path performs network I/O.
 
 ## Caveat
 

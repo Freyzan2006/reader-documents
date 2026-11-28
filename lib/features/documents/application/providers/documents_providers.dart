@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:reader_documents/features/documents/data/models/document_file.dart';
 import 'package:reader_documents/features/documents/data/models/tag_color.dart';
@@ -9,6 +13,11 @@ import 'package:reader_documents/features/documents/data/repositories/favorites_
 import 'package:reader_documents/features/documents/data/repositories/highlights_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_offset_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/reading_progress_repository.dart';
+import 'package:reader_documents/features/documents/data/conversion/cached_pdf_projection.dart';
+import 'package:reader_documents/features/documents/data/conversion/docx_creator_pdf_converter.dart';
+import 'package:reader_documents/features/documents/data/conversion/file_converted_pdf_cache.dart';
+import 'package:reader_documents/features/documents/data/conversion/isolate_pdf_converter.dart';
+import 'package:reader_documents/features/documents/data/conversion/pdf_projection.dart';
 import 'package:reader_documents/features/documents/data/repositories/page_count_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/recently_opened_repository.dart';
 import 'package:reader_documents/features/documents/data/repositories/tag_definitions_repository.dart';
@@ -38,6 +47,19 @@ final pageCountRepositoryProvider = Provider<PageCountRepository>(
 final readingOffsetRepositoryProvider = Provider<ReadingOffsetRepository>(
   (ref) => const ReadingOffsetRepository(),
 );
+
+final docxPdfProjectionProvider = Provider<PdfProjection>(
+  (ref) => CachedPdfProjection(
+    converter: const IsolatePdfConverter(DocxCreatorPdfConverter()),
+    cache: FileConvertedPdfCache(resolveDirectory: _docxPdfCacheDirectory),
+  ),
+);
+
+// The support directory keeps generated PDFs out of the document library.
+Future<Directory> _docxPdfCacheDirectory() async {
+  final root = await getApplicationSupportDirectory();
+  return Directory(p.join(root.path, 'docx_pdf_cache')).create(recursive: true);
+}
 
 final highlightsRepositoryProvider = Provider<HighlightsRepository>(
   (ref) => const HighlightsRepository(),
@@ -140,13 +162,8 @@ final lastReadingProgressPageProvider = FutureProvider.family<int?, String>(
       ref.watch(readingProgressRepositoryProvider).load(documentPath),
 );
 
-/// The saved reading position for a document rendered as a continuous flow
-/// (DOCX), as a fraction of the scrollable extent, or `null` if nothing was
-/// saved — which is also the case for a document read to the end, see
-/// [ReadingProgressController.flush].
-///
-/// Meaningless for paginated documents: they save a page number instead, and
-/// this stays `null` for them rather than pretending to be 0%.
+/// Legacy scroll fraction saved before DOCX became page-based. Kept only so
+/// the viewer can migrate it to a page number on first open.
 final lastReadingOffsetProvider = FutureProvider.family<double?, String>(
   (ref, documentPath) =>
       ref.watch(readingOffsetRepositoryProvider).load(documentPath),

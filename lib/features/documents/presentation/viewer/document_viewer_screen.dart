@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:reader_documents/features/documents/presentation/list/document_thumbnail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,6 +53,8 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   final _captureKey = GlobalKey();
 
   DocumentViewerController? _viewerController;
+  // Early page events must not overwrite a legacy DOCX offset being migrated.
+  bool _progressTrackingReady = true;
   bool _searchActive = false;
   int _quarterTurns = 0;
   final _searchController = TextEditingController();
@@ -59,21 +63,16 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
   @override
   void initState() {
     super.initState();
+    _progressTrackingReady = widget.file.type != DocumentType.docx;
     _highlights = DocumentHighlightsController(
       ref.read(highlightsRepositoryProvider),
       widget.file.path,
     );
-    _readingProgress = widget.file.type == DocumentType.docx
-        ? ReadingProgressController.offset(
-            repository: ref.read(readingOffsetRepositoryProvider),
-            documentPath: widget.file.path,
-            onSaved: _onReadingProgressSaved,
-          )
-        : ReadingProgressController.page(
-            repository: ref.read(readingProgressRepositoryProvider),
-            documentPath: widget.file.path,
-            onSaved: _onReadingProgressSaved,
-          );
+    _readingProgress = ReadingProgressController.page(
+      repository: ref.read(readingProgressRepositoryProvider),
+      documentPath: widget.file.path,
+      onSaved: _onReadingProgressSaved,
+    );
     _bookmarks = DocumentBookmarksController(
       ref.read(bookmarksRepositoryProvider),
       widget.file.path,
@@ -128,7 +127,38 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
     setState(() => _viewerController = controller);
     if (controller.supportsPagination && controller.pageCount > 0) {
       _rememberPageCount(controller.pageCount);
+      if (widget.file.type == DocumentType.docx) {
+        unawaited(_migrateLegacyDocxOffset(controller.pageCount));
+      }
     }
+  }
+
+  Future<void> _migrateLegacyDocxOffset(int pageCount) async {
+    try {
+      final offsets = ref.read(readingOffsetRepositoryProvider);
+      final fraction = await offsets.load(widget.file.path);
+      if (fraction == null) return;
+
+      final pages = ref.read(readingProgressRepositoryProvider);
+      if (await pages.load(widget.file.path) == null) {
+        final page = (fraction.clamp(0.0, 1.0) * pageCount).ceil().clamp(
+          1,
+          pageCount,
+        );
+        await pages.save(widget.file.path, page);
+        await _readingProgress.load();
+      }
+      await offsets.clear(widget.file.path);
+      ref.invalidate(lastReadingOffsetProvider(widget.file.path));
+      ref.invalidate(lastReadingProgressPageProvider(widget.file.path));
+      ref.invalidate(readingFractionProvider(widget.file.path));
+    } finally {
+      if (mounted) setState(() => _progressTrackingReady = true);
+    }
+  }
+
+  void _handlePageChanged(int? page) {
+    if (_progressTrackingReady) _readingProgress.onPageChanged(page);
   }
 
   Future<void> _rememberPageCount(int count) async {
@@ -225,7 +255,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
       initialPageNumber:
           _viewerController?.currentPage ?? _readingProgress.initialPage,
       highlights: _highlights,
-      onPageChanged: _readingProgress.onPageChanged,
+      onPageChanged: _handlePageChanged,
       onReady: _handleViewerReady,
       onBackgroundTap: _handleBackgroundTap,
       passwordProvider: _password.provide,
@@ -242,8 +272,7 @@ class _DocumentViewerScreenState extends ConsumerState<DocumentViewerScreen> {
         type: file.type,
         heroTag: DocumentPageHeroTag.of(file),
       ),
-      initialReadFraction: _readingProgress.initialFraction,
-      onReadFractionChanged: _readingProgress.onScrollFraction,
+      docxPdfProjection: ref.read(docxPdfProjectionProvider),
     );
   }
 
